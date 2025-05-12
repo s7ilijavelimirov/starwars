@@ -1,0 +1,61 @@
+// THEMES COLOR AND FONT
+$primary-color: #000000; //#425265
+$footer-bg: #53112b;
+$secondary-color2: #ffdd55;
+$third-color: #21409a;
+$background-silver: #f5f5f5;
+$separator-lines: #d3d3d3;
+$white: #ffffff;
+$black: #030303;
+$gray: #707070;
+$bg-silver: #f5f4f4;
+$blue: #2b6b93;
+$light-blue: #7497a7;
+$link-color: #0d5c8e; // LINK COLOR
+$divider-color: #790725;
+
+// Font sizes
+$font-size-base: 1rem; // 16px
+$font-h1: 3.75rem; // 60px
+$font-h2: 1.813rem; // 29px
+$font-h3: 3rem; // 48px
+$font-p: 1.188rem; // 19px
+$font-p-cat: 1.563rem; // 25px
+$font-small: 0.875rem; // 14px
+
+// Font weights
+$extra-bold: 800;
+$bold: 700;
+$semi-bold: 600;
+$medium: 500;
+$regular: 400;
+$light: 300;
+$extra-light: 200;
+
+// Pomoćne klase za boje
+.divider {
+    color: $divider-color;
+}
+.white {
+    color: $white;
+}
+.link-color {
+    color: $link-color;
+}
+.black {
+    color: $black;
+}
+.primary-color {
+    color: $primary-color;
+}
+
+// Bootstrap integracija
+$font-family-base:
+    "Montserrat",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;

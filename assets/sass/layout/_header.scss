@@ -1,0 +1,467 @@
+// _header.scss
+// Finalni SCSS za Star Wars header sa optimalnim logo veličinama
+
+// Fade in animacija
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+// Header
+.site-header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1030;
+    transition: all 0.3s ease-in-out;
+    background-color: rgba($primary-color, 0.85);
+
+    // Star Wars žuta linija - modifikacija za fiksiranje
+    .sw-yellow-border {
+        height: 4px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            $secondary-color2 30%,
+            $secondary-color2 70%,
+            transparent 100%
+        );
+        box-shadow: 0 0 10px rgba($secondary-color2, 0.5);
+        transition: all 0.3s ease-in-out;
+
+        // Za mobilni, fiksiramo žutu liniju na vrh
+        @media (max-width: 991.98px) {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1060; // viši z-index od headera
+        }
+    }
+
+    // Navbar osnova
+    .navbar {
+        padding: 0.75rem 0;
+        min-height: 100px;
+        transition: all 0.3s ease-in-out;
+
+        @media (max-width: 991.98px) {
+            min-height: 80px;
+            padding: 0.5rem 0;
+        }
+    }
+
+    // Meniji levo i desno
+    .nav-left,
+    .nav-right {
+        flex: 0 0 auto;
+        min-width: 280px;
+
+        @media (min-width: 1200px) {
+            min-width: 320px;
+        }
+
+        @media (min-width: 1400px) {
+            min-width: 380px;
+        }
+    }
+
+    // Desni meni - poravnanje
+    .nav-right {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        // Korpa ikona
+        .cart-icon-wrapper {
+            margin-left: 0.75rem;
+        }
+    }
+
+    // Logo wrapper
+    .navbar-brand-wrapper {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        @media (max-width: 991.98px) {
+            position: static;
+            transform: none;
+        }
+    }
+
+    // Logo - desktop
+    .header-logo {
+        height: auto;
+        width: auto;
+        max-height: 90px;
+        max-width: 90px;
+        object-fit: contain;
+        transition: all 0.3s ease-in-out;
+        border-radius: 12px;
+        @media (max-width: 1199.98px) {
+            max-height: 85px;
+            max-width: 85px;
+        }
+
+        @media (max-width: 991.98px) {
+            max-height: 0; // Sakrivamo na mobilnom
+            max-width: 0;
+            opacity: 0;
+        }
+    }
+
+    // Logo - mobilni
+    .header-logo-mobile {
+        height: auto;
+        width: auto;
+        max-height: 60px;
+        max-width: 60px;
+        object-fit: contain;
+        transition: all 0.3s ease-in-out;
+
+        @media (max-width: 575.98px) {
+            max-height: 50px;
+            max-width: 50px;
+        }
+
+        @media (min-width: 992px) {
+            max-height: 0; // Sakrivamo na desktopu
+            max-width: 0;
+            opacity: 0;
+        }
+    }
+
+    // Tekstualni logo
+    .logo-text {
+        color: $secondary-color2;
+        font-weight: $bold;
+        font-size: 1.8rem;
+    }
+
+    // Navigacija
+    .navbar-nav {
+        .nav-item {
+            position: relative;
+
+            &::after {
+                content: "";
+                position: absolute;
+                bottom: -3px;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background-color: $secondary-color2;
+                transform: translateX(-50%);
+                transition: width 0.3s ease;
+            }
+
+            &:hover::after {
+                width: 80%;
+            }
+
+            // Aktivni link
+            &.current-menu-item::after,
+            &.current_page_item::after,
+            &.active::after {
+                width: 80%;
+                opacity: 1;
+            }
+        }
+
+        .nav-link {
+            color: $white;
+            font-weight: $medium;
+            padding: 0.5rem 0.6rem;
+            transition: all 0.3s ease-in-out;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+
+            &:hover,
+            &:focus,
+            &.active {
+                color: $secondary-color2;
+                transform: translateY(-2px);
+            }
+        }
+
+        .dropdown-menu {
+            border-radius: 0;
+            border: none;
+            background-color: rgba($primary-color, 0.95);
+            margin-top: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+
+            .dropdown-item {
+                color: $white;
+                padding: 0.75rem 1.5rem;
+
+                &:hover,
+                &:focus,
+                &.active {
+                    background-color: rgba($secondary-color2, 0.1);
+                    color: $secondary-color2;
+                }
+            }
+        }
+    }
+
+    // Hamburger
+    .navbar-toggler {
+        padding: 0.5rem;
+        border: none;
+        z-index: 1050;
+
+        &:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 232, 31, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            width: 1.8em;
+            height: 1.8em;
+        }
+    }
+
+    // Offcanvas mobilni menu (sada sa desne strane)
+    .offcanvas {
+        background-color: rgba($primary-color, 0.98);
+
+        .offcanvas-header {
+            border-bottom: 1px solid rgba($secondary-color2, 0.2);
+            padding: 1rem 1.5rem;
+
+            .offcanvas-title {
+                color: $secondary-color2;
+                font-weight: $bold;
+                font-size: 1.5rem;
+            }
+
+            .btn-close-white {
+                filter: invert(1) brightness(200%);
+                opacity: 0.8;
+
+                &:hover {
+                    opacity: 1;
+                }
+            }
+        }
+
+        .offcanvas-body {
+            padding: 1.5rem;
+
+            .navbar-nav {
+                .nav-item {
+                    border-bottom: 1px solid rgba($white, 0.1);
+
+                    &::after {
+                        display: none;
+                    }
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+                }
+
+                .nav-link {
+                    padding: 1rem 0.5rem;
+                    font-size: 1.1rem;
+                }
+
+                .dropdown-menu {
+                    background-color: transparent;
+                    box-shadow: none;
+                    padding-left: 1rem;
+
+                    .dropdown-item {
+                        padding: 0.5rem 0;
+                    }
+                }
+            }
+
+            // Mobile widget area
+            .mobile-menu-widgets {
+                border-top: 1px solid rgba($secondary-color2, 0.2);
+                padding-top: 1.5rem;
+                margin-top: 1.5rem;
+
+                h2,
+                h3,
+                h4 {
+                    color: $secondary-color2;
+                    font-size: 1.2rem;
+                    margin-bottom: 1rem;
+                }
+
+                a {
+                    color: $white;
+
+                    &:hover {
+                        color: $secondary-color2;
+                    }
+                }
+
+                p,
+                li,
+                div {
+                    color: rgba($white, 0.8);
+                }
+            }
+        }
+    }
+}
+
+// Scroll efekat
+.site-header.scrolled {
+    background-color: rgba($primary-color, 0.95);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+
+    .sw-yellow-border {
+        height: 3px;
+        box-shadow: 0 0 5px rgba($secondary-color2, 0.3);
+    }
+
+    .navbar {
+        padding: 0.5rem 0;
+        min-height: 80px;
+
+        @media (max-width: 991.98px) {
+            min-height: 70px;
+        }
+    }
+
+    .header-logo {
+        max-height: 75px;
+        max-width: 75px;
+
+        @media (max-width: 1199.98px) {
+            max-height: 70px;
+            max-width: 70px;
+        }
+    }
+
+    .header-logo-mobile {
+        max-height: 50px;
+        max-width: 50px;
+
+        @media (max-width: 575.98px) {
+            max-height: 45px;
+            max-width: 45px;
+        }
+    }
+
+    .navbar-nav .nav-link {
+        padding: 0.45rem 0.55rem;
+        font-size: 0.9rem;
+    }
+}
+
+// Media upiti za različite veličine ekrana
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .site-header {
+        .nav-left,
+        .nav-right {
+            min-width: 250px;
+        }
+
+        .navbar-nav .nav-link {
+            padding: 0.5rem 0.5rem;
+            font-size: 0.85rem;
+        }
+    }
+}
+
+// Dodatna optimizacija za velika i mala resolutions
+@media (min-width: 992px) {
+    .site-header .navbar-nav {
+        flex-wrap: nowrap;
+
+        .nav-item {
+            white-space: nowrap;
+        }
+    }
+}
+
+// Poboljšani mobilni layout
+@media (max-width: 991.98px) {
+    body.header-scrolled {
+        padding-top: 4px; // ista visina kao i žuta linija
+    }
+
+    // Žuta linija nema scroll efekat - ostaje ista
+    .site-header.scrolled .sw-yellow-border {
+        height: 4px; // održavamo istu visinu
+        position: fixed;
+    }
+    .site-header {
+        .navbar {
+            margin-top: 4px;
+            .container {
+                padding: 0 15px;
+                position: relative;
+            }
+        }
+
+        // Poboljšano pozicioniranje za mobilni
+        .navbar-brand {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 0;
+        }
+
+        // Korpa pozicioniranje
+        .cart-icon-wrapper {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}
+
+// Logo hover efekat
+.site-header .navbar-brand-wrapper:hover .header-logo {
+    animation: glow 1.5s infinite;
+}
+
+@keyframes glow {
+    0% {
+        filter: drop-shadow(0 0 5px rgba($secondary-color2, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 10px rgba($secondary-color2, 0.8));
+    }
+    100% {
+        filter: drop-shadow(0 0 5px rgba($secondary-color2, 0.5));
+    }
+}
+
+// Dodatni efekti za korpu
+.cart-icon-wrapper {
+    .xoo-wsc-icon-basket {
+        color: $white;
+        transition: all 0.3s ease;
+
+        &:hover {
+            color: $secondary-color2;
+            transform: scale(1.1);
+        }
+    }
+
+    .xoo-wsc-items-count {
+        background-color: $secondary-color2;
+        color: $primary-color;
+        font-weight: $bold;
+    }
+}

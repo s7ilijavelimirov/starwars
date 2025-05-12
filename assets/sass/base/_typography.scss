@@ -1,0 +1,196 @@
+// Typography - baziran na Bootstrap-ovim konvencijama
+// ---------------------------------------------------------
+// Uklanjamo redundantni reset koji je već uključen u Bootstrap reboot
+
+/* Osnovni stilovi */
+
+
+body {
+  // Osnovni stilovi
+  color: $gray-900;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  // Pozadinska slika - direktna putanja do korena teme
+  background-color: $primary-color; // Fallback boja
+  background-image: url("../../background.webp"); // Putanja relativna u odnosu na kompajlirani CSS
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+}
+
+// Osiguravamo dobar kontrast za sadržaj
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Headings - koriste Bootstrap skaliranje */
+h1,
+.h1 {
+  font-size: $h1-font-size;
+  font-weight: $font-weight-bolder;
+  line-height: $line-height-sm;
+  margin-bottom: $spacer;
+}
+
+h2,
+.h2 {
+  font-size: $h2-font-size;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-sm;
+  margin-bottom: $spacer;
+}
+
+h3,
+.h3 {
+  font-size: $h3-font-size;
+  font-weight: $font-weight-bold;
+  line-height: $line-height-sm;
+  margin-bottom: $spacer;
+}
+
+h4,
+.h4 {
+  font-size: $h4-font-size;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-base;
+  margin-bottom: $spacer * 0.75;
+}
+
+h5,
+.h5 {
+  font-size: $h5-font-size;
+  font-weight: $font-weight-semibold;
+  line-height: $line-height-base;
+  margin-bottom: $spacer * 0.5;
+}
+
+h6,
+.h6 {
+  font-size: $h6-font-size;
+  font-weight: $font-weight-medium;
+  line-height: $line-height-base;
+  margin-bottom: $spacer * 0.5;
+}
+
+/* Paragrafi */
+p {
+  margin-bottom: $spacer;
+}
+
+/* Lists */
+ul,
+ol {
+  margin-bottom: $spacer;
+  padding-left: $spacer * 1.5;
+}
+
+/* Inline text elements */
+small,
+.small {
+  font-size: $font-size-sm;
+}
+
+strong,
+.strong,
+b {
+  font-weight: $font-weight-bold;
+}
+
+em,
+.em,
+i {
+  font-style: italic;
+}
+
+/* Utility klase za tipografiju */
+.font-weight-light {
+  font-weight: $font-weight-light !important;
+}
+.font-weight-normal {
+  font-weight: $font-weight-normal !important;
+}
+.font-weight-medium {
+  font-weight: $font-weight-medium !important;
+}
+.font-weight-semibold {
+  font-weight: $font-weight-semibold !important;
+}
+.font-weight-bold {
+  font-weight: $font-weight-bold !important;
+}
+.font-weight-bolder {
+  font-weight: $font-weight-bolder !important;
+}
+
+.text-primary {
+  color: $primary !important;
+}
+.text-secondary {
+  color: $secondary !important;
+}
+.text-success {
+  color: $success !important;
+}
+.text-danger {
+  color: $danger !important;
+}
+.text-warning {
+  color: $warning !important;
+}
+.text-info {
+  color: $info !important;
+}
+.text-light {
+  color: $light !important;
+}
+.text-dark {
+  color: $dark !important;
+}
+.text-white {
+  color: $white !important;
+}
+.text-black {
+  color: $black !important;
+}
+
+/* Media queries za responsive tipografiju */
+@include media-breakpoint-down(md) {
+  h1,
+  .h1 {
+    font-size: $h1-font-size * 0.8;
+  }
+  h2,
+  .h2 {
+    font-size: $h2-font-size * 0.8;
+  }
+  h3,
+  .h3 {
+    font-size: $h3-font-size * 0.8;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  h1,
+  .h1 {
+    font-size: $h1-font-size * 0.7;
+  }
+  h2,
+  .h2 {
+    font-size: $h2-font-size * 0.7;
+  }
+  h3,
+  .h3 {
+    font-size: $h3-font-size * 0.7;
+  }
+  h4,
+  .h4 {
+    font-size: $h4-font-size * 0.9;
+  }
+
+  p {
+    font-size: $font-size-base !important;
+  }
+}

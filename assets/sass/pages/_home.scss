@@ -1,0 +1,877 @@
+.block {
+  margin-top: 100px;
+  .row {
+    margin-bottom: 0px;
+    .col-sm-12.col-md-12.col-lg-6.p-0 {
+      height: 100%;
+
+      a {
+        display: block;
+        position: relative;
+        h3 {
+          display: flex;
+          position: absolute;
+          height: 100%;
+          width: 100%;
+          flex-direction: column;
+          justify-content: center;
+          top: 0px;
+          align-items: center;
+          text-shadow: -5px 2px black;
+          line-height: 60px;
+          border-bottom: 0px;
+        }
+        .overlay {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 100%;
+          width: 100%;
+          opacity: 0;
+          transition: 0.5s ease;
+          background-color: #000000d0;
+        }
+        &:hover {
+          .overlay {
+            opacity: 1;
+          }
+        }
+        img{
+          width:100%;
+        }
+      }
+    }
+  }
+}
+.container.products {
+  .head-products.d-flex {
+    margin-bottom: 50px;
+    align-items: center;
+    justify-content: space-between;
+    a.links-all {
+      color: $secondary-color2;
+      font-size: 1.2rem;
+      transition: 0.4s;
+      text-shadow: 1px 1px black;
+      margin-right: 30px;
+      &:hover {
+        color: white;
+        transition: 0.4s;
+        //padding-right:10px;
+      }
+    }
+  }
+}
+.carousel-control-next, .carousel-control-prev{
+  width:10%;
+}
+$orange: #ed762d;
+$whig: #dfdfdf;
+$ligg: #bbb;
+$medg: #999;
+$darg: #666;
+.stage {
+  position: relative;
+}
+
+.foobar {
+  @extend .stage;
+  color: red;
+}
+
+.bb8 {
+  .head {
+    height: 8em;
+    width: 16em;
+    border-radius: 8em 8em 0 0;
+    position: relative;
+    -web-kit-perspective: 600;
+    margin: 0 auto;
+    animation: 3s headroll infinite linear, 4s headbounce infinite linear;
+    z-index: 5;
+    .eye {
+      border-radius: 80em;
+      background: #000;
+      height: 2.7em;
+      width: 2.7em;
+      position: absolute;
+      z-index: 5;
+      top: 3em;
+      right: 2.5em;
+      box-shadow: -0.5em 0 rgba(0, 0, 0, 0.3);
+      animation: 4s eyeaim infinite linear;
+      &::before,
+      &::after {
+        content: "";
+        background: #fff;
+        border-radius: 80em;
+        height: 0.9em;
+        width: 0.9em;
+      }
+      &::before {
+        top: 0.5em;
+        left: 0.6em;
+        animation: 4s eyegleammajor infinite linear;
+      }
+      &::after {
+        top: 3em;
+        left: 3em;
+        font-size: 0.5em;
+        animation: 4s eyegleamminor infinite linear;
+      }
+      ~ .eye {
+        font-size: 0.55em;
+        top: 9em;
+        right: 1.3em;
+      }
+    }
+    .stripecontainer {
+      z-index: 3;
+      background: $whig;
+      width: 100%;
+      height: 100%;
+      height: 8em;
+      width: 16em;
+      border-radius: 8em 8em 0 0;
+      overflow: hidden;
+      position: relative;
+      > div {
+        left: 0;
+        width: 250%;
+        position: absolute;
+        animation: 4s headaim infinite linear;
+      }
+    }
+    .b {
+      background: #5d62a3;
+      height: 0.8em;
+      top: 1.3em;
+    }
+    .o {
+      background: $orange;
+      height: 0.4em;
+      top: 3em;
+    }
+    .lg1,
+    .lg2 {
+      background: $ligg;
+      height: 0.1em;
+      top: 0.5em;
+    }
+    .lg2 {
+      top: 6em;
+    }
+    .dg {
+      background: $darg;
+      height: 0.5em;
+      top: 7.3em;
+    }
+    .odash {
+      background: $orange;
+      height: 0.5em;
+      top: 6.7em;
+      width: 67% !important;
+      overflow: hidden;
+      + .odash {
+        margin-left: 95%;
+      }
+      div,
+      div::after {
+        position: absolute;
+        height: 100%;
+        width: 0.5em;
+        border: 1em solid $whig;
+        border-width: 0 0.4em;
+        left: 1em;
+        + div {
+          left: 7.2em;
+        }
+      }
+      div::after {
+        content: "";
+        left: 2.3em;
+      }
+    }
+    .antenna {
+      position: absolute;
+      z-index: 2;
+      top: 0;
+      margin-top: -5em;
+      left: 0;
+      margin-left: 1.7em;
+      transform: rotate3d(1, 0, 0, 25deg);
+      animation: 4s antennamove infinite linear;
+      &::before {
+        position: absolute;
+        top: -1.8em;
+        left: -4.1em;
+        content: "";
+        height: 15em;
+        width: 5em;
+        border: 1em solid $whig;
+        border-width: 0.4em;
+        border-radius: 5em/14em;
+        border-color: transparent $whig transparent transparent;
+        animation: 4s antennabend infinite linear;
+      }
+      &::after {
+        content: "";
+        background: $whig;
+        width: 0.8em;
+        height: 0.8em;
+        border-radius: 5em;
+        position: absolute;
+        top: -0.6em;
+        left: -0.13em;
+      }
+    }
+    .exclamation {
+      opacity: 0;
+      animation: 4s exclamation infinite linear;
+    }
+    .exclamation,
+    .exclamation::after,
+    .exclamation::before {
+      position: absolute;
+      width: 1em;
+      height: 5em;
+      background: white;
+      top: -7em;
+      left: 8em;
+      border-radius: 5em;
+    }
+    .exclamation::after,
+    .exclamation::before {
+      content: "";
+      top: 2em;
+    }
+    .exclamation::after {
+      left: -8em;
+      transform: rotate(-30deg);
+    }
+    .exclamation::before {
+      left: 8em;
+      transform: rotate(30deg);
+    }
+
+    &::after {
+      content: "";
+      border: 1em solid #000;
+      border-width: 0.8em 1em;
+      border-color: $medg transparent transparent transparent;
+      bottom: -1.4em;
+      left: 0;
+      width: 14.2em;
+      z-index: 3;
+    }
+  }
+  .body {
+    .ball {
+      background: $whig;
+      width: 24.2em;
+      height: 24.2em;
+      overflow: hidden;
+      border-radius: 50em;
+      animation: 1s bodyroll infinite linear;
+    }
+    position: relative;
+    z-index: 2;
+    width: 24em;
+    height: 24em;
+    top: -1.4em;
+    left: 0;
+    border-radius: 50em;
+    overflow: hidden;
+    animation: 4s bodybounce infinite linear;
+
+    .decal,
+    .seam {
+      height: 10em;
+      width: 10em;
+      margin-left: -1.5em;
+    }
+    .decal {
+      position: absolute;
+      border: 1.1em solid $orange;
+      border-radius: 50em;
+      background: $whig;
+      z-index: 3;
+
+      &::after,
+      &::before {
+        content: "";
+        background: $orange;
+        height: 1.8em;
+        width: 1.2em;
+        position: absolute;
+        top: 1.1em;
+        transform: rotate(45deg);
+      }
+      &::after {
+        left: 1.1em;
+        width: 1.8em;
+        height: 1.2em;
+      }
+      &::before {
+        right: 1.1em;
+      }
+      &:nth-child(4n + 1) {
+        top: 6em;
+        left: 18em;
+        transform: rotate(-90deg);
+      }
+      &:nth-child(4n + 2) {
+        top: 18em;
+        left: 6em;
+      }
+      &:nth-child(4n + 3) {
+        top: 6em;
+        left: -6em;
+        transform: rotate(90deg);
+      }
+      &:nth-child(4n + 4) {
+        top: -6em;
+        left: 6em;
+        transform: rotate(180deg);
+      }
+
+      div:first-child {
+        position: absolute;
+        left: 2.5em;
+        top: 2.5em;
+        background: $darg;
+        width: 5em;
+        height: 5em;
+        border-radius: 50em;
+
+        &::before,
+        &::after {
+          content: "";
+          border-radius: 50em;
+          position: absolute;
+          right: -2em;
+          top: 0.2em;
+          border: 2.5em solid $darg;
+          border-color: transparent $darg transparent transparent;
+          border-width: 2.5em 3em;
+        }
+        &::after {
+          border-color: transparent transparent transparent $darg;
+          left: -1.8em;
+          top: -0.3em;
+          right: initial;
+        }
+      }
+      div:last-child {
+        &::before,
+        &::after {
+          content: "";
+          border: 0.3em solid $whig;
+          border-width: 0 0.3em;
+          width: 0.5em;
+          height: 6em;
+          transform: rotate(35deg);
+          position: absolute;
+        }
+        &::before {
+          left: 3.8em;
+          top: 1.5em;
+        }
+        &::after {
+          left: 5.3em;
+          top: 2.7em;
+          border-left: 0;
+        }
+      }
+    }
+    .seam {
+      border: 0.3em solid $ligg;
+      border-radius: 50em;
+      position: absolute;
+      top: -1em;
+      left: -1em;
+      &:nth-child(4n + 1) {
+        left: 15em;
+      }
+      &:nth-child(4n + 2) {
+        top: 15em;
+        left: 15em;
+      }
+      &:nth-child(4n + 4) {
+        top: 15em;
+      }
+    }
+  }
+  .body-shadow {
+    position: absolute;
+    width: 24em;
+    height: 24em;
+    bottom: -0.1em;
+    left: 0em;
+    border-radius: 50em;
+    overflow: hidden;
+    z-index: 5;
+    border-bottom: 5em solid rgba(0, 0, 0, 0.15);
+  }
+}
+.shadow {
+  position: absolute;
+  z-index: 1;
+  top: 30.5em;
+  left: 0;
+  width: 24em;
+  height: 2em;
+  border-radius: 12em / 1em;
+  background: rgba(255, 255, 255, 0.219);
+  animation: 4s shadowshrink infinite linear;
+}
+.scenery {
+  position: absolute;
+  width: 100%;
+  top: 30em;
+  left: 0;
+  height: 10em;
+  overflow: hidden;
+}
+.rock {
+  position: absolute;
+  top: 0em;
+  width: 2em;
+  height: 2em;
+  overflow: hidden;
+  border-radius: 50%;
+  background: $secondary-color2;
+  animation: 4s scenery infinite linear;
+  margin-right: -5em;
+  right: -5em;
+}
+
+@keyframes bodyroll {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes headroll {
+  0% {
+    transform: rotate(0deg);
+    left: 0;
+  }
+  25% {
+    transform: rotate(5deg);
+    left: 1.2em;
+  }
+  75% {
+    transform: rotate(-5deg);
+    left: -1.2em;
+  }
+  100% {
+    transform: rotate(0deg);
+    left: 0;
+  }
+}
+@keyframes headbounce {
+  0% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  38% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  41% {
+    margin-top: -12em;
+    margin-bottom: 12em;
+  }
+  44% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  46% {
+    margin-top: -4em;
+    margin-bottom: 4em;
+  }
+  48% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  50% {
+    margin-top: -1em;
+    margin-bottom: 1em;
+  }
+  52% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  100% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+@keyframes bodybounce {
+  0% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  38% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  41% {
+    margin-top: -8em;
+    margin-bottom: 8em;
+  }
+  44% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  46% {
+    margin-top: -2em;
+    margin-bottom: 2em;
+  }
+  48% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  50% {
+    margin-top: -1em;
+    margin-bottom: 0.1em;
+  }
+  52% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  100% {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+@keyframes eyeaim {
+  0% {
+    margin-right: 0;
+    box-shadow: -0.5em 0 rgba(0, 0, 0, 0.2);
+  }
+  40% {
+    margin-right: 0;
+    box-shadow: -0.5em 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    margin-right: 65%;
+    box-shadow: 0.5em 0 rgba(0, 0, 0, 0.2);
+  }
+  60% {
+    margin-right: 65%;
+    box-shadow: 0.5em 0 rgba(0, 0, 0, 0.2);
+  }
+  70% {
+    margin-right: 50%;
+    box-shadow: 0.3em 0 rgba(0, 0, 0, 0.2);
+  }
+  80% {
+    margin-right: 50%;
+    box-shadow: 0.3em 0 rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    margin-right: 0;
+    box-shadow: -0.5em 0 rgba(0, 0, 0, 0.2);
+  }
+}
+@keyframes eyegleammajor {
+  0% {
+    left: 0.5em;
+  }
+  40% {
+    left: 0.5em;
+  }
+  50% {
+    left: 1.25em;
+  }
+  60% {
+    left: 1.25em;
+  }
+  70% {
+    left: 1em;
+  }
+  80% {
+    left: 1em;
+  }
+  100% {
+    left: 0.5em;
+  }
+}
+@keyframes eyegleamminor {
+  0% {
+    left: 3em;
+  }
+  40% {
+    left: 3em;
+  }
+  50% {
+    left: 1em;
+  }
+  60% {
+    left: 1em;
+  }
+  70% {
+    left: 1.3em;
+  }
+  80% {
+    left: 1.3em;
+  }
+  100% {
+    left: 3em;
+  }
+}
+@keyframes headaim {
+  0% {
+    left: 0;
+  }
+  40% {
+    left: 0;
+  }
+  50% {
+    left: -60%;
+  }
+  60% {
+    left: -60%;
+  }
+  70% {
+    left: -50%;
+  }
+  80% {
+    left: -50%;
+  }
+  100% {
+    left: 0;
+  }
+}
+@keyframes antennamove {
+  0% {
+    left: 0%;
+    top: 0;
+  }
+  36% {
+    top: 0;
+  }
+  40% {
+    left: 0%;
+    top: 2em;
+  }
+  43% {
+    top: 0;
+  }
+  46% {
+    top: 1.8em;
+  }
+  49% {
+    top: 0;
+  }
+  50% {
+    left: 60%;
+  }
+  52% {
+    top: 0;
+  }
+  55% {
+    top: 0.5em;
+  }
+  58% {
+    top: 0;
+  }
+  60% {
+    left: 60%;
+  }
+  70% {
+    left: 45%;
+  }
+  80% {
+    left: 45%;
+  }
+  100% {
+    left: 0%;
+  }
+}
+@keyframes antennabend {
+  0% {
+    width: 5em;
+    border-radius: 5em/14em;
+    margin-left: 0;
+  }
+  40% {
+    width: 5em;
+    border-radius: 5em/14em;
+    margin-left: 0;
+  }
+  48% {
+    height: 15em;
+  }
+  50% {
+    height: 13em;
+    width: 8em;
+    border-radius: 8em/14em;
+    margin-left: -2.6em;
+  }
+  52% {
+    height: 15em;
+  }
+  55% {
+    height: 13em;
+  }
+  58% {
+    height: 15em;
+  }
+  60% {
+    height: 13em;
+    width: 8em;
+    border-radius: 8em/14em;
+    margin-left: -2.6em;
+  }
+  62% {
+    height: 15em;
+  }
+  70% {
+    width: 6.75em;
+    border-radius: 6.75em/14em;
+    margin-left: -1.45em;
+  }
+  80% {
+    width: 6.75em;
+    border-radius: 6.75em/14em;
+    margin-left: -1.45em;
+  }
+  100% {
+    width: 5em;
+    border-radius: 5em/14em;
+    margin-left: 0;
+  }
+}
+@keyframes shadowshrink {
+  0% {
+    width: 24em;
+    height: 2em;
+    border-radius: 12em / 1em;
+    left: 0;
+  }
+  38% {
+    width: 24em;
+    height: 2em;
+    border-radius: 12em / 1em;
+    left: 0;
+  }
+  41% {
+    width: 18em;
+    height: 1.5em;
+    border-radius: 9em / 0.75em;
+    left: 0.5em;
+  }
+  44% {
+    width: 24em;
+    height: 2em;
+    border-radius: 12em / 1em;
+    left: 0;
+  }
+  46% {
+    width: 21em;
+    height: 1.75em;
+    border-radius: 10.5em / 0.875em;
+    left: 0.25em;
+  }
+  48% {
+    width: 24em;
+    height: 2em;
+    border-radius: 12em / 1em;
+    left: 0;
+  }
+  100% {
+    width: 24em;
+    height: 2em;
+    border-radius: 12em / 1em;
+    left: 0;
+  }
+}
+@keyframes scenery {
+  0% {
+    right: -5em;
+  }
+  24% {
+    right: -5em;
+  }
+  38% {
+    right: 50%;
+  }
+  52% {
+    right: 110vw;
+  }
+  100% {
+    right: 110vw;
+  }
+}
+@keyframes exclamation {
+  0% {
+    opacity: 0;
+    font-size: 1em;
+    left: 8em;
+    top: -7em;
+  }
+  38% {
+    opacity: 0;
+    font-size: 1em;
+    left: 8em;
+    top: -7em;
+  }
+  41% {
+    opacity: 1;
+    font-size: 1.5em;
+    left: 6em;
+    top: -8.5em;
+  }
+  44% {
+    opacity: 0;
+    font-size: 2em;
+    left: 4em;
+    top: -10em;
+  }
+  100% {
+    opacity: 0;
+    font-size: 1em;
+    left: 8em;
+    top: -7em;
+  }
+}
+.container.dostava {
+  margin-top:80px;
+  .row {
+    .col-sm-12.col-md-12.col-lg-4.text-center {
+      .content {
+        img{
+          background-color:white;
+          padding:25px;
+          width:100px;
+          height:100px;
+          border-radius: 50%;
+          margin-bottom:40px;
+          transition: ease-in-out 0.5s;
+          box-shadow: 0 2px 30px $secondary-color2;
+          &:hover{
+              background-color:$secondary-color2 !important;
+              transition: ease-in-out 0.5s;
+              box-shadow: 0 2px 61px rgb(255, 255, 255);
+          }
+        }
+        h4{
+          color:$secondary-color2;
+          font-weight: 700;
+          font-size:1.6rem;
+          margin-bottom:10px;
+        }
+        h5{
+          color:$secondary-color2;
+        }
+      }
+    }
+  }
+}

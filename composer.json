@@ -1,0 +1,11 @@
+{
+    "name": "s7design/theme",
+    "description": "Wordpress boilerplate theme",
+    "authors": [
+        {
+            "name": "S7design",
+            "email": "office@s7designcreative.com"
+        }
+    ],
+    "require": {}
+}

@@ -1,0 +1,131 @@
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.carousel-container {
+    .carousel-inner {
+        .carousel-item {
+            position: relative;
+
+            .carousel-img {
+                height: 85vh;
+                object-fit: cover;
+                object-position: center;
+            }
+
+            .carousel-caption {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.4);
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                text-align: left;
+
+                .slide-content {
+                    background: rgba(0, 0, 0, 0.55);
+                    border-left: 4px solid $secondary-color2;
+                    padding: 1.5rem 2rem;
+                    border-radius: 10px;
+                    animation: fadeInUp 1.2s ease forwards;
+
+                    .slide-head {
+                        font-size: 2.2rem;
+                        font-weight: 700;
+                        color: $white;
+                        margin-bottom: 1rem;
+                    }
+
+                    .slide-sub {
+                        font-size: 1.1rem;
+                        color: $white;
+                        margin-bottom: 1.5rem;
+                        opacity: 0.9;
+                    }
+
+                    .slide-btn {
+                        padding: 0.65rem 1.3rem;
+                        border: 2px solid $secondary-color2;
+                        background: transparent;
+                        color: $secondary-color2;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+
+                        &:hover {
+                            background: $secondary-color2;
+                            color: $black;
+                            transform: translateY(-2px);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .carousel-indicators.custom-indicators {
+        bottom: 1.5rem;
+
+        [data-bs-target] {
+            width: 10px;
+            height: 10px;
+            margin: 0 5px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: 1.5px solid $third-color; // plavo-tamna granica (ili $black)
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            position: relative;
+
+            &::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 6px;
+                height: 6px;
+                background-color: transparent;
+                border-radius: 50%;
+                transition:
+                    background-color 0.3s ease,
+                    box-shadow 0.3s ease;
+            }
+
+            &.active {
+                border-color: $secondary-color2;
+                opacity: 1;
+
+                &::after {
+                    background-color: $secondary-color2;
+                    box-shadow: 0 0 8px rgba($secondary-color2, 0.6);
+                }
+            }
+
+            &:hover {
+                border-color: lighten($secondary-color2, 10%);
+                opacity: 0.9;
+
+                &::after {
+                    background-color: lighten($secondary-color2, 5%);
+                }
+            }
+        }
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-size: 100% 100%;
+        filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.6));
+    }
+}

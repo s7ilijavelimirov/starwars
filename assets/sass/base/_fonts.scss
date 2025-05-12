@@ -1,0 +1,102 @@
+// MONTSERRAT FONTOVI
+// Optimizovana verzija sa podrškom za WOFF2 i fallback na TTF
+
+// Regular - primarni font za većinu teksta
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/Montserrat-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+// Light - za datume i sekundarne informacije
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/Montserrat-Light.woff2") format("woff2");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+// Medium - za footer i druge elemente
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/Montserrat-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+// SemiBold - za linkove i druge elemente
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/Montserrat-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+// Bold - za naglašeni tekst i podnaslove
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/Montserrat-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+// ExtraBold - za H1 i H3 naslove
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/Montserrat-ExtraBold.woff2") format("woff2");
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+// Fontovi za slučaj Bootstrap-a
+$font-family-base:
+    "Montserrat",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+$headings-font-family: "Montserrat", sans-serif;
+
+// Ovo je važno - postavljamo osnovne varijable za Bootstrap
+:root {
+    --bs-font-sans-serif: #{$font-family-base};
+    --bs-body-font-family: #{$font-family-base};
+}
+
+// Osnovni stil za body
+body {
+    font-family: $font-family-base !important;
+    font-weight: 400;
+}
+
+// Headings stilovi
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    font-family: $headings-font-family;
+    font-weight: 700;
+}
+
+h1,
+.h1 {
+    font-weight: 800;
+}

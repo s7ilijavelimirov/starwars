@@ -1,0 +1,243 @@
+div#single-post {
+    padding-bottom: 60px;
+    .content {
+        margin-top: 3rem;
+        p{
+            line-height: 32px;
+            font-weight: 500;
+            margin-bottom:0.8rem;
+            strong,a{
+                font-weight: 700;
+                color:#ffe81f;
+            }
+            iframe{
+                width: 100%;
+            }
+        }
+        .date {
+            color: $secondary-color2;
+        }
+        h2 {
+            font-weight: $bold;
+            margin-bottom: 40px;
+        }
+        img {
+            margin-bottom: 40px;
+            border: 2px solid #ffe81f;
+        }
+        nav.woocommerce-breadcrumb {
+            height: 30px;
+            background-color: transparent;
+            color: $secondary-color2;
+            font-weight: $regular;
+            a {
+                color: $secondary-color2;
+                font-weight: $regular;
+                margin: 0 10px;
+                &:first-child {
+                    margin-left: 0px !important;
+                }
+            }
+        }
+    }
+    nav.navigation.post-navigation {
+        margin-top: 80px;
+        background-color: transparent;
+        .nav-links {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            a {
+                color: white;
+                display: flex;
+                flex-direction: column;
+            }
+            .nav-next {
+                a {
+                    transition: ease-in-out 0.3s;
+                    span.meta-nav {
+                        text-align: right;
+                        font-weight: 700;
+                        margin-bottom: 20px;
+                        color: $secondary-color2;
+                        i {
+                            font-size: initial;
+                            height: auto;
+                        }
+                    }
+                    &:hover {
+                        color: $secondary-color2;
+                        transition: ease-in-out 0.3s;
+                    }
+                }
+            }
+            .nav-previous {
+                a {
+                    transition: ease-in-out 0.3s;
+                    span.meta-nav {
+                        font-weight: 700;
+                        margin-bottom: 20px;
+                        color: $secondary-color2;
+                        i {
+                            font-size: initial;
+                            height: auto;
+                        }
+                    }
+                    &:hover {
+                        color: $secondary-color2;
+                        transition: ease-in-out 0.3s;
+                    }
+                }
+            }
+        }
+    }
+}
+div#terms {
+    h1 {
+        &::after {
+            display: none;
+        }
+        &::before {
+            display: none;
+        }
+        text-transform: uppercase;
+    }
+    h2 {
+        margin: 30px 0px;
+        font-size: 1.75rem;
+        color: $secondary-color2;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: -0.75px;
+        opacity: 1;
+        text-align: left;
+
+        position: relative;
+        &::after {
+            content: "";
+            position: absolute;
+            background: silver;
+            height: 4px;
+            width: 10px;
+            border-radius: 4px;
+            animation: blade2 2s ease infinite;
+            left: 50px;
+            z-index: 2;
+            bottom: -7px;
+        }
+        &::before {
+            content: "";
+            position: absolute;
+            background: white;
+            height: 4px;
+            width: 47px;
+            border-radius: 4px;
+            animation: blade1 2s ease infinite;
+            /* top: 4px; */
+            bottom: -7px;
+            left: 0px;
+            z-index: 2;
+        }
+    }
+    ul {
+        padding-left: 2rem;
+        margin: 1rem 0px;
+        list-style: disc !important;
+        li {
+            font-size: 1.188rem;
+            opacity: 1;
+            text-align: left;
+            color: #fff;
+            font-weight: 400;
+            letter-spacing: 0;
+            line-height: 1.563rem;
+            text-transform: none;
+        }
+    }
+}
+.hero-image {
+    position: relative;
+    width: 100%;
+    height: 40vh; /* Adjusted height */
+    background-size: cover;
+}
+
+.hero-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(0, 0, 0, 1) 100%
+    ); /* Gradual fade from transparent to dark */
+    .date {
+        background-color: #fff;
+        color: #333;
+        font-size: 18px;
+        font-weight: 800;
+        min-height: 48px;
+        min-width: 48px;
+        padding: 10px 0;
+        left: 0px;
+        text-align: center;
+        text-transform: uppercase;
+        z-index: 1;
+        border-radius: 10px;
+        span {
+            display: block;
+            line-height: 14px;
+        }
+        .month {
+            font-size: 11px;
+        }
+    }
+    .post-titles {
+        gap: 1rem;
+        margin:0 auto;
+        max-width:800px;
+    }
+}
+
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centering the content */
+    width: 100%;
+    text-align: center;
+    color: #fff; /* White text color for visibility against dark gradient */
+    .post-meta {
+        
+        gap: 1rem;
+        margin-top: 1rem;
+        a {
+            text-decoration: dotted underline;
+            color: #3be46b;
+            font-size: 1rem;
+            font-weight: 600;
+            opacity: 1;
+        }
+    }
+}
+
+.hero-content .post-title {
+    font-size: 2rem; /* Large title for impact */
+    margin-bottom: 0.5rem;
+    line-height: normal;
+    &::before {
+        transform: translate(-50%, -50%);
+        left: 50%;
+    }
+    &::after {
+        transform: translate(-50%, -50%);
+        left: 40%;
+        width: 50px;
+    }
+}
+
+.hero-content .post-meta {
+    font-size: 1.2rem; /* Slightly larger meta info */
+}
