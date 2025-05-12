@@ -1,0 +1,99 @@
+// Social Icons - sa poboljšanom animacijom
+.social-icons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin: 15px 0;
+
+    @media (max-width: 767.98px) {
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .social-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        color: $black;
+        border-radius: 50%;
+        background-color: $secondary-color2;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid transparent;
+        position: relative;
+        box-shadow: 0 3px 10px rgba($secondary-color2, 0.3);
+
+        @media (max-width: 767.98px) {
+            width: 46px;
+            height: 46px;
+        }
+
+        svg {
+            position: relative;
+            z-index: 1;
+            width: 26px;
+            height: 26px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+            @media (max-width: 767.98px) {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        &:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 5px 15px rgba($secondary-color2, 0.5);
+            border-color: rgba($black, 0.2);
+
+            svg {
+                transform: scale(1.2) rotate(-5deg);
+            }
+        }
+
+        &:active {
+            transform: scale(0.95);
+            transition: all 0.1s;
+        }
+    }
+
+    // Dodatak za footer i header specifično
+    .site-footer & {
+        justify-content: flex-start;
+
+        @media (max-width: 767.98px) {
+            justify-content: center;
+        }
+    }
+
+    .site-header & {
+        margin: 10px 0;
+
+        @media (max-width: 991.98px) {
+            justify-content: center;
+        }
+    }
+
+    // Offcanvas mobilni menu specifično
+    .offcanvas-body & {
+        justify-content: center;
+        margin-top: 20px;
+    }
+}
+
+// Dodatak za footer widget
+.footer-social-icons {
+    .widget-title {
+        color: $secondary-color2;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        font-weight: 600;
+
+        @media (max-width: 767.98px) {
+            text-align: center;
+        }
+    }
+}

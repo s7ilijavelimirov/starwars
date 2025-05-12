@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Theme scripts - optimizovan setup za Bootstrap 5.3
+ * Theme scripts - optimizovan setup za Bootstrap 5.3 i Swiper
  *
  * @package s7design
  */
@@ -34,17 +34,31 @@ function s7design_load_scripts()
     wp_enqueue_script('s7design-main-js');
     wp_script_add_data('s7design-main-js', 'defer', true);
 
-    // Carousel JS - Izmenjen način učitavanja
+    // Swiper JS - učitavamo samo na stranicama gde je potreban
     if (is_front_page() || is_home() || is_shop() || is_product_category()) {
+        // Swiper CSS - već je uključen kroz Webpack
+
+        // Swiper JS
         wp_register_script(
-            's7design-carousel-js',
-            $dist_path . '/js/carousel.js', // Direktno iz dist/js foldera, ne više carousel-build.js
-            array('s7design-bootstrap-js', 's7design-main-js'),
-            file_exists($dist_dir . '/js/carousel.js') ? filemtime($dist_dir . '/js/carousel.js') : null,
+            's7design-swiper-js',
+            $dist_path . '/js/swiper-bundle.min.js',
+            array(),
+            file_exists($dist_dir . '/js/swiper-bundle.min.js') ? filemtime($dist_dir . '/js/swiper-bundle.min.js') : null,
             true
         );
-        wp_enqueue_script('s7design-carousel-js');
-        wp_script_add_data('s7design-carousel-js', 'defer', true);
+        wp_enqueue_script('s7design-swiper-js');
+        wp_script_add_data('s7design-swiper-js', 'defer', true);
+
+        // Inicijalizacioni JS za Swiper
+        wp_register_script(
+            's7design-swiper-init',
+            $dist_path . '/js/swiper-init-build.js',
+            array('s7design-swiper-js', 'jquery'),
+            file_exists($dist_dir . '/js/swiper-init-build.js') ? filemtime($dist_dir . '/js/swiper-init-build.js') : null,
+            true
+        );
+        wp_enqueue_script('s7design-swiper-init');
+        wp_script_add_data('s7design-swiper-init', 'defer', true);
     }
 
     // Prosleđujemo varijable u JS
@@ -118,3 +132,45 @@ function s7design_optimize_scroll_effects()
     }
 }
 add_action('wp_footer', 's7design_optimize_scroll_effects', 99);
+
+/**
+ * Inline kritični CSS za brže inicijalno učitavanje
+ */
+function s7design_add_critical_css()
+{
+    // Samo ako smo na stranicama sa swiper-om
+    if (is_front_page() || is_home() || is_shop() || is_product_category()) {
+        echo '<style id="critical-swiper-css">
+/* Minimalni kritični stilovi za Swiper */
+.swiper-container{position:relative;width:100%;margin:0 0 2.5rem;overflow:hidden;padding:5px 0 30px;}
+.swiper-slide{height:auto;}
+.swiper-button-prev,.swiper-button-next{color:#ffe81f;background-color:rgba(0,0,0,0.7);width:40px;height:40px;border-radius:50%;}
+.swiper-button-prev:after,.swiper-button-next:after{font-size:18px;}
+.swiper-pagination-bullet{width:12px;height:12px;margin:0 6px;background:transparent;border:2px solid #666;opacity:1;}
+.swiper-pagination-bullet-active{border-color:#ffe81f;background-color:#ffe81f;}
+.product-card{display:flex;flex-direction:column;height:100%;background:#000;border:2px solid #ffe81f;border-radius:8px;overflow:hidden;}
+.product-image{position:relative;overflow:hidden;height:0;padding-bottom:100%;}
+.product-image img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;}
+.product-title{padding:1rem;margin:0;font-size:1rem;text-align:center;color:#fff;flex-grow:1;display:flex;align-items:center;justify-content:center;}
+.product-price{padding:0 1rem 1rem;text-align:center;font-weight:bold;color:#ffe81f;}
+.swiper-lazy-preloader{border-color:#ffe81f transparent #ffe81f transparent;}
+</style>';
+    }
+}
+add_action('wp_head', 's7design_add_critical_css', 1);
+
+/**
+ * Optimizacija zaglavlja za preload resursa
+ */
+function s7design_preload_resources_script()
+{
+    // Preload CSS i JS
+    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/css/frontend.min.css" as="style">';
+    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/js/bootstrap.bundle.min.js" as="script">';
+
+    // Preload Swiper resursa na relevantnim stranicama
+    if (is_front_page() || is_home() || is_shop() || is_product_category()) {
+        echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/js/swiper-bundle.min.js" as="script">';
+    }
+}
+add_action('wp_head', 's7design_preload_resources_script', 1);

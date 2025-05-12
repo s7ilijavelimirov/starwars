@@ -31,7 +31,7 @@ if (have_posts()) :
         get_template_part('template-parts/home/category-blocks');
 
         // Blog Sekcija
-        get_template_part('template-parts/home/blog-section');
+       // get_template_part('template-parts/home/blog-section');
 
     endwhile;
 endif;

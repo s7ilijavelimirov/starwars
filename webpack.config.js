@@ -30,11 +30,6 @@ assets.forEach(function (el) {
 entries.frontend.push('./assets/sass/app.scss');
 entries.admin.push('./assets/sass/dashboard.scss');
 
-// Dodajemo carousel.js kao poseban entry point da se ne bunda sa frontend.js
-if (!entries.carousel) {
-  entries.carousel = ['./assets/js/carousel.js'];
-}
-
 module.exports = {
   entry: entries,
   output: {
@@ -45,6 +40,7 @@ module.exports = {
   resolve: {
     alias: {
       '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
+      '~swiper': path.resolve(__dirname, 'node_modules/swiper'),
     }
   },
   module: {
@@ -91,7 +87,8 @@ module.exports = {
                         './404.php',
                         './index.php',
                         './functions.php',
-                        './assets/js/**/*.js'
+                        './assets/js/**/*.js',
+                        './template-parts/**/*.php'
                       ],
                       defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || [],
                       safelist: {
@@ -129,13 +126,16 @@ module.exports = {
                           'current_page_item',
                           'scrolled',
                           'header-scrolled',
-                          // Dodaj klase za carousel
-                          /^sw-/,
-                          'slider-inner',
-                          'slider-item',
-                          'slider-control-prev',
-                          'slider-control-next',
-                          'disabled',
+                          // Swiper klase
+                          /^swiper/,
+                          'blog-card',
+                          'product-card',
+                          'product-image',
+                          'product-title',
+                          'product-price',
+                          'blog-image',
+                          'blog-details',
+                          'read-more',
                         ],
                         deep: [
                           /carousel$/,
@@ -147,6 +147,10 @@ module.exports = {
                           /wrapper$/,
                           /container$/,
                           /item$/,
+                          /slide$/,
+                          /pagination$/,
+                          /button$/,
+                          /lazy$/,
                         ],
                         greedy: []
                       }
@@ -184,7 +188,7 @@ module.exports = {
       filename: 'css/[name].min.css'
     }),
 
-    // Kopiraj samo Bootstrap bundle i carousel.js
+    // Kopiraj potrebne fajlove
     new CopyPlugin({
       patterns: [
         // Bootstrap bundle
@@ -192,10 +196,14 @@ module.exports = {
           from: 'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
           to: 'js/bootstrap.bundle.min.js'
         },
-        // Carousel.js - eksplicitno kopiramo i ovaj fajl
+        // Swiper bundle
         {
-          from: 'assets/js/carousel.js',
-          to: 'js/carousel.js'
+          from: 'node_modules/swiper/swiper-bundle.min.js',
+          to: 'js/swiper-bundle.min.js'
+        },
+        {
+          from: 'node_modules/swiper/swiper-bundle.min.css',
+          to: 'css/swiper-bundle.min.css'
         },
         // Fontovi
         {
@@ -205,9 +213,10 @@ module.exports = {
       ],
     }),
 
-    // Globalno dostupan bootstrap objekat
+    // Globalno dostupan bootstrap i swiper objekti
     new webpack.ProvidePlugin({
-      bootstrap: ['bootstrap', 'default']
+      bootstrap: ['bootstrap', 'default'],
+      Swiper: ['swiper', 'default']
     }),
 
     // Dodaj banner sa informacijama o verziji teme

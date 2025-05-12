@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Template Part: Product Sections
+ * Template Part: Product Sections - Swiper.js implementacija
  *
  * @package s7design
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 // Proveri da li imamo ACF polja
@@ -110,92 +110,75 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
                 <?php endif; ?>
             </div>
 
-            <div class="sw-product-carousel<?php echo $show_dots ? ' with-dots' : ''; ?>"
+            <!-- Swiper Container -->
+            <div class="swiper-container <?php echo $show_dots ? 'with-pagination' : ''; ?>"
                 id="<?php echo esc_attr($carousel_id); ?>"
                 data-slides="<?php echo esc_attr($slides_to_show); ?>"
-                data-product-category="<?php echo esc_attr(get_sub_field('product_category')); ?>">
+                data-category="<?php echo esc_attr(get_sub_field('product_category')); ?>">
 
-                <div class="sw-carousel-container">
-                    <div class="sw-carousel-wrapper">
-                        <?php while ($products_query->have_posts()) : $products_query->the_post();
-                            global $product;
+                <div class="swiper-wrapper">
+                    <?php while ($products_query->have_posts()) : $products_query->the_post();
+                        global $product;
 
-                            if (!$product || !$product->is_visible()) {
-                                continue;
+                        if (!$product || !$product->is_visible()) {
+                            continue;
+                        }
+
+                        // Uzmi ID proizvoda za praćenje
+                        $product_id = $product->get_id();
+                        $product_sku = $product->get_sku();
+                        $product_price = $product->get_price();
+                        $product_cat_ids = $product->get_category_ids();
+                        $product_cats = array();
+
+                        foreach ($product_cat_ids as $cat_id) {
+                            $term = get_term_by('id', $cat_id, 'product_cat');
+                            if ($term) {
+                                $product_cats[] = $term->name;
                             }
+                        }
 
-                            // Uzmi ID proizvoda za praćenje
-                            $product_id = $product->get_id();
-                            $product_sku = $product->get_sku();
-                            $product_price = $product->get_price();
-                            $product_cat_ids = $product->get_category_ids();
-                            $product_cats = array();
-
-                            foreach ($product_cat_ids as $cat_id) {
-                                $term = get_term_by('id', $cat_id, 'product_cat');
-                                if ($term) {
-                                    $product_cats[] = $term->name;
-                                }
-                            }
-
-                            $product_cat_string = implode(', ', $product_cats);
-                        ?>
-                            <div class="sw-carousel-item py-4">
-                                <a href="<?php the_permalink(); ?>" class="product-card"
-                                    data-product-id="<?php echo esc_attr($product_id); ?>"
-                                    data-product-name="<?php echo esc_attr(get_the_title()); ?>"
-                                    data-product-price="<?php echo esc_attr($product_price); ?>"
-                                    data-product-sku="<?php echo esc_attr($product_sku); ?>"
-                                    data-product-category="<?php echo esc_attr($product_cat_string); ?>"
-                                    data-position="<?php echo esc_attr($products_query->current_post + 1); ?>"
-                                    onClick="trackProductClick(this)">
-                                    <div class="product-image">
-                                        <?php
-                                        if (has_post_thumbnail()) {
-                                            the_post_thumbnail('woocommerce_thumbnail', array(
-                                                'class' => 'img-fluid',
-                                                'alt' => get_the_title(),
-                                                'loading' => 'lazy'
-                                            ));
-                                        } else {
-                                            echo wc_placeholder_img();
-                                        }
-                                        ?>
-                                    </div>
-                                    <h6 class="product-title"><?php the_title(); ?></h6>
-                                    <div class="product-price">
-                                        <?php echo $product->get_price_html(); ?>
-                                    </div>
-                                </a>
-                            </div>
-                        <?php endwhile;
-                        wp_reset_postdata(); ?>
-                    </div>
+                        $product_cat_string = implode(', ', $product_cats);
+                    ?>
+                        <div class="swiper-slide">
+                            <a href="<?php the_permalink(); ?>" class="product-card"
+                                data-product-id="<?php echo esc_attr($product_id); ?>"
+                                data-product-name="<?php echo esc_attr(get_the_title()); ?>"
+                                data-product-price="<?php echo esc_attr($product_price); ?>"
+                                data-product-sku="<?php echo esc_attr($product_sku); ?>"
+                                data-product-category="<?php echo esc_attr($product_cat_string); ?>"
+                                data-position="<?php echo esc_attr($products_query->current_post + 1); ?>">
+                                <div class="product-image">
+                                    <?php
+                                    if (has_post_thumbnail()) {
+                                        the_post_thumbnail('woocommerce_thumbnail', array(
+                                            'class' => 'img-fluid swiper-lazy',
+                                            'alt' => get_the_title(),
+                                            'loading' => 'lazy'
+                                        ));
+                                    } else {
+                                        echo wc_placeholder_img();
+                                    }
+                                    ?>
+                                    <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+                                </div>
+                                <h6 class="product-title"><?php the_title(); ?></h6>
+                                <div class="product-price">
+                                    <?php echo $product->get_price_html(); ?>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endwhile;
+                    wp_reset_postdata(); ?>
                 </div>
 
                 <!-- Kontrolna dugmad za navigaciju -->
-                <button class="sw-carousel-prev" aria-label="Prethodni proizvodi" aria-controls="<?php echo esc_attr($carousel_id); ?>">
-                    <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
-                </button>
-                <button class="sw-carousel-next" aria-label="Sledeći proizvodi" aria-controls="<?php echo esc_attr($carousel_id); ?>">
-                    <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
-                </button>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
 
-                <?php if ($show_dots) :
-                    // Izračunaj broj tačkica na osnovu broja proizvoda i vidljivih proizvoda
-                    $total_products = $products_query->found_posts;
-                    $total_slides = ceil($total_products / $slides_to_show);
-                ?>
-                    <div class="sw-carousel-dots" role="tablist">
-                        <?php for ($i = 0; $i < $total_slides; $i++) : ?>
-                            <button class="sw-carousel-dot<?php echo $i === 0 ? ' active' : ''; ?>"
-                                data-slide="<?php echo $i; ?>"
-                                aria-label="Slajd <?php echo $i + 1; ?>"
-                                role="tab"
-                                aria-selected="<?php echo $i === 0 ? 'true' : 'false'; ?>"
-                                tabindex="<?php echo $i === 0 ? '0' : '-1'; ?>"></button>
-                        <?php endfor; ?>
-                    </div>
+                <?php if ($show_dots) : ?>
+                    <!-- Paginacija (dots) -->
+                    <div class="swiper-pagination"></div>
                 <?php endif; ?>
             </div>
     <?php

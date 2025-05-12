@@ -1,4 +1,4 @@
-// Finalni SCSS za footer sa svim poboljšanjima
+// Optimizovan SCSS za footer sa centralnim poravnanjem
 .site-footer {
     position: relative;
     background-color: transparent;
@@ -14,13 +14,11 @@
         transition: all 0.3s ease-in-out;
     }
 
-    // Button za povratak na vrh sa SVG (desno pozicionirano, žuto)
+    // Button za povratak na vrh sa SVG
     .back-to-top-container {
         position: absolute;
         top: -25px;
-        right: calc(10% + 20px); // Prilagodljivo desnoj margini
-        left: auto; // Uklonjen left:50% da bi bilo desno
-        transform: none; // Uklonjen translateX
+        right: 2rem;
         z-index: 10;
 
         .back-to-top-btn {
@@ -30,28 +28,28 @@
             justify-content: center;
             width: 55px;
             height: 55px;
-            background-color: $secondary-color2 !important; // Star Wars žuta
+            background-color: $secondary-color2 !important;
             color: $black;
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); // Bounce efekat
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0;
             visibility: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             padding: 6px 0;
-            transform: translateY(20px); // Počinje malo niže
+            transform: translateY(20px);
 
             &.show {
                 opacity: 1;
                 visibility: visible;
-                transform: translateY(0); // Animacija dolaska odozdo
+                transform: translateY(0);
             }
 
             &:hover,
             &:focus {
-                background-color: lighten($secondary-color2, 10%); // Svetlije na hover
-                transform: translateY(-5px) rotate(5deg); // Rotacija i podizanje
+                background-color: lighten($secondary-color2, 10%);
+                transform: translateY(-5px) rotate(5deg);
                 box-shadow: 0 6px 15px rgba($secondary-color2, 0.4);
             }
 
@@ -64,7 +62,6 @@
 
             .back-to-top-text {
                 font-size: 0.7rem;
-                //font-weight: $bold;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
                 color: $black;
@@ -72,45 +69,106 @@
             }
 
             &:hover .back-to-top-icon {
-                transform: translateY(-2px); // Ikona ide malo gore na hover
+                transform: translateY(-2px);
             }
         }
     }
 
     // Glavni deo footer-a
     .footer-main {
+        .row {
+            align-items: flex-start; // Promena na flex-start da bi naslovi bili poravnati
+
+            // Dodatno - svi će naslovi početi od istog mesta
+            > div {
+                margin-top: 0;
+                padding-top: 0;
+
+                // Naslovi - dodatno poravnanje na vrhu
+                h2.rounded,
+                h5.rounded,
+                .widgettitle,
+                .footer-site-name {
+                    margin-top: 0;
+                    padding-top: 0;
+                }
+            }
+        }
+
         // Logo kolona
         .footer-logo-column {
-            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
 
-            .footer-logo,
-            .textwidget {
-                display: block;
+            .footer-logo {
+                margin-bottom: 1rem;
+                display: inline-block;
 
-                img,
                 .footer-logo-img {
-                    width: 120px !important;
-                    max-width: 120px !important;
-                    height: auto !important;
-                    object-fit: contain !important;
-                    aspect-ratio: auto;
+                    max-width: 180px;
+                    height: auto;
+                    object-fit: contain;
+                }
+            }
+
+            .footer-site-name {
+                color: $secondary-color2;
+                font-size: 1.25rem; // Uskladio sa ostalim naslovima
+                margin-bottom: 1.5rem; // Uskladio sa ostalim naslovima
+                font-weight: 600;
+                text-transform: uppercase; // Uskladio sa ostalim naslovima
+                letter-spacing: 0.5px; // Uskladio sa ostalim naslovima
+                position: relative;
+                padding-bottom: 0.75rem; // Uskladio sa ostalim naslovima
+
+                &:after {
+                    // Dodao sam liniju kao kod ostalih naslova
+                    content: "";
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 40px;
+                    height: 3px;
+                    background-color: $secondary-color2;
+                }
+            }
+
+            .footer-contact-info {
+                margin-bottom: 1.5rem;
+
+                .footer-email {
+                    display: flex;
+                    align-items: center;
+                    color: $white;
+                    font-size: 1rem;
+                    transition: all 0.3s ease;
+
+                    .email-icon {
+                        color: $secondary-color2;
+                        margin-right: 10px;
+                        width: 18px;
+                        height: 18px;
+                    }
 
                     &:hover {
-                        opacity: 0.9;
+                        color: $secondary-color2;
+                        transform: translateX(3px);
                     }
                 }
             }
 
-            .footer-site-title {
-                font-size: 1.75rem;
-                //font-weight: $bold;
-                color: $white;
-                margin: 0;
-                max-width: 120px;
+            // Widget text iz footer_4
+            .textwidget {
+                img {
+                    max-width: 180px;
+                    height: auto;
+                    object-fit: contain;
+                }
             }
         }
 
-        // Footer menije container - za dva navigacijska menija
+        // Footer menije container - za navigacijske menija
         .footer-menus-container {
             .footer-widget-menus-row {
                 display: flex;
@@ -118,19 +176,16 @@
                 margin-right: -15px;
                 margin-left: -15px;
 
-                // Svaki widget u footer_2
-                .footer-menu {
+                // Ciljaj direktno widgete sa klasom footer-menu
+                > .footer-menu {
                     flex: 0 0 50%;
                     max-width: 50%;
-                    padding-left: 0px;
-                    padding-right: 0px;
+                    margin-bottom: 1.5rem;
 
-                    margin-bottom: 2rem;
-
-                    // Widget naslov
-                    h5.rounded {
+                    // Naslovi u navigacijama
+                    h5.rounded,
+                    .widgettitle {
                         font-size: 1.25rem;
-                        //font-weight: $semi-bold;
                         color: $secondary-color2;
                         margin-bottom: 1.5rem;
                         text-transform: uppercase;
@@ -139,8 +194,6 @@
                         padding-bottom: 0.75rem;
                         background: none;
                         border: none;
-                        padding-left: 0;
-                        padding-right: 0;
                         border-radius: 0;
 
                         &:after {
@@ -154,10 +207,10 @@
                         }
                     }
 
-                    // Menu stavke - optimizovane animacije
+                    // Stilovi za sve tipove menija
+                    ul.menu,
                     .menu-footer-category-container ul,
-                    .menu-footer-menu-container ul,
-                    ul.menu {
+                    .menu-footer-menu-container ul {
                         list-style: none;
                         padding: 0;
                         margin: 0;
@@ -184,18 +237,13 @@
                                     transition: width 0.3s ease;
                                 }
 
-                                &:hover,
-                                &:focus {
+                                &:hover {
                                     color: $secondary-color2;
                                     transform: translateX(3px);
 
                                     &:before {
                                         width: 100%;
                                     }
-                                }
-
-                                &:focus {
-                                    outline: none;
                                 }
                             }
                         }
@@ -204,15 +252,14 @@
             }
         }
 
-        // Blog container - poboljšan sa atraktivnijim stilovima
+        // Blog container
         .footer-blog-container {
             .footer-widget-blog {
-                // Stilovi za blog widget
                 .blog {
-                    // Naslov blog sekcije
-                    h2.rounded {
+                    // Naslov
+                    h2.rounded,
+                    .widgettitle {
                         font-size: 1.25rem;
-                        //font-weight: $semi-bold;
                         color: $secondary-color2;
                         margin-bottom: 1.5rem;
                         text-transform: uppercase;
@@ -221,8 +268,6 @@
                         padding-bottom: 0.75rem;
                         background: none;
                         border: none;
-                        padding-left: 0;
-                        padding-right: 0;
                         border-radius: 0;
 
                         &:after {
@@ -236,7 +281,7 @@
                         }
                     }
 
-                    // Lista blog postova - poboljšani stilovi
+                    // Lista blog postova
                     ul {
                         list-style: none;
                         padding: 0;
@@ -244,24 +289,22 @@
 
                         li.footer-blog-item {
                             display: flex;
-                            align-items: stretch; // Promenjeno da bi content uzeo punu visinu
+                            align-items: center;
                             margin-bottom: 1.25rem;
-                            background-color: rgba($black, 0.7); // Tamnija pozadina
-                            border-radius: 8px; // Veći radius za moderniji izgled
+                            background-color: rgba($black, 0.7);
+                            border-radius: 8px;
                             overflow: hidden;
-                            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); // Poboljšana animacija
-                            box-shadow: 0 2px 8px $secondary-color2; // Dodata senka
-                            border: 1px solid $secondary-color2; // Star Wars žuta linija levo
-                            will-change: transform;
+                            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                            box-shadow: 0 2px 8px rgba($secondary-color2, 0.3);
+                            border: 1px solid $secondary-color2;
 
-                            &:hover,
-                            &:focus-within {
+                            &:hover {
                                 transform: translateY(-3px);
                                 box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
                                 background-color: rgba($black, 0.85);
 
                                 .footer-blog-image img {
-                                    transform: scale(1.1) rotate(2deg); // Dodata rotacija za dinamičniji efekat
+                                    transform: scale(1.1);
                                 }
 
                                 .footer-blog-content a {
@@ -269,25 +312,12 @@
                                 }
                             }
 
-                            // Slika posta - poboljšan stil
+                            // Slika posta
                             .footer-blog-image {
-                                position: relative;
                                 flex: 0 0 80px;
                                 width: 80px;
-                                height: auto; // Changed to scale with content height
+                                height: 80px;
                                 overflow: hidden;
-
-                                &:after {
-                                    content: "";
-                                    position: absolute;
-                                    top: 0;
-                                    right: 0;
-                                    bottom: 0;
-                                    left: 0;
-                                    background: linear-gradient(to right, transparent, rgba($black, 0.3));
-                                    pointer-events: none;
-                                    z-index: 1;
-                                }
 
                                 a {
                                     display: block;
@@ -297,26 +327,18 @@
                                         width: 100%;
                                         height: 100%;
                                         object-fit: cover;
-                                        transition: all 0.5s ease;
-                                        filter: brightness(0.9); // Malo tamnije slike
-                                        will-change: transform;
-                                        min-height: 80px; // Minimalna visina
+                                        transition: transform 0.5s ease;
                                     }
                                 }
                             }
 
-                            // Sadržaj posta - poboljšan stil
+                            // Sadržaj posta
                             .footer-blog-content {
                                 flex: 1;
-                                padding: 10px 12px;
-                                display: flex;
-                                flex-direction: column;
-                                justify-content: center; // Vertikalno centriranje
-                                position: relative;
+                                padding: 0.75rem 1rem;
 
                                 a {
                                     font-size: 0.9rem;
-                                    //font-weight: $semi-bold; // Podebljano malo više
                                     line-height: 1.3;
                                     margin-bottom: 5px;
                                     color: $white;
@@ -327,13 +349,8 @@
                                     overflow: hidden;
                                     transition: color 0.2s ease;
 
-                                    &:hover,
-                                    &:focus {
+                                    &:hover {
                                         color: $secondary-color2;
-                                    }
-
-                                    &:focus {
-                                        outline: none;
                                     }
                                 }
 
@@ -343,7 +360,6 @@
                                     display: flex;
                                     align-items: center;
 
-                                    // Mali kalendar ikona prije datuma
                                     &:before {
                                         content: "";
                                         display: inline-block;
@@ -364,7 +380,7 @@
 
         // Copyright red
         .footer-copyright-row {
-            margin-top: 1.5rem;
+            margin-top: 2rem;
             border-top: 1px solid rgba($secondary-color2, 0.4);
             padding-top: 1.5rem;
 
@@ -377,118 +393,147 @@
                 }
             }
         }
+    }
 
-        // Social ikone red
-        .footer-social-row {
-            margin-top: 1.5rem;
+    // Social Icons
+    .social-icons {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin: 15px 0;
 
-            .footer-social-icons {
-                ul {
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
-                    display: flex;
-                    justify-content: flex-start;
-                    gap: 15px;
+        @media (max-width: 767.98px) {
+            justify-content: flex-start;
+            gap: 15px;
+        }
 
-                    li {
-                        a {
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            width: 40px;
-                            height: 40px;
-                            background-color: rgba($white, 0.1);
-                            color: $white;
-                            border-radius: 50%;
-                            transition: all 0.3s ease;
-                            will-change: transform;
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            color: $black;
+            border-radius: 50%;
+            background-color: $secondary-color2;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            position: relative;
+            box-shadow: 0 3px 10px rgba($secondary-color2, 0.3);
 
-                            &:hover,
-                            &:focus {
-                                background-color: $secondary-color2;
-                                color: $black;
-                                transform: translateY(-3px);
-                            }
+            @media (max-width: 767.98px) {
+                width: 46px;
+                height: 46px;
+            }
 
-                            &:focus {
-                                outline: 2px solid $secondary-color2;
-                                outline-offset: 2px;
-                            }
+            svg {
+                position: relative;
+                z-index: 1;
+                width: 22px;
+                height: 22px;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-                            i {
-                                font-size: 1.2rem;
-                            }
-                        }
-                    }
+                @media (max-width: 767.98px) {
+                    width: 20px;
+                    height: 20px;
                 }
+            }
+
+            &:hover {
+                transform: scale(1.15) rotate(5deg);
+                box-shadow: 0 5px 15px rgba($secondary-color2, 0.5);
+                border-color: rgba($black, 0.2);
+
+                svg {
+                    transform: scale(1.2) rotate(-5deg);
+                }
+            }
+
+            &:active {
+                transform: scale(0.95);
+                transition: all 0.1s;
             }
         }
     }
 }
 
-// Za tablet i manje ekrane - izmenjeni layout
-@media (max-width: 991px) {
+// Nastavak media queries za tablet
+@media (max-width: 991.98px) {
     .site-footer {
-        .back-to-top-container {
-            right: 20px; // Malo bliže ivici na tabletu
-        }
-
         .footer-main {
-            // Logo kolona - puna širina na vrhu
+            // Centriraj na tabletu/mobilnom
             .footer-logo-column {
-                flex: 0 0 100%;
-                max-width: 100%;
-                margin-bottom: 2rem;
+                align-items: center;
+                text-align: center;
 
-                .footer-logo,
-                .textwidget {
-                    display: flex;
-                    justify-content: flex-start;
+                .footer-site-name:after {
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+
+                .footer-contact-info {
+                    .footer-email {
+                        justify-content: center;
+                    }
+                }
+
+                .social-icons {
+                    justify-content: center;
                 }
             }
 
-            // Footer menije i blog u istom redu
-            .footer-menus-container,
+            // Blog container na tablet/mobitel
             .footer-blog-container {
-                flex: 0 0 50%;
-                max-width: 50%;
-            }
+                .footer-widget-blog {
+                    .blog {
+                        h2.rounded,
+                        .widgettitle {
+                            text-align: center;
 
-            // Footer menije container - struktura za tablet
-            .footer-menus-container {
-                .footer-widget-menus-row {
-                    margin-right: 0;
-                    margin-left: 0;
-
-                    .footer-menu {
-                        flex: 0 0 100%;
-                        max-width: 100%;
-
-                        margin-bottom: 1.5rem;
-
-                        &:last-child {
-                            margin-bottom: 0;
+                            &:after {
+                                left: 50%;
+                                transform: translateX(-50%);
+                            }
                         }
                     }
                 }
             }
 
-            // Blog sekcija - prilagođena za tablet
-            .footer-blog-container {
-                .footer-widget-blog {
-                    .blog {
-                        h2.rounded {
-                            margin-top: 0; // Poravnato sa meni naslovima
+            // Navigacije - kolona za tablet
+            .footer-menus-container {
+                .footer-widget-menus-row {
+                    > .footer-menu {
+                        // Na tabletu, svaki widget zauzima 100% širine
+                        flex: 0 0 100%;
+                        max-width: 100%;
+                        text-align: center;
+
+                        h5.rounded,
+                        .widgettitle {
+                            text-align: center;
+
+                            &:after {
+                                left: 50%;
+                                transform: translateX(-50%);
+                            }
                         }
 
-                        ul {
-                            li.footer-blog-item {
-                                margin-bottom: 1rem;
+                        ul.menu,
+                        .menu-footer-category-container ul,
+                        .menu-footer-menu-container ul {
+                            li {
+                                text-align: center;
 
-                                .footer-blog-content {
-                                    a {
-                                        -webkit-line-clamp: 1; // Jedan red za naslov
+                                a {
+                                    &:before {
+                                        left: 50%;
+                                        transform: translateX(-50%);
+                                    }
+
+                                    &:hover {
+                                        transform: none;
                                     }
                                 }
                             }
@@ -496,69 +541,82 @@
                     }
                 }
             }
+
+            // Copyright
+            .footer-copyright-row {
+                .footer-copyright {
+                    text-align: center;
+                }
+            }
         }
     }
 }
 
-// Za mobilne uređaje - potpuna reorganizacija
-@media (max-width: 767px) {
+// Dodatna optimizacija za mobilne
+@media (max-width: 767.98px) {
     .site-footer {
         .back-to-top-container {
-            right: 15px; // Bliže ivici na mobilnom
+            right: 1rem;
+
+            .back-to-top-btn {
+                width: 50px;
+                height: 50px;
+            }
         }
 
         .footer-main {
-            // Logo kolona na vrhu
-            .footer-logo-column {
+            // Kolone bolje poređane na mobilnom
+            .row > div {
                 margin-bottom: 2rem;
-            }
 
-            // Navigacija ispod loga
-            .footer-menus-container {
-                flex: 0 0 100%;
-                max-width: 100%;
-                margin-bottom: 2rem;
-            }
-
-            // Blog sekcija na dnu
-            .footer-blog-container {
-                flex: 0 0 100%;
-                max-width: 100%;
-                //padding-left: 0;
-
-                .footer-widget-blog {
-                    padding-left: 0;
-
-                    .blog {
-                        h2.rounded {
-                            &:after {
-                                left: 0;
-                            }
-                        }
-                    }
+                &:last-child {
+                    margin-bottom: 0;
                 }
             }
 
-            // Copyright na mobilnom
-            .footer-copyright-row {
-                .footer-copyright {
-                    text-align: left;
+            // Poboljšani responzivni izgled za manje ekrane
+            .footer-menus-container {
+                .footer-widget-menus-row {
+                    margin-right: 0;
+                    margin-left: 0;
+                }
+            }
+
+            // Blog card stilovi za mobilni
+            .footer-blog-container .footer-widget-blog .blog ul li.footer-blog-item {
+                .footer-blog-content {
+                    padding: 0.5rem 0.75rem;
+
+                    a {
+                        font-size: 0.85rem;
+                    }
+
+                    .post-date {
+                        font-size: 0.7rem;
+                    }
+                }
+
+                .footer-blog-image {
+                    flex: 0 0 70px;
+                    width: 70px;
+                    height: 70px;
                 }
             }
         }
     }
 }
 
-// Print stilovi - za optimizaciju štampanja
+// CSS za štampanje
 @media print {
     .site-footer {
-        .back-to-top-container {
+        .back-to-top-container,
+        .footer-social-icons,
+        .footer-blog-container {
             display: none;
         }
 
-        .footer-blog-container,
-        .footer-social-row {
-            display: none;
+        .footer-copyright-row {
+            border-top: 1px solid #ccc;
         }
     }
 }

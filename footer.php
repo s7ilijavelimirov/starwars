@@ -28,7 +28,6 @@
         <div class="container">
             <div class="row">
                 <!-- Logo kolona -->
-                <!-- Logo kolona sa potpuno fiksnom širinom i visinom -->
                 <div class="col-lg-3 col-md-6 col-sm-12 footer-logo-column">
                     <?php if (is_active_sidebar('footer_4')) : ?>
                         <?php dynamic_sidebar('footer_4'); ?>
@@ -65,6 +64,16 @@
                                 <h3 class="footer-site-title"><?php echo esc_html(get_bloginfo('name')); ?></h3>
                             <?php endif; ?>
                         </a>
+
+                        <!-- Dodajemo naziv sajta ispod logoa -->
+                        <h4 class="footer-site-name"><?php echo esc_html(get_bloginfo('name')); ?></h4>
+
+                        <!-- Dodajemo email sa ikonom -->
+                        <div class="footer-contact-info">
+                            <a href="mailto:office@starwarssrbija.rs" class="footer-email">
+                                office@starwarssrbija.rs
+                            </a>
+                        </div>
                     <?php endif; ?>
 
                     <!-- Social ikone -->
