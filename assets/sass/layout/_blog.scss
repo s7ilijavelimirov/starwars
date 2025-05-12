@@ -18,7 +18,7 @@ div#single-post {
             color: $secondary-color2;
         }
         h2 {
-            font-weight: $bold;
+            //font-weight: $bold;
             margin-bottom: 40px;
         }
         img {
@@ -29,10 +29,10 @@ div#single-post {
             height: 30px;
             background-color: transparent;
             color: $secondary-color2;
-            font-weight: $regular;
+           // font-weight: $regular;
             a {
                 color: $secondary-color2;
-                font-weight: $regular;
+                //font-weight: $regular;
                 margin: 0 10px;
                 &:first-child {
                     margin-left: 0px !important;

@@ -1,7 +1,7 @@
 // Minimalne varijable za Star Wars temu
 // -------------------------------------------------
 
-// Osnovne boje teme - zadržavamo samo njih
+// Osnovne boje teme
 $primary-color: #000000;
 $secondary-color2: #ffdd55;
 $third-color: #21409a;
@@ -10,21 +10,32 @@ $white: #ffffff;
 $black: #030303;
 $background-silver: #f5f5f5;
 
-// Font-weight varijable - moramo ih zadržati zbog postojećeg koda
-// ALI ovde ih definišemo drugačije da se ne bi sukobile sa Bootstrap-om
-$extra-bold: 800;
-$bold: 700;
-$semi-bold: 600;
-$medium: 500;
-$regular: 400;
-$light: 300;
-$extra-light: 200;
+// Bootstrap override varijable
+// VAŽNO: Definišemo globalno pre uvoza Bootstrap komponenti
+$primary: $primary-color;
+$secondary: $secondary-color2;
+$dark: $black;
 
-// Bootstrap override - samo najosnovnije
-// VAŽNO: Koristimo HEX vrednosti, ne imenovanje varijabli
-$primary: #000000; // primary-color
-$secondary: #ffdd55; // secondary-color2
-$dark: #030303; // black
+// Override za font-weight - koristimo Bootstrap terminologiju
+$font-weight-lighter: 200;
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-bolder: 800;
+
+// Tipografija - veličine naslova
+$h1-font-size: 2.5rem;
+$h2-font-size: 2rem;
+$h3-font-size: 1.75rem;
+$h4-font-size: 1.5rem;
+$h5-font-size: 1.25rem;
+$h6-font-size: 1rem;
+
+// Headings properties
+$headings-font-weight: $font-weight-bold;
+$headings-color: $secondary-color2;
 
 // Font-family
 $font-family-base:

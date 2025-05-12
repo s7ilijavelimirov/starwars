@@ -1,6 +1,5 @@
 // Minimalni tipografski overrides
 // ---------------------------------------
-// Koristimo Bootstrap font-weight mape umesto naših varijabli
 
 // Osnovni stilovi za body
 body {
@@ -8,39 +7,14 @@ body {
   background-color: $primary-color;
 }
 
-// Override boja za naslove
-h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6 {
-  color: $secondary-color2;
-  font-weight: 700; // umesto $bold koristimo direktnu vrednost
-}
+// Override boja za naslove je već definisan kroz headings-color varijablu
+// Ostali stilovi specifični za naš dizajn:
 
 // Override stilova za linkove
 a {
   color: $secondary-color2;
   
   &:hover {
-    // Umesto darken() koristimo color.scale() jer darken() je deprecated
-    color: #e5c433; // ručno zatamnjena verzija $secondary-color2
+    color: darken($secondary-color2, 10%);
   }
-}
-
-// Bootstrap utility klase za font-weight - mapiramo ih na naše
-.fw-bold {
-  font-weight: $bold !important;
-}
-
-.fw-semibold {
-  font-weight: $semi-bold !important;
-}
-
-.fw-medium {
-  font-weight: $medium !important;
-}
-
-.fw-normal {
-  font-weight: $regular !important;
-}
-
-.fw-light {
-  font-weight: $light !important;
 }

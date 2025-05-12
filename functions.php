@@ -27,6 +27,7 @@ function disable_emojis()
     remove_filter('comment_text_rss', 'wp_staticize_emoji');
     remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 }
+
 // Dodaj ovo u functions.php ili theme-scripts.php za preload kritičnih resursa
 function s7design_add_resource_hints()
 {

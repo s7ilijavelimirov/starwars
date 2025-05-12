@@ -64,7 +64,7 @@
 
             .back-to-top-text {
                 font-size: 0.7rem;
-                font-weight: $bold;
+                //font-weight: $bold;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
                 color: $black;
@@ -103,7 +103,7 @@
 
             .footer-site-title {
                 font-size: 1.75rem;
-                font-weight: $bold;
+                //font-weight: $bold;
                 color: $white;
                 margin: 0;
                 max-width: 120px;
@@ -130,7 +130,7 @@
                     // Widget naslov
                     h5.rounded {
                         font-size: 1.25rem;
-                        font-weight: $semi-bold;
+                        //font-weight: $semi-bold;
                         color: $secondary-color2;
                         margin-bottom: 1.5rem;
                         text-transform: uppercase;
@@ -212,7 +212,7 @@
                     // Naslov blog sekcije
                     h2.rounded {
                         font-size: 1.25rem;
-                        font-weight: $semi-bold;
+                        //font-weight: $semi-bold;
                         color: $secondary-color2;
                         margin-bottom: 1.5rem;
                         text-transform: uppercase;
@@ -316,7 +316,7 @@
 
                                 a {
                                     font-size: 0.9rem;
-                                    font-weight: $semi-bold; // Podebljano malo više
+                                    //font-weight: $semi-bold; // Podebljano malo više
                                     line-height: 1.3;
                                     margin-bottom: 5px;
                                     color: $white;

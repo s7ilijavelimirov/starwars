@@ -2,10 +2,10 @@ nav.woocommerce-breadcrumb {
     margin: 2rem 0px !important;
     background-color: transparent;
     color: $secondary-color2 !important;
-    font-weight: $regular;
+    // font-weight: $regular;
     a {
         color: $secondary-color2 !important;
-        font-weight: $regular;
+        // font-weight: $regular;
 
         transition: 0.2s;
         &:first-child {
@@ -587,6 +587,6 @@ header.woocommerce-products-header {
         }
     }
 }
-.woocommerce form .form-row .optional{
+.woocommerce form .form-row .optional {
     visibility: hidden;
 }

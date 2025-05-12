@@ -112,6 +112,8 @@ module.exports = {
                           /^carousel/,
                           /^dropdown/,
                           /^btn/,
+                          /^fw-/,  // Font-weight utility klase
+                          /^fs-/,  // Font-size utility klase
                           'fade',
                           'show',
                           'collapse',
@@ -149,7 +151,7 @@ module.exports = {
                 // Uklanjamo upozorenja za zastarelu sintaksu
                 quietDeps: true,
                 logger: {
-                  warn: function(message) {
+                  warn: function (message) {
                     return message.includes('@import') ? null : console.warn(message);
                   }
                 }
@@ -186,7 +188,7 @@ module.exports = {
     new webpack.ProvidePlugin({
       bootstrap: ['bootstrap', 'default']
     }),
-    
+
     // Dodaj banner sa informacijama o verziji teme
     new webpack.BannerPlugin({
       banner: `Theme: StarWars | Version: ${require('./package.json').version} | Build date: ${new Date().toISOString()}`
