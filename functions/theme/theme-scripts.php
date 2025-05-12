@@ -22,16 +22,7 @@ function s7design_load_scripts()
     );
     wp_enqueue_script('s7design-bootstrap-js');
     wp_script_add_data('s7design-bootstrap-js', 'defer', true);
-    // Carousel JS
-    wp_register_script(
-        's7design-carousel-js',
-        $dist_path . '/js/carousel.js',
-        array('s7design-main-js'), // Zavisi od glavnog JS-a
-        file_exists($dist_dir . '/js/carousel.js') ? filemtime($dist_dir . '/js/carousel.js') : null,
-        true
-    );
-    wp_enqueue_script('s7design-carousel-js');
-    wp_script_add_data('s7design-carousel-js', 'defer', true);
+
     // Glavni JS fajl teme
     wp_register_script(
         's7design-main-js',
@@ -42,6 +33,19 @@ function s7design_load_scripts()
     );
     wp_enqueue_script('s7design-main-js');
     wp_script_add_data('s7design-main-js', 'defer', true);
+
+    // Carousel JS - Izmenjen način učitavanja
+    if (is_front_page() || is_home() || is_shop() || is_product_category()) {
+        wp_register_script(
+            's7design-carousel-js',
+            $dist_path . '/js/carousel.js', // Direktno iz dist/js foldera, ne više carousel-build.js
+            array('s7design-bootstrap-js', 's7design-main-js'),
+            file_exists($dist_dir . '/js/carousel.js') ? filemtime($dist_dir . '/js/carousel.js') : null,
+            true
+        );
+        wp_enqueue_script('s7design-carousel-js');
+        wp_script_add_data('s7design-carousel-js', 'defer', true);
+    }
 
     // Prosleđujemo varijable u JS
     wp_localize_script(

@@ -111,7 +111,7 @@
         transition:
             max-height 0.3s ease-in-out,
             max-width 0.3s ease-in-out;
-        border-radius: 12px;
+        border-radius: 8px;
         transform: translateZ(0); // Forsira hardversku akceleraciju za glatke tranzicije
 
         @media (max-width: 1199.98px) {

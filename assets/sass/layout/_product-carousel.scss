@@ -1,214 +1,195 @@
-/**
- * Stilovi za karusel proizvoda 
- * Fajl treba ubaciti u assets/sass/components/_product-carousel.scss
- * Potrebno je importovati u app.scss
- */
+// _carousel.scss
 
-// Karusel sekcija
+// Varijable
+$carousel-arrow-size: 40px;
+$carousel-arrow-color: #ffd700;
+$carousel-arrow-bg: rgba(26, 26, 26, 0.7);
+$carousel-dot-size: 12px;
+$carousel-dot-color: #666;
+$carousel-dot-active-color: #ffd700;
+$carousel-transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$carousel-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+// Breakpointi
+$breakpoints: (
+    "xl": 1200px,
+    "lg": 992px,
+    "md": 768px,
+    "sm": 576px
+);
+
+// Mixins
+@mixin respond-below($breakpoint) {
+    @if map-has-key($breakpoints, $breakpoint) {
+        @media (max-width: map-get($breakpoints, $breakpoint)) {
+            @content;
+        }
+    }
+}
+
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// Glavni carousel stil
 .sw-product-carousel {
     position: relative;
-    margin: 2rem 0 3rem;
-    padding: 0 2.5rem; // Prostor za navigacione strelice
-    
-    // Container za održavanje iste visine
-    .sw-carousel-container {
-        overflow: hidden;
-        margin: 0 -10px; // Negativan margin za prostor između kartica
+    width: 100%;
+    margin: 3rem 0;
+    overflow: hidden;
+
+    // Header sekcija
+    .head-products {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0 1rem;
+
+        h2 {
+            margin: 0;
+            font-size: 1.75rem;
+            color: #1a1a1a;
+        }
+
+        .links-all {
+            color: $carousel-arrow-color;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            transition: $carousel-transition;
+
+            i {
+                margin-left: 0.5rem;
+                transition: $carousel-transition;
+            }
+
+            &:hover {
+                color: lighten($carousel-arrow-color, 15%);
+
+                i {
+                    transform: translateX(5px);
+                }
+            }
+        }
     }
-    
-    // Wrapper za slide items
+
+    // Kontejner
+    .sw-carousel-container {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        padding: 1rem 0;
+    }
+
+    // Wrapper
     .sw-carousel-wrapper {
         display: flex;
-        transition: transform 0.3s ease;
-        margin: 0;
-        overflow: visible;
+        transition: transform 0.5s ease-out;
+        will-change: transform;
+        cursor: grab;
+
+        &:active {
+            cursor: grabbing;
+        }
     }
-    
-    // Slide item
+
+    // Item
     .sw-carousel-item {
-        flex-shrink: 0;
-        padding: 0 10px;
+        flex: 0 0 auto;
+        padding: 0 15px;
         box-sizing: border-box;
-        transition: all 0.3s ease;
-    }
-    
-    // Proizvod kartica
-    .product-card {
-        display: flex;
-        flex-direction: column;
-        background: $white;
-        border: 2px solid transparent;
-        border-radius: 20px;
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        height: 100%;
-        position: relative;
-        
-        &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            border-color: $secondary-color2;
-            
-            .product-image img {
-                transform: scale(1.05);
-            }
-            
-            .product-title {
-                color: $secondary-color2;
-            }
+        transition: $carousel-transition;
+
+        @include respond-below("xl") {
+            padding: 0 12px;
         }
-        
-        &:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba($secondary-color2, 0.5);
+
+        @include respond-below("lg") {
+            padding: 0 10px;
         }
-        
-        &::after {
-            content: '';
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 40px;
-            height: 40px;
-            background-image: url("../../../StarWars/logostarwarscontent.png");
-            background-size: 30px 30px;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-color: $black;
-            border-radius: 50%;
-            z-index: 1;
+
+        @include respond-below("sm") {
+            padding: 0 8px;
         }
     }
-    
-    // Slika proizvoda
-    .product-image {
-        overflow: hidden;
-        border-radius: 18px 18px 0 0;
-        background-color: white;
-        flex: 1 0 auto;
-        
-        img {
-            display: block;
-            width: 100%;
-            transition: transform 0.3s ease;
-            height: auto;
-            margin: 0 auto;
-            padding: 15px;
-        }
-    }
-    
-    // Naslov proizvoda
-    .product-title {
-        padding: 1rem;
-        margin: 0;
-        font-size: 1rem;
-        color: $black;
-        text-align: center;
-        font-weight: 700;
-        transition: color 0.3s ease;
-        min-height: 3.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    // Cena proizvoda
-    .product-price {
-        padding: 0 1rem 1rem;
-        text-align: center;
-        color: $black;
-        font-weight: 700;
-        font-size: 1.1rem;
-        
-        ins {
-            text-decoration: none;
-            color: $secondary-color2;
-        }
-        
-        del {
-            color: #999;
-            font-size: 0.9em;
-            margin-right: 0.5rem;
-        }
-    }
-    
-    // Kontrole karusela - strelice
+
+    // Navigacione strelice
     .sw-carousel-prev,
     .sw-carousel-next {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        background-color: rgba(0, 0, 0, 0.7);
-        color: $secondary-color2;
+        width: $carousel-arrow-size;
+        height: $carousel-arrow-size;
+        background-color: $carousel-arrow-bg;
+        color: $carousel-arrow-color;
         border: none;
-        width: 40px;
-        height: 40px;
         border-radius: 50%;
-        font-size: 1.2rem;
-        z-index: 2;
         cursor: pointer;
-        opacity: 0.8;
-        transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
+        z-index: 10;
+        @include flex-center;
+        transition: $carousel-transition;
+        opacity: 0.9;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+        i {
+            font-size: 1.2rem;
+            transition: $carousel-transition;
+        }
+
         &:hover {
-            opacity: 1;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: darken($carousel-arrow-bg, 10%);
             transform: translateY(-50%) scale(1.1);
+            opacity: 1;
         }
-        
-        &:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba($secondary-color2, 0.5);
-        }
-        
+
         &.disabled {
             opacity: 0.3;
             cursor: not-allowed;
-            
-            &:hover {
-                transform: translateY(-50%);
-                background-color: rgba(0, 0, 0, 0.7);
-            }
+            pointer-events: none;
         }
     }
-    
+
     .sw-carousel-prev {
-        left: 0;
+        left: 1rem;
+
+        &:hover i {
+            transform: translateX(-2px);
+        }
     }
-    
+
     .sw-carousel-next {
-        right: 0;
+        right: 1rem;
+
+        &:hover i {
+            transform: translateX(2px);
+        }
     }
-    
+
     // Dots navigacija
-    &.with-dots {
-        margin-bottom: 3.5rem;
-    }
-    
     .sw-carousel-dots {
         display: flex;
         justify-content: center;
-        margin-top: 1.5rem;
-        position: absolute;
-        bottom: -30px;
-        left: 0;
-        right: 0;
-        
+        align-items: center;
+        margin-top: 2rem;
+        padding: 0.5rem 0;
+
         .sw-carousel-dot {
-            width: 12px;
-            height: 12px;
-            margin: 0 5px;
+            width: $carousel-dot-size;
+            height: $carousel-dot-size;
+            margin: 0 6px;
             border-radius: 50%;
             background-color: transparent;
-            border: 2px solid $third-color;
+            border: 2px solid $carousel-dot-color;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: $carousel-transition;
             position: relative;
-            padding: 0;
-            
+            outline: none;
+
             &::after {
                 content: "";
                 position: absolute;
@@ -219,72 +200,111 @@
                 height: 6px;
                 background-color: transparent;
                 border-radius: 50%;
-                transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                transition: $carousel-transition;
             }
-            
-            &.active {
-                border-color: $secondary-color2;
-                
-                &::after {
-                    background-color: $secondary-color2;
-                    box-shadow: 0 0 8px rgba($secondary-color2, 0.6);
-                }
-            }
-            
+
             &:hover {
-                border-color: lighten($secondary-color2, 10%);
-                
+                border-color: lighten($carousel-dot-active-color, 10%);
+
                 &::after {
-                    background-color: lighten($secondary-color2, 5%);
+                    background-color: lighten($carousel-dot-active-color, 20%);
                 }
             }
-            
-            &:focus {
-                outline: none;
-                box-shadow: 0 0 0 3px rgba($secondary-color2, 0.3);
+
+            &.active {
+                border-color: $carousel-dot-active-color;
+
+                &::after {
+                    background-color: $carousel-dot-active-color;
+                    width: 8px;
+                    height: 8px;
+                    box-shadow: 0 0 10px rgba($carousel-dot-active-color, 0.5);
+                }
             }
         }
     }
-}
 
-// Responsive stilovi
-@media (max-width: 1199px) {
-    .sw-product-carousel {
+    // Product card unutar carousela
+    .product-card {
+        display: block;
+        text-decoration: none;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: $carousel-shadow;
+        transition: $carousel-transition;
+        height: 100%;
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            overflow: hidden;
+            position: relative;
+            padding-top: 100%; // 1:1 aspect ratio
+
+            img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: $carousel-transition;
+            }
+        }
+
         .product-title {
-            font-size: 0.95rem;
-            min-height: 3.8rem;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 1rem;
+            margin: 0;
+            min-height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            text-align: center;
+            padding: 0 1rem 1rem;
+            font-weight: 700;
+            color: $carousel-dot-active-color;
+            font-size: 1.2rem;
         }
     }
 }
 
-@media (max-width: 991px) {
+// Responsivni stilovi
+@include respond-below("xl") {
     .sw-product-carousel {
-        padding: 0 2rem;
-        
         .sw-carousel-prev,
         .sw-carousel-next {
             width: 36px;
             height: 36px;
-            font-size: 1rem;
+        }
+
+        .sw-carousel-dots .sw-carousel-dot {
+            width: 10px;
+            height: 10px;
         }
     }
 }
 
-@media (max-width: 767px) {
+@include respond-below("lg") {
     .sw-product-carousel {
-        .product-card::after {
-            width: 30px;
-            height: 30px;
-            background-size: 20px 20px;
-        }
-    }
-}
+        margin: 2.5rem 0;
 
-@media (max-width: 575px) {
-    .sw-product-carousel {
-        padding: 0 1.5rem;
-        
-        .sw-carousel-prev, 
+        .head-products h2 {
+            font-size: 1.5rem;
+        }
+
+        .sw-carousel-prev,
         .sw-carousel-next {
             width: 32px;
             height: 32px;
@@ -292,54 +312,38 @@
     }
 }
 
-// Blog carousel dodatni stilovi
-#newsSlider.custom-slider {
-    position: relative;
-    overflow: hidden;
-    
-    .slider-inner {
-        display: flex;
-        transition: transform 0.3s ease;
-    }
-    
-    .slider-control-prev,
-    .slider-control-next {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background-color: rgba(0, 0, 0, 0.7);
-        color: $secondary-color2;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-size: 1.6rem;
-        z-index: 2;
-        cursor: pointer;
-        opacity: 0.8;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-            opacity: 1;
+@include respond-below("md") {
+    .sw-product-carousel {
+        margin: 2rem 0;
+
+        .head-products {
+            flex-direction: column;
+            align-items: flex-start;
+
+            h2 {
+                margin-bottom: 0.5rem;
+            }
         }
-        
-        &.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
+
+        .product-card .product-title {
+            min-height: 3rem;
+            font-size: 0.95rem;
         }
     }
-    
-    .slider-control-prev {
-        left: 10px;
+}
+
+@include respond-below("sm") {
+    .sw-product-carousel {
+        .sw-carousel-prev,
+        .sw-carousel-next {
+            width: 28px;
+            height: 28px;
+        }
+
+        .sw-carousel-dots .sw-carousel-dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 4px;
+        }
     }
-    
-    .slider-control-next {
-        right: 10px;
-    }
-    
-    // Stilovi za postojeći custom-card sadržaj
 }

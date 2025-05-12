@@ -30,6 +30,11 @@ assets.forEach(function (el) {
 entries.frontend.push('./assets/sass/app.scss');
 entries.admin.push('./assets/sass/dashboard.scss');
 
+// Dodajemo carousel.js kao poseban entry point da se ne bunda sa frontend.js
+if (!entries.carousel) {
+  entries.carousel = ['./assets/js/carousel.js'];
+}
+
 module.exports = {
   entry: entries,
   output: {
@@ -124,6 +129,13 @@ module.exports = {
                           'current_page_item',
                           'scrolled',
                           'header-scrolled',
+                          // Dodaj klase za carousel
+                          /^sw-/,
+                          'slider-inner',
+                          'slider-item',
+                          'slider-control-prev',
+                          'slider-control-next',
+                          'disabled',
                         ],
                         deep: [
                           /carousel$/,
@@ -131,6 +143,10 @@ module.exports = {
                           /modal$/,
                           /show$/,
                           /active$/,
+                          /control$/,
+                          /wrapper$/,
+                          /container$/,
+                          /item$/,
                         ],
                         greedy: []
                       }
@@ -168,13 +184,18 @@ module.exports = {
       filename: 'css/[name].min.css'
     }),
 
-    // Kopiraj samo Bootstrap bundle
+    // Kopiraj samo Bootstrap bundle i carousel.js
     new CopyPlugin({
       patterns: [
         // Bootstrap bundle
         {
           from: 'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
           to: 'js/bootstrap.bundle.min.js'
+        },
+        // Carousel.js - eksplicitno kopiramo i ovaj fajl
+        {
+          from: 'assets/js/carousel.js',
+          to: 'js/carousel.js'
         },
         // Fontovi
         {

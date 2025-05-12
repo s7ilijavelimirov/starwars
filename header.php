@@ -81,7 +81,7 @@
 
 					<!-- Logo u sredini - stvarno centriran -->
 					<div class="navbar-brand-wrapper">
-						<a href="<?php echo esc_url(home_url('/')); ?>" class="navbar-brand mx-auto pb-0">
+						<a href="<?php echo esc_url(home_url('/')); ?>" class="navbar-brand mx-auto py-0">
 							<?php
 							if (has_custom_logo()) {
 								$custom_logo_id = get_theme_mod('custom_logo');

@@ -140,7 +140,7 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
 
                             $product_cat_string = implode(', ', $product_cats);
                         ?>
-                            <div class="sw-carousel-item">
+                            <div class="sw-carousel-item py-4">
                                 <a href="<?php the_permalink(); ?>" class="product-card"
                                     data-product-id="<?php echo esc_attr($product_id); ?>"
                                     data-product-name="<?php echo esc_attr(get_the_title()); ?>"
@@ -162,7 +162,7 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
                                         }
                                         ?>
                                     </div>
-                                    <h3 class="product-title"><?php the_title(); ?></h3>
+                                    <h6 class="product-title"><?php the_title(); ?></h6>
                                     <div class="product-price">
                                         <?php echo $product->get_price_html(); ?>
                                     </div>
@@ -173,6 +173,7 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
                     </div>
                 </div>
 
+                <!-- Kontrolna dugmad za navigaciju -->
                 <button class="sw-carousel-prev" aria-label="Prethodni proizvodi" aria-controls="<?php echo esc_attr($carousel_id); ?>">
                     <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
                 </button>
