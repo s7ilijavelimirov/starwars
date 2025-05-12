@@ -15,7 +15,7 @@ include_once  get_template_directory() . '/functions/theme/theme-scripts.php';
 
 /* Disable WordPress Admin Bar for all users */
 //add_filter('show_admin_bar', '__return_false');
-add_filter( 'use_widgets_block_editor', '__return_false' );
+add_filter('use_widgets_block_editor', '__return_false');
 
 function disable_emojis()
 {
@@ -199,7 +199,89 @@ function woo_new_product_tab($tabs)
     );
     return $tabs;
 }
+/**
+ * Optimalno učitavanje pozadinske slike
+ */
+function s7design_optimize_background_image()
+{
+    $bg_image = get_template_directory_uri() . '/background.webp';
 
+    // Preload sliku sa visokim prioritetom
+    echo '<link rel="preload" fetchpriority="high" href="' . $bg_image . '" as="image" type="image/webp">';
+
+    // CSS za pozadinsku sliku sa naprednim svojstvima
+?>
+    <style>
+        /* Osnovna pozadina za fallback i početni prikaz */
+        body {
+            background-color: #000000;
+        }
+
+        /* Pozadinska slika kao pseudo-element za bolju kontrolu */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('<?php echo $bg_image; ?>');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            will-change: opacity;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        /* Kada je slika učitana, prikazujemo je sa fade efektom */
+        body.bg-loaded::before {
+            opacity: 1;
+        }
+
+        /* Dodatna optimizacija za mobilne uređaje - zadrži samo deo slike koji je vidljiv */
+        @media (max-width: 768px) {
+            body::before {
+                background-size: cover;
+                background-position: center top;
+            }
+        }
+    </style>
+
+    <script>
+        // Učitavanje slike i dodavanje klase za prikaz
+        (function() {
+            // Ako je slika već u keširana, odmah aktiviraj prikaz
+            if (window.performance) {
+                const navEntries = performance.getEntriesByType('navigation');
+                if (navEntries.length > 0 && navEntries[0].type === 'back_forward') {
+                    document.body.classList.add('bg-loaded');
+                    return;
+                }
+            }
+
+            // Inače, sačekaj da se slika učita
+            const img = new Image();
+            img.src = '<?php echo $bg_image; ?>';
+            img.onload = function() {
+                requestAnimationFrame(function() {
+                    document.body.classList.add('bg-loaded');
+                });
+            };
+
+            // Ako slika ne uspe da se učita u razumnom roku, ipak je prikaži
+            setTimeout(function() {
+                if (!document.body.classList.contains('bg-loaded')) {
+                    document.body.classList.add('bg-loaded');
+                }
+            }, 3000);
+        })();
+    </script>
+<?php
+}
+add_action('wp_head', 's7design_optimize_background_image', 5);
 function woo_new_product_tab_content()
 {
     global $product;

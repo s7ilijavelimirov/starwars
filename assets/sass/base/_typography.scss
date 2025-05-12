@@ -4,20 +4,14 @@
 
 /* Osnovni stilovi */
 
-
 body {
   // Osnovni stilovi
   color: $gray-900;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  // Pozadinska slika - direktna putanja do korena teme
-  background-color: $primary-color; // Fallback boja
-  background-image: url("../../background.webp"); // Putanja relativna u odnosu na kompajlirani CSS
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
+  
+  // Ukloni background-image definiciju
+  background-color: $primary-color; // Fallback boja ostaje
 }
 
 // Osiguravamo dobar kontrast za sadržaj

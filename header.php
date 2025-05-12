@@ -13,25 +13,13 @@
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-	<style>
-		body {
-			background-color: #000000;
-			background-image: url('<?php echo get_template_directory_uri(); ?>/background.webp');
-			background-repeat: no-repeat;
-			background-attachment: fixed;
-			background-position: center;
-			background-size: cover;
-		}
-	</style>
-
 	<?php wp_head(); ?>
 </head>
 
 <body <?php body_class(); ?>>
 	<?php wp_body_open(); ?>
 	<header id="navbar" class="site-header sticky-top">
-	<div class="sw-yellow-border"></div>
+		<div class="sw-yellow-border"></div>
 		<!-- Glavni navigacijski dio -->
 		<nav class="navbar navbar-dark navbar-expand-lg">
 			<div class="container">
