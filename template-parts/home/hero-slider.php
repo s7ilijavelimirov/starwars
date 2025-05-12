@@ -42,9 +42,9 @@
                                                 </h1>
                                             <?php endif; ?>
                                             <?php if ($small_title) : ?>
-                                                <h2 class="slide-sub" style="<?php echo $boja_small_text ? 'color:' . $boja_small_text : ''; ?>">
+                                                <h4 class="slide-sub" style="<?php echo $boja_small_text ? 'color:' . $boja_small_text : ''; ?>">
                                                     <?php echo $small_title; ?>
-                                                </h2>
+                                                </h4>
                                             <?php endif; ?>
                                             <?php if ($link) : ?>
                                                 <a href="<?php echo esc_url($link['url']); ?>" class="btn slide-btn" style="<?php echo $boja_buttona ? 'color:' . $boja_buttona . '; border-color:' . $boja_buttona : ''; ?>">

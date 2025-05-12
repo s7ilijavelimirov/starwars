@@ -150,11 +150,11 @@
 					'walker'         => new bootstrap_5_wp_nav_menu_walker()
 				));
 				?>
-
+				<hr>
 				<!-- Widgeti za mobilni menu ako postoje -->
-				<?php if (is_active_sidebar('mobile-menu-widgets')) : ?>
-					<div class="mobile-menu-widgets mt-4">
-						<?php dynamic_sidebar('mobile-menu-widgets'); ?>
+				<?php if (is_active_sidebar('footer_3')) : ?>
+					<div class="footer-social-icons" role="complementary">
+						<?php dynamic_sidebar('footer_3'); ?>
 					</div>
 				<?php endif; ?>
 			</div>

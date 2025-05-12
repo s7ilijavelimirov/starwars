@@ -66,6 +66,13 @@
                             <?php endif; ?>
                         </a>
                     <?php endif; ?>
+
+                    <!-- Social ikone -->
+                    <?php if (is_active_sidebar('footer_3')) : ?>
+                        <div class="footer-social-icons" role="complementary">
+                            <?php dynamic_sidebar('footer_3'); ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Footer menije (Navigacija) -->
@@ -173,17 +180,6 @@
                     <?php endif; ?>
                 </div>
             </div>
-
-            <!-- Social ikone -->
-            <?php if (is_active_sidebar('footer_3')) : ?>
-                <div class="row footer-social-row">
-                    <div class="col-md-12">
-                        <div class="footer-social-icons" role="complementary">
-                            <?php dynamic_sidebar('footer_3'); ?>
-                        </div>
-                    </div>
-                </div>
-            <?php endif; ?>
         </div>
     </div>
 </footer>
@@ -194,7 +190,7 @@
     // Jednostavan JS za "Back to top" funkcionalnost
     document.addEventListener('DOMContentLoaded', function() {
         const backToTopButton = document.getElementById('backToTop');
-        
+
         // Prikaži/sakrij dugme na skrol
         window.addEventListener('scroll', function() {
             if (window.pageYOffset > 300) {
@@ -203,7 +199,7 @@
                 backToTopButton.classList.remove('show');
             }
         });
-        
+
         // Brzi scroll to top kada se klikne
         backToTopButton.addEventListener('click', function() {
             window.scrollTo({
@@ -211,7 +207,7 @@
                 behavior: 'smooth'
             });
         });
-        
+
         // Dodavanje "active" klase na trenutnu stranicu u navigaciji
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('.navbar-nav a');
