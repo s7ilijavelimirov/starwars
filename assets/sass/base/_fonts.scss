@@ -1,6 +1,16 @@
-// SAMO DEFINICIJE FONTOVA
-// --------------------------
-// Ništa ne menjamo u Bootstrap-u, samo ubacujemo font
+// Optimizovano učitavanje fontova sa font-display: swap
+// -------------------------------------------
+
+@font-face {
+    font-family: "Montserrat";
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src:
+        local("Montserrat Light"),
+        local("Montserrat-Light"),
+        url("../fonts/Montserrat-Light.woff2") format("woff2");
+}
 
 @font-face {
     font-family: "Montserrat";

@@ -49,7 +49,7 @@ function s7design_load_styles()
 add_action('wp_enqueue_scripts', 's7design_load_styles');
 
 /**
- * Preload ključnih resursa za poboljšanje performansi
+ * Optimizovani preload ključnih fontova
  */
 function s7design_preload_resources()
 {
@@ -58,21 +58,14 @@ function s7design_preload_resources()
     echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/js/bootstrap.bundle.min.js" as="script">';
     echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/js/frontend-build.js" as="script">';
 
-    // Preload fontova sa display swap
-    if (file_exists(get_template_directory() . '/dist/fonts/Montserrat-Regular.woff2')) {
-        echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin>';
-    }
+    // Preload kritičnih fontova sa fetchpriority="high" za glavni Regular font
+    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">';
 
-    if (file_exists(get_template_directory() . '/dist/fonts/Montserrat-Bold.woff2')) {
-        echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossorigin>';
-    }
+    // Preload ostalih fontova (Bold i Medium su takođe važni, ali sa normalnim prioritetom)
+    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossorigin>';
+    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/fonts/Montserrat-Medium.woff2" as="font" type="font/woff2" crossorigin>';
 
-    // Preload pozadinske slike
-    if (file_exists(get_template_directory() . '/background.webp')) {
-        echo '<link rel="preload" href="' . get_template_directory_uri() . '/background.webp" as="image" type="image/webp">';
-    } elseif (file_exists(get_template_directory() . '/background.jpg')) {
-        echo '<link rel="preload" href="' . get_template_directory_uri() . '/background.jpg" as="image" type="image/jpeg">';
-    }
+    // Ostali fontovi se dinamički učitavaju kada su potrebni
 }
 
 /**
@@ -82,59 +75,28 @@ function s7design_font_display_swap()
 {
 ?>
     <style>
-        /* Bolja definicija font-display: swap sa lokalnim fontovima */
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 400;
-            font-display: swap;
-            src: local('Montserrat Regular'), local('Montserrat-Regular'),
-                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-Regular.woff2') format('woff2');
+        /* Kritični CSS koji postavlja font-family pre učitavanja glavnog CSS-a */
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
 
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 500;
-            font-display: swap;
-            src: local('Montserrat Medium'), local('Montserrat-Medium'),
-                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-Medium.woff2') format('woff2');
-        }
-
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 600;
-            font-display: swap;
-            src: local('Montserrat SemiBold'), local('Montserrat-SemiBold'),
-                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-SemiBold.woff2') format('woff2');
-        }
-
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 700;
-            font-display: swap;
-            src: local('Montserrat Bold'), local('Montserrat-Bold'),
-                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-Bold.woff2') format('woff2');
-        }
-
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 800;
-            font-display: swap;
-            src: local('Montserrat ExtraBold'), local('Montserrat-ExtraBold'),
-                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-ExtraBold.woff2') format('woff2');
-        }
-
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: italic;
-            font-weight: 400;
-            font-display: swap;
-            src: local('Montserrat Italic'), local('Montserrat-Italic'),
-                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-Italic.woff2') format('woff2');
+        /* Hack za Safari koji ponekad ima probleme sa font-display: swap */
+        @supports (-webkit-overflow-scrolling: touch) {
+            @font-face {
+                font-family: 'Montserrat';
+                font-display: swap;
+            }
         }
     </style>
 <?php

@@ -28,20 +28,47 @@ function disable_emojis()
     remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 }
 
-// Dodaj ovo u functions.php ili theme-scripts.php za preload kritičnih resursa
-function s7design_add_resource_hints()
-{
-    // Preconnect za jQuery (ako je neophodan za WooCommerce)
-    echo '<link rel="preconnect" href="//code.jquery.com" crossorigin>';
-
-    // Dodaj DNS prefetch za eksterne domene
-    echo '<link rel="dns-prefetch" href="//code.jquery.com">';
-
-    // Preload kritičnih fontova
-    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin>';
-}
-add_action('wp_head', 's7design_add_resource_hints', 1);
 add_action('init', 'disable_emojis');
+function s7design_font_priority_loader()
+{
+?>
+    <!-- Font Priority Loader -->
+    <style id="s7design-font-priority">
+        @font-face {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: local('Montserrat Regular'), local('Montserrat-Regular'),
+                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-Regular.woff2') format('woff2');
+        }
+
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        }
+    </style>
+<?php
+}
+add_action('wp_head', 's7design_font_priority_loader', 1);
+
+/**
+ * Deregistruje Google Fonts koje drugi plugini možda učitavaju
+ */
+function s7design_deregister_external_fonts()
+{
+    // Pronađi i ukloni Google Fonts i slične externe fontove
+    global $wp_styles;
+    foreach ($wp_styles->registered as $handle => $style) {
+        if (
+            strpos($style->src, 'fonts.googleapis.com') !== false ||
+            strpos($style->src, 'fonts.gstatic.com') !== false
+        ) {
+            wp_deregister_style($handle);
+        }
+    }
+}
+add_action('wp_enqueue_scripts', 's7design_deregister_external_fonts', 999);
+
 /**
  * Optimizacija pozadinske slike
  */
