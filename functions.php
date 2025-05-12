@@ -227,83 +227,74 @@ function woo_new_product_tab($tabs)
     );
     return $tabs;
 }
-/**
- * Optimalno učitavanje pozadinske slike
- */
 function s7design_optimize_background_image()
 {
-    $bg_image = get_template_directory_uri() . '/background.webp';
+    // Proveri da li slika zaista postoji
+    $bg_image_path = get_template_directory() . '/background.webp';
+    $bg_image_url = get_template_directory_uri() . '/background.webp';
+
+    // Izađi ako slika ne postoji
+    if (!file_exists($bg_image_path)) {
+        error_log('Pozadinska slika nije pronađena: ' . $bg_image_path);
+        return;
+    }
 
     // Preload sliku sa visokim prioritetom
-    echo '<link rel="preload" fetchpriority="high" href="' . $bg_image . '" as="image" type="image/webp">';
+    echo '<link rel="preload" fetchpriority="high" href="' . esc_url($bg_image_url) . '" as="image" type="image/webp">';
 
-    // CSS za pozadinsku sliku sa naprednim svojstvima
+    // CSS za pozadinsku sliku
 ?>
     <style>
-        /* Osnovna pozadina za fallback i početni prikaz */
         body {
             background-color: #000000;
-        }
-
-        /* Pozadinska slika kao pseudo-element za bolju kontrolu */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background-image: url('<?php echo $bg_image; ?>');
+            background-image: url('<?php echo esc_url($bg_image_url); ?>');
             background-repeat: no-repeat;
             background-attachment: fixed;
             background-position: center;
             background-size: cover;
-            will-change: opacity;
-            opacity: 0;
+            opacity: 1;
             transition: opacity 0.6s ease;
         }
 
-        /* Kada je slika učitana, prikazujemo je sa fade efektom */
-        body.bg-loaded::before {
-            opacity: 1;
+        /* Fallback rešenje ako slika ne učita */
+        body.bg-loading {
+            opacity: 0;
         }
 
-        /* Dodatna optimizacija za mobilne uređaje - zadrži samo deo slike koji je vidljiv */
         @media (max-width: 768px) {
-            body::before {
-                background-size: cover;
+            body {
                 background-position: center top;
             }
         }
     </style>
 
     <script>
-        // Učitavanje slike i dodavanje klase za prikaz
         (function() {
-            // Ako je slika već u keširana, odmah aktiviraj prikaz
-            if (window.performance) {
-                const navEntries = performance.getEntriesByType('navigation');
-                if (navEntries.length > 0 && navEntries[0].type === 'back_forward') {
-                    document.body.classList.add('bg-loaded');
-                    return;
-                }
-            }
+            // Privremeno sakrij pozadinu dok se slika učitava
+            document.body.classList.add('bg-loading');
 
-            // Inače, sačekaj da se slika učita
+            // Kreiraj image objekat za proveru učitavanja
             const img = new Image();
-            img.src = '<?php echo $bg_image; ?>';
+
             img.onload = function() {
+                // Ukloni klasu nakon učitavanja
                 requestAnimationFrame(function() {
-                    document.body.classList.add('bg-loaded');
+                    document.body.classList.remove('bg-loading');
                 });
             };
 
-            // Ako slika ne uspe da se učita u razumnom roku, ipak je prikaži
+            img.onerror = function() {
+                console.error('Greška pri učitavanju pozadinske slike');
+                // Ukloni klasu i u slučaju greške da bi se prikazala bar osnovna boja
+                document.body.classList.remove('bg-loading');
+            };
+
+            // Postavi src nakon definisanja onload/onerror
+            img.src = '<?php echo esc_url($bg_image_url); ?>';
+
+            // Sigurnosno vrati na vidljivo nakon 3 sekunde bez obzira na sve
             setTimeout(function() {
-                if (!document.body.classList.contains('bg-loaded')) {
-                    document.body.classList.add('bg-loaded');
-                }
+                document.body.classList.remove('bg-loading');
             }, 3000);
         })();
     </script>

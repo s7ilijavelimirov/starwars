@@ -22,7 +22,16 @@ function s7design_load_scripts()
     );
     wp_enqueue_script('s7design-bootstrap-js');
     wp_script_add_data('s7design-bootstrap-js', 'defer', true);
-
+    // Carousel JS
+    wp_register_script(
+        's7design-carousel-js',
+        $dist_path . '/js/carousel.js',
+        array('s7design-main-js'), // Zavisi od glavnog JS-a
+        file_exists($dist_dir . '/js/carousel.js') ? filemtime($dist_dir . '/js/carousel.js') : null,
+        true
+    );
+    wp_enqueue_script('s7design-carousel-js');
+    wp_script_add_data('s7design-carousel-js', 'defer', true);
     // Glavni JS fajl teme
     wp_register_script(
         's7design-main-js',
@@ -63,7 +72,7 @@ function s7design_optimize_woocommerce_scripts()
     if (!is_woocommerce() && !is_cart() && !is_checkout() && !is_account_page() && !is_shop()) {
         // Potpuno isključi WooCommerce stilove na ne-WooCommerce stranicama
         add_filter('woocommerce_enqueue_styles', '__return_empty_array');
-        
+
         // Ukloni sve nepotrebne skripte
         wp_dequeue_script('woocommerce');
         wp_dequeue_script('wc-add-to-cart');
@@ -96,7 +105,8 @@ add_action('wp_enqueue_scripts', 's7design_optimize_woocommerce_scripts', 99);
 /**
  * Optimizacija JS za scroll efekat header-a
  */
-function s7design_optimize_scroll_effects() {
+function s7design_optimize_scroll_effects()
+{
     // Implementiraj direktno ako se koristi samo na nekim stranicama,
     // inače ovo može ostati u frontend.js
     if (is_front_page() || is_home() || is_single()) {
