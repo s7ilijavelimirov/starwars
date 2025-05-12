@@ -1,9 +1,11 @@
 <?php
+
 /**
  * Bootstrap 5 WP Nav Menu Walker 
  * Optimizovano za Bootstrap 5.3.x
  */
-class bootstrap_5_wp_nav_menu_walker extends Walker_Nav_menu {
+class bootstrap_5_wp_nav_menu_walker extends Walker_Nav_menu
+{
   private $current_item;
   private $dropdown_menu_alignment_values = [
     'dropdown-menu-start',
@@ -20,7 +22,8 @@ class bootstrap_5_wp_nav_menu_walker extends Walker_Nav_menu {
     'dropdown-menu-xxl-end'
   ];
 
-  function start_lvl(&$output, $depth = 0, $args = null) {
+  function start_lvl(&$output, $depth = 0, $args = null)
+  {
     $dropdown_menu_class[] = '';
     foreach ($this->current_item->classes as $class) {
       if (in_array($class, $this->dropdown_menu_alignment_values)) {
@@ -32,7 +35,8 @@ class bootstrap_5_wp_nav_menu_walker extends Walker_Nav_menu {
     $output .= "\n$indent<ul class=\"dropdown-menu$submenu " . esc_attr(implode(" ", $dropdown_menu_class)) . " depth_$depth\">\n";
   }
 
-  function start_el(&$output, $item, $depth = 0, $args = null, $id = 0) {
+  function start_el(&$output, $item, $depth = 0, $args = null, $id = 0)
+  {
     $this->current_item = $item;
 
     $indent = ($depth) ? str_repeat("\t", $depth) : '';
@@ -49,7 +53,7 @@ class bootstrap_5_wp_nav_menu_walker extends Walker_Nav_menu {
       $classes[] = 'dropdown-menu dropdown-menu-end';
     }
 
-    $class_names =  join(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item, $args));
+    $class_names = join(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item, $args));
     $class_names = ' class="' . esc_attr($class_names) . '"';
 
     $id = apply_filters('nav_menu_item_id', 'menu-item-' . $item->ID, $item, $args);
@@ -62,9 +66,15 @@ class bootstrap_5_wp_nav_menu_walker extends Walker_Nav_menu {
     $attributes .= !empty($item->xfn) ? ' rel="' . esc_attr($item->xfn) . '"' : '';
     $attributes .= !empty($item->url) ? ' href="' . esc_attr($item->url) . '"' : '';
 
-    $active_class = ($item->current || $item->current_item_ancestor || in_array("current_page_parent", $item->classes, true) || in_array("current-post-ancestor", $item->classes, true)) ? 'active' : '';
+    // KLJUČNA POPRAVKA: Koristi samo current, ne i home/ancestor/itd
+    // Ovo će rešiti problem višestrukih active linkova
+    $active_class = '';
+    if ($item->current && in_array('current-menu-item', $classes)) {
+      $active_class = 'active';
+    }
+
     $nav_link_class = ($depth > 0) ? 'dropdown-item ' : 'nav-link ';
-    
+
     // Dodajemo datu-bs-toggle i data-bs-auto-close atribute za mobilnu navigaciju
     if ($args->walker->has_children) {
       $attributes .= ' class="' . $nav_link_class . $active_class . ' dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"';

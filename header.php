@@ -23,10 +23,44 @@
 		<!-- Glavni navigacijski dio -->
 		<nav class="navbar navbar-dark navbar-expand-lg">
 			<div class="container">
-				<!-- Hamburger za mobilne -->
-				<button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
+				<!-- Logo - sada levo na mobilnom -->
+				<a href="<?php echo esc_url(home_url('/')); ?>" class="navbar-brand d-lg-none">
+					<?php
+					if (has_custom_logo()) {
+						$custom_logo_id = get_theme_mod('custom_logo');
+						$logo_image = wp_get_attachment_image(
+							$custom_logo_id,
+							'full',
+							false,
+							array(
+								'class'    => 'header-logo-mobile',
+								'loading'  => 'eager',
+								'fetchpriority' => 'high',
+								'itemprop' => 'logo',
+								'alt'      => get_bloginfo('name')
+							)
+						);
+						echo $logo_image;
+					} else {
+					?>
+						<span class="logo-text"><?php echo esc_html(get_bloginfo('name')); ?></span>
+					<?php } ?>
+				</a>
+
+				<!-- Mobilna kontrolna traka (desno) -->
+				<div class="mobile-controls d-flex d-lg-none">
+					<!-- Korpa za mobilne -->
+					<?php if (shortcode_exists('xoo_wsc_cart')) : ?>
+						<div class="cart-icon-wrapper me-3">
+							<?php echo do_shortcode('[xoo_wsc_cart]'); ?>
+						</div>
+					<?php endif; ?>
+
+					<!-- Hamburger za mobilne -->
+					<button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+				</div>
 
 				<!-- Desktop navigacija u 3 dijela (Grid) -->
 				<div class="d-none d-lg-flex align-items-center justify-content-between w-100">
@@ -58,6 +92,7 @@
 									array(
 										'class'    => 'header-logo',
 										'loading'  => 'eager',
+										'fetchpriority' => 'high',
 										'itemprop' => 'logo',
 										'alt'      => get_bloginfo('name')
 									)
@@ -84,7 +119,7 @@
 						));
 						?>
 
-						<!-- Opciono: Korpa za desktop -->
+						<!-- Korpa za desktop -->
 						<?php if (shortcode_exists('xoo_wsc_cart')) : ?>
 							<div class="ms-3 cart-icon-wrapper">
 								<?php echo do_shortcode('[xoo_wsc_cart]'); ?>
@@ -92,36 +127,6 @@
 						<?php endif; ?>
 					</div>
 				</div>
-
-				<!-- Logo za mobilne - centriran -->
-				<a href="<?php echo esc_url(home_url('/')); ?>" class="navbar-brand mx-auto d-lg-none">
-					<?php
-					if (has_custom_logo()) {
-						$custom_logo_id = get_theme_mod('custom_logo');
-						$logo_image = wp_get_attachment_image(
-							$custom_logo_id,
-							'full',
-							false,
-							array(
-								'class'    => 'header-logo-mobile',
-								'loading'  => 'eager',
-								'itemprop' => 'logo',
-								'alt'      => get_bloginfo('name')
-							)
-						);
-						echo $logo_image;
-					} else {
-					?>
-						<span class="logo-text"><?php echo esc_html(get_bloginfo('name')); ?></span>
-					<?php } ?>
-				</a>
-
-				<!-- Korpa za mobilne -->
-				<?php if (shortcode_exists('xoo_wsc_cart')) : ?>
-					<div class="d-lg-none ms-2 cart-icon-wrapper">
-						<?php echo do_shortcode('[xoo_wsc_cart]'); ?>
-					</div>
-				<?php endif; ?>
 			</div>
 		</nav>
 

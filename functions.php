@@ -14,7 +14,7 @@ include_once  get_template_directory() . '/functions/theme/theme-styles.php';
 include_once  get_template_directory() . '/functions/theme/theme-scripts.php';
 
 /* Disable WordPress Admin Bar for all users */
-//add_filter('show_admin_bar', '__return_false');
+add_filter('show_admin_bar', '__return_false');
 add_filter('use_widgets_block_editor', '__return_false');
 
 function disable_emojis()
