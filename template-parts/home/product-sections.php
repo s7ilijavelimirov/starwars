@@ -101,7 +101,7 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
             // Jedinstveni ID za ovaj karusel
             $carousel_id = 'product-carousel-' . $carousel_count;
     ?>
-            <div class="head-products d-flex align-center mt-5">
+            <div class="head-products d-flex">
                 <h2 class="fs-1"><?php echo esc_html($section_title); ?></h2>
                 <?php if ($view_all_link) : ?>
                     <a class="links-all" href="<?php echo esc_url($view_all_link['url']); ?>" aria-label="<?php echo esc_attr($view_all_link['title'] ?: 'Pogledaj sve'); ?>">
@@ -139,30 +139,57 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
                         }
 
                         $product_cat_string = implode(', ', $product_cats);
+
+                        // Proveri da li je proizvod na popustu
+                        $is_on_sale = $product->is_on_sale();
+                        $sale_class = $is_on_sale ? 'on-sale' : '';
                     ?>
                         <div class="swiper-slide">
-                            <a href="<?php the_permalink(); ?>" class="product-card"
+                            <a href="<?php the_permalink(); ?>" class="product-card <?php echo $sale_class; ?>"
                                 data-product-id="<?php echo esc_attr($product_id); ?>"
                                 data-product-name="<?php echo esc_attr(get_the_title()); ?>"
                                 data-product-price="<?php echo esc_attr($product_price); ?>"
                                 data-product-sku="<?php echo esc_attr($product_sku); ?>"
                                 data-product-category="<?php echo esc_attr($product_cat_string); ?>"
                                 data-position="<?php echo esc_attr($products_query->current_post + 1); ?>">
+
                                 <div class="product-image">
                                     <?php
                                     if (has_post_thumbnail()) {
-                                        the_post_thumbnail('woocommerce_thumbnail', array(
-                                            'class' => 'img-fluid swiper-lazy',
-                                            'alt' => get_the_title(),
-                                            'loading' => 'lazy'
+                                        // Direktno učitaj sliku, ali dodaj swiper-lazy klasu za kompatibilnost
+                                        echo get_the_post_thumbnail($product->get_id(), 'woocommerce_thumbnail', array(
+                                            'class' => 'swiper-lazy',
+                                            'alt' => get_the_title()
                                         ));
                                     } else {
                                         echo wc_placeholder_img();
                                     }
                                     ?>
                                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+
+                                    <?php if ($is_on_sale) : ?>
+                                        <span class="product-badge sale-badge">
+                                            <?php
+                                            if (!$product->is_type('variable')) {
+                                                $regular_price = (float) $product->get_regular_price();
+                                                $sale_price = (float) $product->get_sale_price();
+
+                                                if ($regular_price > 0) {
+                                                    $percentage = round(100 - ($sale_price / $regular_price * 100));
+                                                    echo "-{$percentage}%";
+                                                } else {
+                                                    echo esc_html__('Sniženo', 'starwars-theme');
+                                                }
+                                            } else {
+                                                echo esc_html__('Sniženo', 'starwars-theme');
+                                            }
+                                            ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
+
                                 <h6 class="product-title"><?php the_title(); ?></h6>
+
                                 <div class="product-price">
                                     <?php echo $product->get_price_html(); ?>
                                 </div>

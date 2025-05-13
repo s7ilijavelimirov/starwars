@@ -133,31 +133,7 @@ function s7design_optimize_scroll_effects()
 }
 add_action('wp_footer', 's7design_optimize_scroll_effects', 99);
 
-/**
- * Inline kritični CSS za brže inicijalno učitavanje
- */
-function s7design_add_critical_css()
-{
-    // Samo ako smo na stranicama sa swiper-om
-    if (is_front_page() || is_home() || is_shop() || is_product_category()) {
-        echo '<style id="critical-swiper-css">
-/* Minimalni kritični stilovi za Swiper */
-.swiper-container{position:relative;width:100%;margin:0 0 2.5rem;overflow:hidden;padding:5px 0 30px;}
-.swiper-slide{height:auto;}
-.swiper-button-prev,.swiper-button-next{color:#ffe81f;background-color:rgba(0,0,0,0.7);width:40px;height:40px;border-radius:50%;}
-.swiper-button-prev:after,.swiper-button-next:after{font-size:18px;}
-.swiper-pagination-bullet{width:12px;height:12px;margin:0 6px;background:transparent;border:2px solid #666;opacity:1;}
-.swiper-pagination-bullet-active{border-color:#ffe81f;background-color:#ffe81f;}
-.product-card{display:flex;flex-direction:column;height:100%;background:#000;border:2px solid #ffe81f;border-radius:8px;overflow:hidden;}
-.product-image{position:relative;overflow:hidden;height:0;padding-bottom:100%;}
-.product-image img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;}
-.product-title{padding:1rem;margin:0;font-size:1rem;text-align:center;color:#fff;flex-grow:1;display:flex;align-items:center;justify-content:center;}
-.product-price{padding:0 1rem 1rem;text-align:center;font-weight:bold;color:#ffe81f;}
-.swiper-lazy-preloader{border-color:#ffe81f transparent #ffe81f transparent;}
-</style>';
-    }
-}
-add_action('wp_head', 's7design_add_critical_css', 1);
+
 
 /**
  * Optimizacija zaglavlja za preload resursa
