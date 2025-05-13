@@ -71,7 +71,7 @@ function s7design_add_critical_css()
 </style>';
     }
 }
-add_action('wp_head', 's7design_add_critical_css', 1);
+//add_action('wp_head', 's7design_add_critical_css', 1);
 /**
  * Optimizovani preload ključnih fontova
  */

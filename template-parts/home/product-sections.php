@@ -1,56 +1,53 @@
 <?php
 
 /**
- * Template Part: Product Sections - Swiper.js implementacija
+ * Template Part: Product Sections - Optimizovana verzija sa poboljšanim lazy loadingom
  *
  * @package s7design
- * @version 2.0.0
+ * @version 2.4.0
  */
 
 // Proveri da li imamo ACF polja
 if (!function_exists('get_field') || !have_rows('product_carousels')) {
     return;
 }
+
 ?>
 
-<div class="container products" data-testid="homepage-products">
+<!-- Proizvodi sekcija -->
+<div class="container products">
     <?php
-    // Widget za proizvode (ako ga imaš)
-    if (is_active_sidebar('product-widget')) : ?>
-        <div class="footer-widget-logo" role="complementary">
-            <?php dynamic_sidebar('product-widget'); ?>
-        </div>
-    <?php endif; ?>
-
-    <?php
-    // Prolazak kroz sve karusele proizvoda
+    // Brojač za jedinstvene ID-jeve
     $carousel_count = 0;
+
+    // Loop kroz ACF repeater sa karuselima
     while (have_rows('product_carousels')) : the_row();
         $carousel_count++;
 
-        // Osnovni podaci
+        // Osnovni podaci iz ACF-a
         $section_title = get_sub_field('section_title');
         $view_all_link = get_sub_field('view_all_link');
         $product_source = get_sub_field('product_source');
-        $number_of_products = get_sub_field('number_of_products') ?: 9;
+        $number_of_products = get_sub_field('number_of_products') ?: 10;
         $slides_to_show = get_sub_field('slides_to_show') ?: 5;
         $show_dots = get_sub_field('show_dots');
         $product_order = get_sub_field('product_order') ?: 'date_desc';
+        $selected_category_id = get_sub_field('product_category');
 
         // Pripremi argumente za WP_Query
         $args = array(
             'post_type' => 'product',
             'posts_per_page' => $number_of_products,
-            'post_status' => 'publish',
+            'post_status' => 'publish'
         );
 
         // Postavi izvor podataka
-        if ($product_source === 'category' && get_sub_field('product_category')) {
+        if ($product_source === 'category' && $selected_category_id) {
             $args['tax_query'] = array(
                 array(
                     'taxonomy' => 'product_cat',
                     'field' => 'term_id',
-                    'terms' => get_sub_field('product_category'),
+                    'terms' => $selected_category_id
                 ),
             );
         } elseif ($product_source === 'custom' && get_sub_field('custom_products')) {
@@ -87,9 +84,6 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
                     $args['orderby'] = 'title';
                     $args['order'] = 'DESC';
                     break;
-                case 'rand':
-                    $args['orderby'] = 'rand';
-                    break;
             }
         }
 
@@ -101,112 +95,102 @@ if (!function_exists('get_field') || !have_rows('product_carousels')) {
             // Jedinstveni ID za ovaj karusel
             $carousel_id = 'product-carousel-' . $carousel_count;
     ?>
-            <div class="head-products d-flex">
-                <h2 class="fs-1"><?php echo esc_html($section_title); ?></h2>
-                <?php if ($view_all_link) : ?>
-                    <a class="links-all" href="<?php echo esc_url($view_all_link['url']); ?>" aria-label="<?php echo esc_attr($view_all_link['title'] ?: 'Pogledaj sve'); ?>">
-                        <?php echo esc_html($view_all_link['title'] ?: 'Pogledaj sve'); ?> <i class="fa-solid fa-right-long" aria-hidden="true"></i>
-                    </a>
-                <?php endif; ?>
-            </div>
+            <div class="product-section">
+                <!-- Naslov i link "pogledaj sve" -->
+                <div class="head-products d-flex">
+                    <h2 class="fs-1"><?php echo esc_html($section_title); ?></h2>
+                    <?php if ($view_all_link) : ?>
+                        <a class="links-all" href="<?php echo esc_url($view_all_link['url']); ?>">
+                            <?php echo esc_html($view_all_link['title'] ?: 'Pogledaj sve'); ?> &rarr;
+                        </a>
+                    <?php endif; ?>
+                </div>
 
-            <!-- Swiper Container -->
-            <div class="swiper-container <?php echo $show_dots ? 'with-pagination' : ''; ?>"
-                id="<?php echo esc_attr($carousel_id); ?>"
-                data-slides="<?php echo esc_attr($slides_to_show); ?>"
-                data-category="<?php echo esc_attr(get_sub_field('product_category')); ?>">
+                <!-- Navigacione strelice -->
+                <div class="product-nav-buttons">
+                    <button class="product-nav-prev" id="prev-<?php echo esc_attr($carousel_id); ?>">&larr;</button>
+                    <button class="product-nav-next" id="next-<?php echo esc_attr($carousel_id); ?>">&rarr;</button>
+                </div>
 
-                <div class="swiper-wrapper">
-                    <?php while ($products_query->have_posts()) : $products_query->the_post();
-                        global $product;
+                <!-- Swiper Container -->
+                <div class="swiper-container lazy-swiper" id="<?php echo esc_attr($carousel_id); ?>" data-slides="<?php echo esc_attr($slides_to_show); ?>">
+                    <div class="swiper-wrapper">
+                        <?php
+                        $slide_count = 0;
+                        while ($products_query->have_posts()) : $products_query->the_post();
+                            global $product;
+                            $slide_count++;
 
-                        if (!$product || !$product->is_visible()) {
-                            continue;
-                        }
-
-                        // Uzmi ID proizvoda za praćenje
-                        $product_id = $product->get_id();
-                        $product_sku = $product->get_sku();
-                        $product_price = $product->get_price();
-                        $product_cat_ids = $product->get_category_ids();
-                        $product_cats = array();
-
-                        foreach ($product_cat_ids as $cat_id) {
-                            $term = get_term_by('id', $cat_id, 'product_cat');
-                            if ($term) {
-                                $product_cats[] = $term->name;
+                            if (!$product || !$product->is_visible()) {
+                                continue;
                             }
-                        }
 
-                        $product_cat_string = implode(', ', $product_cats);
+                            // Da li je proizvod na akciji
+                            $is_on_sale = $product->is_on_sale();
+                            $sale_class = $is_on_sale ? 'on-sale' : '';
+                        ?>
+                            <div class="swiper-slide">
+                                <a href="<?php the_permalink(); ?>" class="product-card <?php echo $sale_class; ?>">
+                                    <div class="product-image">
+                                        <?php
+                                        if (has_post_thumbnail()) {
+                                            // Dohvati informacije o slici za maksimalnu optimizaciju
+                                            $thumbnail_id = get_post_thumbnail_id();
+                                            $image_alt = get_post_meta($thumbnail_id, '_wp_attachment_image_alt', true);
+                                            $image_alt = $image_alt ? $image_alt : get_the_title();
 
-                        // Proveri da li je proizvod na popustu
-                        $is_on_sale = $product->is_on_sale();
-                        $sale_class = $is_on_sale ? 'on-sale' : '';
-                    ?>
-                        <div class="swiper-slide">
-                            <a href="<?php the_permalink(); ?>" class="product-card <?php echo $sale_class; ?>"
-                                data-product-id="<?php echo esc_attr($product_id); ?>"
-                                data-product-name="<?php echo esc_attr(get_the_title()); ?>"
-                                data-product-price="<?php echo esc_attr($product_price); ?>"
-                                data-product-sku="<?php echo esc_attr($product_sku); ?>"
-                                data-product-category="<?php echo esc_attr($product_cat_string); ?>"
-                                data-position="<?php echo esc_attr($products_query->current_post + 1); ?>">
+                                            // Koristi Swiper-ov nativni lazy loading sa data-src atributom
+                                            $image_src = wp_get_attachment_image_src($thumbnail_id, 'woocommerce_thumbnail')[0];
 
-                                <div class="product-image">
-                                    <?php
-                                    if (has_post_thumbnail()) {
-                                        // Direktno učitaj sliku, ali dodaj swiper-lazy klasu za kompatibilnost
-                                        echo get_the_post_thumbnail($product->get_id(), 'woocommerce_thumbnail', array(
-                                            'class' => 'swiper-lazy',
-                                            'alt' => get_the_title()
-                                        ));
-                                    } else {
-                                        echo wc_placeholder_img();
-                                    }
-                                    ?>
-                                    <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
+                                            // Učitaj prve dve slike odmah, ostale kroz Swiper lazy loading
+                                            if ($slide_count <= 2) {
+                                                echo '<img src="' . esc_url($image_src) . '" alt="' . esc_attr($image_alt) . '" class="swiper-loaded" />';
+                                            } else {
+                                                echo '<img data-src="' . esc_url($image_src) . '" alt="' . esc_attr($image_alt) . '" class="swiper-lazy" />';
+                                                echo '<div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>';
+                                            }
+                                        } else {
+                                            // Placeholder slika
+                                            echo wc_placeholder_img();
+                                        }
+                                        ?>
+                                        <?php if ($is_on_sale) : ?>
+                                            <span class="product-badge sale-badge">
+                                                <?php
+                                                // Prikaži procenat popusta za proizvode koji nisu varijabilni
+                                                if (!$product->is_type('variable')) {
+                                                    $regular_price = (float) $product->get_regular_price();
+                                                    $sale_price = (float) $product->get_sale_price();
 
-                                    <?php if ($is_on_sale) : ?>
-                                        <span class="product-badge sale-badge">
-                                            <?php
-                                            if (!$product->is_type('variable')) {
-                                                $regular_price = (float) $product->get_regular_price();
-                                                $sale_price = (float) $product->get_sale_price();
-
-                                                if ($regular_price > 0) {
-                                                    $percentage = round(100 - ($sale_price / $regular_price * 100));
-                                                    echo "-{$percentage}%";
+                                                    if ($regular_price > 0) {
+                                                        $percentage = round(100 - ($sale_price / $regular_price * 100));
+                                                        echo "-{$percentage}%";
+                                                    } else {
+                                                        echo esc_html__('Sniženo', 'starwars-theme');
+                                                    }
                                                 } else {
                                                     echo esc_html__('Sniženo', 'starwars-theme');
                                                 }
-                                            } else {
-                                                echo esc_html__('Sniženo', 'starwars-theme');
-                                            }
-                                            ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
+                                                ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
 
-                                <h6 class="product-title"><?php the_title(); ?></h6>
+                                    <h6 class="product-title"><?php the_title(); ?></h6>
 
-                                <div class="product-price">
-                                    <?php echo $product->get_price_html(); ?>
-                                </div>
-                            </a>
-                        </div>
-                    <?php endwhile;
-                    wp_reset_postdata(); ?>
+                                    <div class="product-price">
+                                        <?php echo $product->get_price_html(); ?>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php endwhile;
+                        wp_reset_postdata(); ?>
+                    </div>
+                    <?php if ($show_dots) : ?>
+                        <!-- Paginacija (dots) -->
+                        <div class="swiper-pagination"></div>
+                    <?php endif; ?>
                 </div>
-
-                <!-- Kontrolna dugmad za navigaciju -->
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-
-                <?php if ($show_dots) : ?>
-                    <!-- Paginacija (dots) -->
-                    <div class="swiper-pagination"></div>
-                <?php endif; ?>
             </div>
     <?php
         endif;

@@ -1,123 +1,488 @@
 /**
- * Najvažnije CSS popravke za Swiper - dodaj na kraj _swiper-custom.scss
+ * Kompletan SCSS za Swiper komponente - Star Wars tema
+ * assets/sass/layout/_swiper-custom.scss
  */
 
-// Fix za Swiper koji već ima klase
+// Glavni swiper container
 .swiper-container {
     width: 100%;
-    overflow: hidden !important; /* Force overflow hidden */
+    overflow: hidden;
+    margin-bottom: 40px;
+    position: relative;
+    // Promenljive za preloadere i efekte
+    --swiper-preloader-color: rgba(255, 232, 31, 0.2);
+    --swiper-theme-color: #ffe81f;
+}
 
-    // Za već inicijalizovane containere
-    &.swiper-initialized {
-        overflow: hidden !important;
+// Wrapper za slideove
+.swiper-wrapper {
+    display: flex;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    height: auto;
+}
+
+// Pojedinačni slide
+.swiper-slide {
+    flex-shrink: 0;
+    height: auto !important;
+    transition: transform 0.3s ease-out;
+    display: flex;
+}
+
+// Container za navigacione dugmiće
+.product-nav-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+// Stilovi za strelice
+.product-nav-prev,
+.product-nav-next {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ffe81f;
+    background-color: #000;
+    color: #ffe81f;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    // Uklanja plavi highlight na mobile
+    -webkit-tap-highlight-color: transparent;
+    // Poboljšava text rendering
+    text-rendering: optimizeLegibility;
+}
+
+// Hover state
+.product-nav-prev:hover,
+.product-nav-next:hover,
+.product-nav-prev.nav-hover,
+.product-nav-next.nav-hover {
+    background-color: #ffe81f;
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+// Active state (kada se klikne)
+.product-nav-prev:active,
+.product-nav-next:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// Disabled state
+.product-nav-prev.disabled,
+.product-nav-next.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+// Hover za disabled state
+.product-nav-prev.disabled:hover,
+.product-nav-next.disabled:hover {
+    background-color: #000;
+    color: #ffe81f;
+    transform: none;
+    box-shadow: none;
+}
+
+// Container za paginaciju
+.swiper-pagination {
+    position: static !important;
+    margin-top: 20px;
+    text-align: center;
+    width: 100%;
+    // Poboljšanje za čistoću animacija
+    transform: translateZ(0);
+}
+
+// Pojedinačni bullet
+.swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: transparent;
+    border: 2px solid #ffe81f;
+    opacity: 0.5;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+    // Star Wars tematski shadow
+    box-shadow: 0 0 5px rgba(255, 232, 31, 0.2);
+}
+
+// Aktivni bullet
+.swiper-pagination-bullet-active {
+    background-color: #ffe81f;
+    opacity: 1;
+    transform: scale(1.2);
+    // Intenzivniji shadow za aktivni
+    box-shadow: 0 0 8px rgba(255, 232, 31, 0.5);
+}
+
+// Animacije za dynamic bullets
+.swiper-pagination-bullet-active-main {
+    transform: scale(1.2);
+}
+
+.swiper-pagination-bullet-active-prev,
+.swiper-pagination-bullet-active-next {
+    transform: scale(1.1);
+}
+
+.swiper-pagination-bullet-active-prev-prev,
+.swiper-pagination-bullet-active-next-next {
+    transform: scale(1);
+}
+
+// Omogućava overflow za animirane bullets
+.swiper-pagination-bullets-dynamic {
+    overflow: visible;
+}
+
+// Osnovno stanje - nevidljivo
+.swiper-lazy {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+// Učitano stanje - vidljivo
+.swiper-lazy-loaded {
+    opacity: 1;
+}
+
+// Preloader spinner
+.swiper-lazy-preloader {
+    border: 3px solid #ffe81f;
+    border-top-color: transparent;
+    width: 42px;
+    height: 42px;
+    // Centriranje
+    margin-left: -21px;
+    margin-top: -21px;
+    // Animacija
+    animation: swiper-preloader-spin 1s infinite linear;
+}
+
+@keyframes swiper-preloader-spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+// Kartica proizvoda
+.product-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    border: 2px solid #ffe81f;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    // Optimizacije performansi
+    will-change: transform, box-shadow;
+    // Izbegava flash tokom tranzicije
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+// Hover efekat
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+// Container za sliku
+.product-image {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 100%; // 1:1 aspect ratio
+}
+
+// Sama slika proizvoda
+.product-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+// Zoom efekat na hover
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+// Badge za sniženje
+.product-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ffe81f;
+    color: #000;
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    z-index: 2;
+    // Star Wars tematski shadow
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+// Naslov proizvoda
+.product-title {
+    padding: 15px;
+    margin: 0;
+    font-size: 1rem;
+    text-align: center;
+    color: #fff;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+}
+
+// Hover efekat na naslovu
+.product-card:hover .product-title {
+    color: #ffe81f;
+}
+
+// Cena proizvoda
+.product-price {
+    padding: 0 15px 15px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffe81f;
+}
+
+// WooCommerce price stilovi
+.product-price {
+    del {
+        opacity: 0.6;
+        color: #999;
+        margin-right: 5px;
+        font-weight: normal;
     }
 
-    // Wrapper
-    .swiper-wrapper {
+    ins {
+        text-decoration: none;
+    }
+
+    .amount {
+        font-weight: bold;
+    }
+
+    .woocommerce-Price-currencySymbol {
+        font-size: 0.9em;
+        margin-left: 2px;
+    }
+}
+
+// Animacija za badge
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+// Product section header
+.head-products {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+
+    // Naslov
+    h2 {
+        color: #ffe81f;
+        margin: 0;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(255, 232, 31, 0.3);
+        // Star Wars stil teksta
+        letter-spacing: 0.02em;
+    }
+
+    // Link "Pogledaj sve"
+    .links-all {
+        color: #ffe81f;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
         display: flex;
-        flex-wrap: nowrap;
-        height: auto;
-    }
+        align-items: center;
+        margin-left: auto;
 
-    // Slide
-    .swiper-slide {
-        height: auto !important;
-        flex-shrink: 0;
-        transition: transform 0.3s ease;
-    }
+        // Hover efekat
+        &:hover {
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            text-decoration: none;
 
-    // Navigacija
-    .swiper-button-prev,
-    .swiper-button-next {
-        width: 40px;
-        height: 40px;
-        background-color: rgba(0, 0, 0, 0.7);
-        border-radius: 50%;
-        z-index: 10;
-
-        &:after {
-            font-size: 18px;
-            color: $secondary-color2;
-        }
-
-        &.swiper-button-disabled {
-            display: none;
-        }
-    }
-
-    // Paginacija
-    .swiper-pagination {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        text-align: center;
-        z-index: 10;
-
-        .swiper-pagination-bullet {
-            width: 12px;
-            height: 12px;
-            margin: 0 5px;
-            display: inline-block;
-            background: transparent;
-            border: 2px solid #666;
-            opacity: 1;
-            border-radius: 50%;
-
-            &-active {
-                background: $secondary-color2;
-                border-color: $secondary-color2;
+            // Arrow animacija
+            .fa-right-long,
+            .fa-arrow-right,
+            &::after {
+                transform: translateX(4px);
             }
+        }
+
+        // Arrow ikone
+        .fa-right-long,
+        .fa-arrow-right,
+        &::after {
+            margin-left: 5px;
+            transition: transform 0.3s ease;
         }
     }
 }
 
-// Custom popravke za produkt kartice
-.product-card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
+// Responsive stilovi
+@media (max-width: 991px) {
+    .product-card {
+        height: 100%;
+    }
 
-    // Preload efekat
-    &.loading {
-        opacity: 0.7;
+    .product-title {
+        font-size: 0.95rem;
+        padding: 12px;
+    }
+
+    .product-price {
+        padding: 0 12px 12px;
+    }
+
+    .product-nav-buttons {
+        margin-bottom: 12px;
+    }
+
+    .product-nav-prev,
+    .product-nav-next {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+
+    .swiper-pagination-bullet {
+        width: 9px;
+        height: 9px;
+        margin: 0 4px;
+    }
+}
+
+@media (max-width: 767px) {
+    .head-products {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 15px;
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        .links-all {
+            margin-left: 0;
+            margin-bottom: 10px;
+        }
+    }
+
+    .product-nav-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .swiper-pagination {
+        margin-top: 15px;
+    }
+
+    .swiper-pagination-bullet {
+        width: 8px;
+        height: 8px;
+        margin: 0 3px;
+    }
+
+    .product-nav-prev,
+    .product-nav-next {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+
+    .product-title {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .product-price {
+        padding: 0 10px 10px;
+        font-size: 0.9rem;
+    }
+
+    .swiper-container {
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 575px) {
+    .head-products {
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        .links-all {
+            font-size: 1rem;
+        }
+    }
+
+    .swiper-pagination-bullet {
+        width: 7px;
+        height: 7px;
+        margin: 0 3px;
     }
 
     .product-image {
-        position: relative;
-        height: 0;
-        padding-bottom: 100%;
-        overflow: hidden;
-
-        img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        padding-bottom: 90%; // Malo manji aspect ratio
     }
 }
-.swiper-button-prev,
-.swiper-button-next {
-    color: #333;
-    width: 30px;
-    height: 30px;
-}
 
-.swiper-pagination {
-    margin-top: 15px;
-    text-align: center;
+// Optimizacije za touch uređaje
+@media (hover: none) {
+    .swiper-container {
+        --swiper-navigation-size: 30px;
+    }
 
-    .swiper-pagination-bullet {
-        background-color: #666;
-        opacity: 0.5;
+    .product-nav-prev,
+    .product-nav-next {
+        width: 36px;
+        height: 36px;
+    }
 
-        &-active {
-            opacity: 1;
-            background-color: #000;
-        }
+    .product-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .product-card:hover .product-image img {
+        transform: none;
+    }
+
+    .product-card:active {
+        transform: scale(0.98);
     }
 }
