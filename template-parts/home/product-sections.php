@@ -12,11 +12,10 @@
 if (!function_exists('get_field') || !have_rows('product_sections')) {
     return;
 }
-
 ?>
 
 <!-- Proizvodi sekcija -->
-<div class="container products">
+<section class="container products py-5">
     <?php
     // Brojač za jedinstvene ID-jeve
     $section_count = 0;
@@ -25,16 +24,18 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
     while (have_rows('product_sections')) : the_row();
         $section_count++;
 
-        // Osnovni podaci iz ACF-a
+        // Osnovni podaci iz ACF-a sa proverama
         $section_title = get_sub_field('section_title');
+        $section_subtitle = get_sub_field('section_title_copy', false);
         $view_all_link = get_sub_field('view_all_link');
-        $display_type = get_sub_field('display_type') ?: 'carousel'; // Tip prikaza: carousel ili grid
+        $display_type = get_sub_field('display_type') ?: 'carousel'; // Default: carousel
         $product_source = get_sub_field('product_source');
         $number_of_products = get_sub_field('number_of_products') ?: 10;
         $slides_to_show = get_sub_field('slides_to_show') ?: 5;
         $show_dots = get_sub_field('show_dots');
         $product_order = get_sub_field('product_order') ?: 'date_desc';
         $selected_category_id = get_sub_field('product_category');
+        $custom_products = get_sub_field('custom_products');
 
         // Pripremi argumente za WP_Query
         $args = array(
@@ -52,8 +53,8 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                     'terms' => $selected_category_id
                 ),
             );
-        } elseif ($product_source === 'custom' && get_sub_field('custom_products')) {
-            $args['post__in'] = get_sub_field('custom_products');
+        } elseif ($product_source === 'custom' && !empty($custom_products)) {
+            $args['post__in'] = $custom_products;
             $args['orderby'] = 'post__in';
         }
 
@@ -95,18 +96,18 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
         // Query proizvoda
         $products_query = new WP_Query($args);
 
-        // Prikaži samo ako imamo proizvode
-        if ($products_query->have_posts()) :
+        // Prikaži samo ako imamo proizvode i naslov sekcije
+        if ($products_query->have_posts() && !empty($section_title)) :
             // Jedinstveni ID za ovu sekciju
             $section_id = 'product-section-' . $section_count;
     ?>
             <div class="product-section">
                 <!-- Naslov i link "pogledaj sve" -->
-                <div class="head-products d-flex">
+                <div class="head-products d-flex mb-3 pb-3">
                     <h2 class="fs-1"><?php echo esc_html($section_title); ?></h2>
-                    <?php if ($view_all_link) : ?>
+                    <?php if (!empty($view_all_link) && !empty($view_all_link['url'])) : ?>
                         <a class="links-all" href="<?php echo esc_url($view_all_link['url']); ?>">
-                            <?php echo esc_html($view_all_link['title'] ?: 'Pogledaj sve'); ?> &rarr;
+                            <?php echo esc_html(!empty($view_all_link['title']) ? $view_all_link['title'] : 'Pogledaj sve'); ?>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -114,11 +115,29 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                 <?php if ($display_type === 'carousel') : ?>
                     <!-- KARUSEL PRIKAZ -->
 
-                    <!-- Navigacione strelice -->
-                    <div class="product-nav-buttons">
-                    <button type="button" class="product-nav-prev" id="prev-<?php echo esc_attr($section_id); ?>" aria-label="Prethodni proizvodi"></button>
-                    <button type="button" class="product-nav-next" id="next-<?php echo esc_attr($section_id); ?>" aria-label="Sledeći proizvodi"></button>
+
+                    <!-- Donji red: podnaslov levo, strelice desno -->
+                    <div class="row align-items-center mb-2">
+                        <?php if (!empty($section_subtitle)) : ?>
+                            <div class="col-md-9 col-12">
+                                <h6 class="mb-0 fw-normal text-white"><?php echo $section_subtitle; ?></h6>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="col-auto ms-auto">
+                            <div class="product-nav-buttons">
+                                <button type="button" class="product-nav-prev" id="prev-<?php echo esc_attr($section_id); ?>" aria-label="Prethodni proizvodi" role="button" <?php echo $prev_disabled ? 'disabled' : ''; ?>>
+                                    <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $prev_disabled ? 'Nema prethodnih proizvoda' : 'Prethodno'; ?>" />
+                                </button>
+                                <button type="button" class="product-nav-next" id="next-<?php echo esc_attr($section_id); ?>" aria-label="Sledeći proizvodi" role="button" <?php echo $next_disabled ? 'disabled' : ''; ?>>
+                                    <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $next_disabled ? 'Nema sledećih proizvoda' : 'Sledeće'; ?>" />
+                                </button>
+                            </div>
+
+
+                        </div>
                     </div>
+
 
                     <!-- Swiper Container -->
                     <div class="swiper-container" id="<?php echo esc_attr($section_id); ?>" data-slides="<?php echo esc_attr($slides_to_show); ?>">
@@ -140,23 +159,18 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                                         <div class="product-image">
                                             <?php
                                             if (has_post_thumbnail()) {
-                                                // Dohvati informacije o slici za maksimalnu optimizaciju
                                                 $thumbnail_id = get_post_thumbnail_id();
                                                 $image_alt = get_post_meta($thumbnail_id, '_wp_attachment_image_alt', true);
                                                 $image_alt = $image_alt ? $image_alt : get_the_title();
-
-                                                // Koristimo obično učitavanje slika umesto lazy loading-a za karusel
                                                 $image_src = wp_get_attachment_image_src($thumbnail_id, 'woocommerce_thumbnail')[0];
                                                 echo '<img src="' . esc_url($image_src) . '" alt="' . esc_attr($image_alt) . '" class="product-image-img" />';
                                             } else {
-                                                // Placeholder slika
                                                 echo wc_placeholder_img();
                                             }
                                             ?>
                                             <?php if ($is_on_sale) : ?>
                                                 <span class="product-badge sale-badge">
                                                     <?php
-                                                    // Prikaži procenat popusta za proizvode koji nisu varijabilni
                                                     if (!$product->is_type('variable')) {
                                                         $regular_price = (float) $product->get_regular_price();
                                                         $sale_price = (float) $product->get_sale_price();
@@ -191,6 +205,16 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                         <?php endif; ?>
                     </div>
                 <?php else : ?>
+                    <?php if (!empty($section_subtitle)) : ?>
+                        <!-- Donji red: podnaslov levo, strelice desno -->
+                        <div class="row align-items-center mb-2">
+                            <?php if (!empty($section_subtitle)) : ?>
+                                <div class="col-md-9 col-12">
+                                    <h6 class="mb-0 fw-normal text-white"><?php echo $section_subtitle; ?></h6>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                     <!-- GRID PRIKAZ -->
                     <div class="product-grid">
                         <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
@@ -202,7 +226,6 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                                     continue;
                                 }
 
-                                // Da li je proizvod na akciji
                                 $is_on_sale = $product->is_on_sale();
                                 $sale_class = $is_on_sale ? 'on-sale' : '';
                             ?>
@@ -215,8 +238,6 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                                                 $image_alt = get_post_meta($thumbnail_id, '_wp_attachment_image_alt', true);
                                                 $image_alt = $image_alt ? $image_alt : get_the_title();
                                                 $image_src = wp_get_attachment_image_src($thumbnail_id, 'woocommerce_thumbnail')[0];
-
-                                                // Za grid prikaz koristimo HTML5 native lazy loading
                                                 echo '<img src="' . esc_url($image_src) . '" alt="' . esc_attr($image_alt) . '" class="product-image-img" loading="lazy" />';
                                             } else {
                                                 echo wc_placeholder_img();
@@ -225,7 +246,6 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                                             <?php if ($is_on_sale) : ?>
                                                 <span class="product-badge sale-badge">
                                                     <?php
-                                                    // Prikaži procenat popusta za proizvode koji nisu varijabilni
                                                     if (!$product->is_type('variable')) {
                                                         $regular_price = (float) $product->get_regular_price();
                                                         $sale_price = (float) $product->get_sale_price();

@@ -344,9 +344,8 @@
 
 // Scroll efekat
 .site-header.scrolled {
-    background-color: rgba($primary-color, 0.95);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-
+    background-color: rgba($primary-color, 0.85);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     .sw-yellow-border {
         height: 3px;
         box-shadow: 0 0 5px rgba($secondary-color2, 0.3);
@@ -360,7 +359,10 @@
             min-height: 70px;
         }
     }
-
+    .xoo-wsc-sc-cont {
+        padding: 3px 12px !important;
+        transition: 0.3s ease-in-out;
+    }
     .header-logo {
         max-height: 75px;
         max-width: 150px;

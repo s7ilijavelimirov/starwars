@@ -26,7 +26,7 @@
                 bottom: 0;
                 left: 0;
                 right: 0;
-                background: rgba(0, 0, 0, 0.4);
+                background: linear-gradient(to bottom, #a51f1f00 85%, #030303dd 100%);
                 padding: 0;
                 display: flex;
                 align-items: center;
@@ -44,6 +44,11 @@
                         font-weight: 700;
                         color: $white;
                         margin-bottom: 1rem;
+                        text-shadow:
+                            -1px -1px 0 #000,
+                            1px -1px 0 #000,
+                            -1px 1px 0 #000,
+                            1px 1px 0 #000;
                     }
 
                     .slide-sub {
@@ -51,6 +56,11 @@
                         color: $white;
                         margin-bottom: 1.5rem;
                         opacity: 0.9;
+                        text-shadow:
+                            -1px -1px 0 #000,
+                            1px -1px 0 #000,
+                            -1px 1px 0 #000,
+                            1px 1px 0 #000;
                     }
 
                     .slide-btn {
