@@ -1,12 +1,15 @@
 <?php
 
 /**
- * Template part za prikaz paginacije - bez ikonica
+ * Template part za Star Wars paginaciju - Finalna verzija
+ * Podržava dva tipa paginacije: 
+ * 1. numbers - za blog/archive/category stranice
+ * 2. post - za navigaciju između pojedinačnih postova
  *
  * @package StarWars
  */
 
-// Stil paginacije: 'numbers' (default), 'prev-next', 'post' (za single.php)
+// Stil paginacije: 'numbers' (default), 'post' (za single.php)
 $pagination_style = isset($args['style']) ? $args['style'] : 'numbers';
 $wrapper_class = isset($args['wrapper_class']) ? $args['wrapper_class'] : 'starwars-pagination';
 $show_thumbnails = isset($args['show_thumbnails']) ? $args['show_thumbnails'] : false;
@@ -15,44 +18,37 @@ $show_thumbnails = isset($args['show_thumbnails']) ? $args['show_thumbnails'] : 
 <div class="<?php echo esc_attr($wrapper_class); ?>">
     <?php if ($pagination_style === 'numbers') : ?>
         <?php
+        // Paginacija sa brojevima stranica (za blog/kategorije/arhive)
         echo wp_kses_post(
             paginate_links(array(
-                'prev_text' => '<span class="arrow prev-arrow"></span> ' . esc_html__('Prethodna', 'starwars'),
-                'next_text' => esc_html__('Sledeća', 'starwars') . ' <span class="arrow next-arrow"></span>',
+                'prev_text' => '<span class="arrow prev-arrow"></span><span class="nav-text">' . esc_html__('Prethodna', 'starwars') . '</span>',
+                'next_text' => '<span class="nav-text">' . esc_html__('Sledeća', 'starwars') . '</span><span class="arrow next-arrow"></span>',
                 'type'      => 'list',
                 'mid_size'  => 2,
                 'end_size'  => 1,
+                'aria_current' => 'page',
             ))
         );
         ?>
-    <?php elseif ($pagination_style === 'prev-next') : ?>
-        <?php
-        the_posts_navigation(array(
-            'prev_text' => '<span class="nav-subtitle"><span class="arrow prev-arrow"></span> ' . esc_html__('Starije objave', 'starwars') . '</span>',
-            'next_text' => '<span class="nav-subtitle">' . esc_html__('Novije objave', 'starwars') . ' <span class="arrow next-arrow"></span></span>',
-            'screen_reader_text' => esc_html__('Navigacija objava', 'starwars'),
-        ));
-        ?>
     <?php elseif ($pagination_style === 'post') : ?>
         <?php
-        // Navigacija za pojedinačne članke sa thumbnailovima
+        // Navigacija za pojedinačne članke sa thumbnailima
         $prev_post = get_previous_post();
         $next_post = get_next_post();
 
         if (!empty($prev_post) || !empty($next_post)) :
         ?>
-            <nav class="navigation post-navigation enhanced" aria-label="<?php esc_attr_e('Posts', 'starwars'); ?>">
-                <h2 class="screen-reader-text"><?php esc_html_e('Post navigation', 'starwars'); ?></h2>
+            <nav class="post-navigation enhanced" aria-label="<?php esc_attr_e('Navigacija članaka', 'starwars'); ?>">
                 <div class="nav-links">
                     <?php if (!empty($prev_post)) :
                         $prev_thumb = $show_thumbnails ? get_the_post_thumbnail_url($prev_post->ID, 'thumbnail') : '';
                         $has_thumb = !empty($prev_thumb);
                     ?>
-                        <div class="nav-previous <?php echo $has_thumb ? 'has-thumb' : 'no-thumb'; ?>">
+                        <div class="nav-previous <?php echo esc_attr($has_thumb ? 'has-thumb' : 'no-thumb'); ?>">
                             <a href="<?php echo esc_url(get_permalink($prev_post->ID)); ?>" rel="prev">
                                 <?php if ($has_thumb) : ?>
                                     <div class="nav-thumb">
-                                        <img src="<?php echo esc_url($prev_thumb); ?>" alt="<?php echo esc_attr(get_the_title($prev_post->ID)); ?>">
+                                        <img src="<?php echo esc_url($prev_thumb); ?>" alt="<?php echo esc_attr(get_the_title($prev_post->ID)); ?>" loading="lazy" width="110" height="110">
                                         <div class="nav-overlay"></div>
                                     </div>
                                 <?php endif; ?>
@@ -71,11 +67,11 @@ $show_thumbnails = isset($args['show_thumbnails']) ? $args['show_thumbnails'] : 
                         $next_thumb = $show_thumbnails ? get_the_post_thumbnail_url($next_post->ID, 'thumbnail') : '';
                         $has_thumb = !empty($next_thumb);
                     ?>
-                        <div class="nav-next <?php echo $has_thumb ? 'has-thumb' : 'no-thumb'; ?>">
+                        <div class="nav-next <?php echo esc_attr($has_thumb ? 'has-thumb' : 'no-thumb'); ?>">
                             <a href="<?php echo esc_url(get_permalink($next_post->ID)); ?>" rel="next">
                                 <?php if ($has_thumb) : ?>
                                     <div class="nav-thumb">
-                                        <img src="<?php echo esc_url($next_thumb); ?>" alt="<?php echo esc_attr(get_the_title($next_post->ID)); ?>">
+                                        <img src="<?php echo esc_url($next_thumb); ?>" alt="<?php echo esc_attr(get_the_title($next_post->ID)); ?>" loading="lazy" width="110" height="110">
                                         <div class="nav-overlay"></div>
                                     </div>
                                 <?php endif; ?>
@@ -92,17 +88,5 @@ $show_thumbnails = isset($args['show_thumbnails']) ? $args['show_thumbnails'] : 
                 </div>
             </nav>
         <?php endif; ?>
-    <?php else : ?>
-        <?php
-        // Standardna navigacija za single.php (fallback)
-        the_post_navigation(array(
-            'prev_text' => '<span class="meta-nav" aria-hidden="true"><span class="arrow prev-arrow"></span> ' . esc_html__('Prethodna vest', 'starwars') . '</span> ' .
-                '<span class="screen-reader-text">' . esc_html__('Prethodna vest', 'starwars') . '</span> ' .
-                '<span class="post-title">%title</span>',
-            'next_text' => '<span class="meta-nav" aria-hidden="true">' . esc_html__('Sledeća vest', 'starwars') . ' <span class="arrow next-arrow"></span></span> ' .
-                '<span class="screen-reader-text">' . esc_html__('Sledeća vest', 'starwars') . '</span> ' .
-                '<span class="post-title">%title</span>',
-        ));
-        ?>
     <?php endif; ?>
 </div>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template za prikaz kategorija
  *
@@ -23,13 +24,13 @@ if (function_exists('get_field')) {
         <h1 class="page-title text-center">
             <?php printf(esc_html__('Kategorija: %s', 'starwars'), single_cat_title('', false)); ?>
         </h1>
-        
+
         <?php if (function_exists('yoast_breadcrumb')) : ?>
             <div class="breadcrumbs mt-3 text-center">
                 <?php yoast_breadcrumb('<p id="breadcrumbs" class="mb-0">', '</p>'); ?>
             </div>
         <?php endif; ?>
-        
+
         <?php if (!empty($category_description)) : ?>
             <div class="category-description mt-4 text-center">
                 <?php echo wp_kses_post($category_description); ?>
@@ -49,12 +50,12 @@ if (function_exists('get_field')) {
                             $post_counter = 0;
                             while (have_posts()) :
                                 the_post();
-                                
+
                                 // Prosleđujemo post_counter template-partu za responsive layout
                                 get_template_part('template-parts/blog/content-blog', null, array(
                                     'post_counter' => $post_counter
                                 ));
-                                
+
                                 $post_counter++;
                             endwhile;
                             ?>

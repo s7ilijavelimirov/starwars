@@ -143,9 +143,9 @@ while (have_posts()) : the_post();
                             <?php
                             // Koristi naš template-part za paginaciju sa stilom 'post'
                             get_template_part('template-parts/blog/pagination', null, array(
-                                'style'         => 'post',
+                                'style' => 'post',
                                 'wrapper_class' => 'post-navigation-wrapper',
-                                'show_thumbnails' => true
+                                'show_thumbnails' => true // Postavi false ako ne želiš thumbnails
                             ));
                             ?>
                         </div>

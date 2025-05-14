@@ -18,9 +18,8 @@
     .back-to-top-container {
         position: absolute;
         top: -25px;
-        right: 2rem;
+        right: 10%;
         z-index: 10;
-
         .back-to-top-btn {
             display: flex;
             flex-direction: column;
@@ -394,8 +393,8 @@
             }
         }
     }
-    .widget_text.social-icon{
-        h2.rounded{
+    .widget_text.social-icon {
+        h2.rounded {
             display: none;
         }
     }

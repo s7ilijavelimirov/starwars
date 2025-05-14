@@ -1,35 +1,50 @@
 <?php
 
 /**
- * Template part za prikaz blog kartica u modernom Star Wars stilu - bez ikonica
+ * Optimizovani template za prikaz blog kartica u Star Wars stilu
  *
  * @package StarWars
  */
 
-// Post counter se prosleđuje iz parent šablona (home.php, archive.php, category.php)
+// Post counter se prosleđuje iz parent šablona
 $post_counter = isset($args['post_counter']) ? $args['post_counter'] : 0;
 $column_class = ($post_counter == 0) ? 'col-sm-12' : 'col-sm-12 col-md-6';
 $featured_class = ($post_counter == 0) ? 'featured-post' : '';
+$excerpt_length = ($post_counter == 0) ? 30 : 20; // Duži excerpt za featured post
 ?>
 
 <div class="<?php echo esc_attr($column_class); ?>">
     <article <?php post_class('sw-card ' . $featured_class); ?> id="post-<?php the_ID(); ?>">
         <a href="<?php the_permalink(); ?>" class="card-link" aria-label="<?php echo esc_attr(get_the_title()); ?>">
-            <!-- Card Header with thumbnail -->
+            <!-- Card Header sa thumbnail-om -->
             <div class="card-header">
-                <?php if (has_post_thumbnail()) : ?>
+                <?php if (has_post_thumbnail()) :
+                    $thumbnail_id = get_post_thumbnail_id();
+                    $alt_text = get_post_meta($thumbnail_id, '_wp_attachment_image_alt', true) ?: get_the_title();
+                    $image_src = wp_get_attachment_image_src($thumbnail_id, 'large');
+                    $width = $image_src[1];
+                    $height = $image_src[2];
+                ?>
                     <div class="card-thumbnail">
-                        <?php the_post_thumbnail('large', array('class' => 'thumbnail-img')); ?>
+                        <?php the_post_thumbnail('large', array(
+                            'class' => 'thumbnail-img',
+                            'alt' => esc_attr($alt_text),
+                            'loading' => 'lazy',
+                            'width' => $width,
+                            'height' => $height
+                        )); ?>
                     </div>
                 <?php else : ?>
-                    <div class="card-thumbnail no-image"></div>
+                    <div class="card-thumbnail no-image">
+                        <span class="sw-icon">SW</span>
+                    </div>
                 <?php endif; ?>
 
-                <!-- Category badge -->
+                <!-- Kategorija - badge -->
                 <?php
                 $categories = get_the_category();
                 if (!empty($categories)) :
-                    $category = $categories[0]; // Prvi pokazujemo
+                    $category = $categories[0]; // Prvi prikazujemo
                 ?>
                     <span class="category-badge">
                         <?php echo esc_html($category->name); ?>
@@ -44,9 +59,9 @@ $featured_class = ($post_counter == 0) ? 'featured-post' : '';
                 </div>
             </div>
 
-            <!-- Card Body with content -->
+            <!-- Card Body sa sadržajem -->
             <div class="card-body">
-                <!-- Post meta info -->
+                <!-- Post meta podaci -->
                 <div class="card-meta">
                     <span class="post-date">
                         <?php echo esc_html(get_the_date()); ?>
@@ -57,18 +72,26 @@ $featured_class = ($post_counter == 0) ? 'featured-post' : '';
                     </span>
                 </div>
 
-                <!-- Post title -->
+                <!-- Naslov posta -->
                 <h2 class="card-title">
                     <?php the_title(); ?>
                 </h2>
 
-                <!-- Post excerpt -->
+                <!-- Automatski excerpt umesto custom -->
                 <div class="card-excerpt">
-                    <?php echo wp_kses_post(wp_trim_words(get_the_excerpt(), 20, '...')); ?>
+                    <?php
+                    // Dobijanje sadržaja posta, uklanjanje shortcode-ova
+                    $content = get_the_content();
+                    $content = strip_shortcodes($content);
+                    $content = wp_strip_all_tags($content);
+
+                    // Prikazivanje ograničenog broja reči
+                    echo esc_html(wp_trim_words($content, $excerpt_length, '...'));
+                    ?>
                 </div>
             </div>
 
-            <!-- Card Footer with CTA -->
+            <!-- Card Footer sa CTA -->
             <div class="card-footer">
                 <span class="read-more-btn">
                     <?php esc_html_e('Pročitaj više', 'starwars'); ?>
@@ -97,7 +120,7 @@ $featured_class = ($post_counter == 0) ? 'featured-post' : '';
                 <?php endif; ?>
             </div>
 
-            <!-- Light effect -->
+            <!-- Svetlosni efekat -->
             <div class="sw-light-effect"></div>
         </a>
     </article>

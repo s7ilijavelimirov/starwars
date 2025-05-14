@@ -26,7 +26,7 @@
         }
 
         // Naslov widgeta
-        .widget-title {
+        .widget-title,h2.rounded {
             position: relative;
             font-size: 1.3rem;
             font-weight: 700;
@@ -165,17 +165,17 @@
                     .category-name {
                         position: relative;
                         padding-left: 1.25rem;
-
+                        text-transform: capitalize;
                         &::before {
-                            content: "\f054";
-                            font-family: "Font Awesome 5 Free";
-                            font-weight: 900;
+                            content: "";
                             position: absolute;
-                            left: 0;
+                            left: 0px;
                             top: 50%;
                             transform: translateY(-50%);
-                            font-size: 0.7rem;
-                            color: $secondary-color2;
+                            width: 6px;
+                            height: 6px;
+                            background-color: rgb(255, 221, 85);
+                            border-radius: 50%;
                         }
                     }
 
@@ -316,7 +316,7 @@
 
         .widget-title {
             position: relative;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: $secondary-color2;
             margin: 0 0 1.5rem;
