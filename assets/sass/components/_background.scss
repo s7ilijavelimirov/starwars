@@ -1,0 +1,16 @@
+// Optimizovana pozadinska slika za Star Wars temu
+@mixin responsive-background {
+    background: {
+        image: url("../images/background.webp");
+        attachment: fixed;
+        position: center center;
+        repeat: no-repeat;
+        size: cover;
+    }
+    background-color: $primary-color;
+}
+
+// Primena na body
+body {
+    @include responsive-background();
+}

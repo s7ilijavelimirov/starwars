@@ -18,8 +18,10 @@ $sw-red: #ff3b30;
 // =============================================
 
 .product-section {
-    margin-bottom: 60px;
-    padding: 5px 0;
+    margin-bottom: 40px;
+    &:last-child {
+        margin-bottom: 0;
+    }
 
     // Naslov i pogledaj sve sekcija
     .head-products {
@@ -79,8 +81,6 @@ $sw-red: #ff3b30;
     position: relative;
     overflow: hidden; // Dopuštamo vidljivost izvan kontejnera za bolje efekte
     list-style: none;
-    padding: 5px 0 40px; // Dodatni padding za senke i efekte
-    margin-bottom: 20px;
     z-index: 1;
 
     &:hover {
@@ -536,10 +536,6 @@ $sw-red: #ff3b30;
 
 // Mobilni
 @media (max-width: 767px) {
-    .product-section {
-        margin-bottom: 40px;
-    }
-
     .product-card {
         min-height: 290px;
     }
@@ -548,7 +544,12 @@ $sw-red: #ff3b30;
         font-size: 0.85rem;
         padding: 10px 6px;
     }
-
+    .row.align-items-center.mb-2 {
+        .col-auto.ms-auto {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    }
     .product-nav-buttons {
         justify-content: center;
         //margin-bottom: 20px;

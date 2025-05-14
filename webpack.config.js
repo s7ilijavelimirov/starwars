@@ -205,6 +205,11 @@ module.exports = {
           from: 'node_modules/swiper/swiper-bundle.min.css',
           to: 'css/swiper-bundle.min.css'
         },
+        // Slike
+        {
+          from: 'assets/images',
+          to: 'images'
+        },
         // Fontovi
         {
           from: 'assets/fonts',

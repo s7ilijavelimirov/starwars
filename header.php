@@ -13,7 +13,7 @@
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	
+
 	<?php wp_head(); ?>
 </head>
 
@@ -152,6 +152,8 @@
 				));
 				?>
 				<hr>
+			</div>
+			<div class="offcanvas-footer">
 				<!-- Widgeti za mobilni menu ako postoje -->
 				<?php if (is_active_sidebar('footer_3')) : ?>
 					<div class="footer-social-icons" role="complementary">

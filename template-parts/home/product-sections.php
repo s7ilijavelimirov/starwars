@@ -125,6 +125,12 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                         <?php endif; ?>
 
                         <div class="col-auto ms-auto">
+                            <?php
+                            // Inicijalizuj promenljive sa podrazumevanim vrednostima
+                            $prev_disabled = isset($prev_disabled) ? $prev_disabled : false;
+                            $next_disabled = isset($next_disabled) ? $next_disabled : false;
+                            ?>
+
                             <div class="product-nav-buttons">
                                 <button type="button" class="product-nav-prev" id="prev-<?php echo esc_attr($section_id); ?>" aria-label="Prethodni proizvodi" role="button" <?php echo $prev_disabled ? 'disabled' : ''; ?>>
                                     <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $prev_disabled ? 'Nema prethodnih proizvoda' : 'Prethodno'; ?>" />
@@ -281,4 +287,4 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
         endif;
     endwhile;
     ?>
-</div>
+    </div>

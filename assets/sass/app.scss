@@ -50,10 +50,12 @@
 @import "~bootstrap/scss/utilities/api";
 
 // NAŠI STILOVI nakon Bootstrap komponenti
+@import "components/background";
 @import "base/typography";
 @import "layout/navigation";
 @import "layout/grid";
 @import "layout/header";
+@import "components/slider";
 @import "layout/footer";
 @import "layout/swiper-custom";
 @import "components/woocommerce";
@@ -62,10 +64,8 @@
 @import "layout/navigation_mobile";
 @import "layout/blog";
 @import "layout/pagination";
-@import "components/starwars-bg";
 @import "components/buttons";
 @import "layout/input";
-@import "components/slider";
 @import "components/gallery";
 @import "pages/home";
 @import "pages/contact";

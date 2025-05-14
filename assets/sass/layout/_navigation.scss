@@ -79,7 +79,8 @@
 
     // Offcanvas mobilni menu specifično
     .offcanvas-body & {
-        justify-content: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        justify-content: start;
         margin-top: 20px;
     }
 }

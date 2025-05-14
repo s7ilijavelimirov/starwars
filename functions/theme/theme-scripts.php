@@ -37,7 +37,6 @@ function s7design_enqueue_scripts()
         file_exists($dist_dir . '/js/swiper-init-build.js') ? filemtime($dist_dir . '/js/swiper-init-build.js') : null,
         true
     );
-
     // Glavni frontend JS
     wp_enqueue_script(
         's7design-frontend',

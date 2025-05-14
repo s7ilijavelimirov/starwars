@@ -32,30 +32,11 @@ function disable_emojis()
 }
 add_action('init', 'disable_emojis');
 
-/**
- * Prioritetno učitavanje fonta - ostaje u functions.php
- */
-function s7design_font_priority_loader()
+function s7design_preload_background()
 {
-?>
-    <!-- Font Priority Loader -->
-    <style id="s7design-font-priority">
-        @font-face {
-            font-family: 'Montserrat';
-            font-style: normal;
-            font-weight: 400;
-            font-display: swap;
-            src: local('Montserrat Regular'), local('Montserrat-Regular'),
-                url('<?php echo get_template_directory_uri(); ?>/dist/fonts/Montserrat-Regular.woff2') format('woff2');
-        }
-
-        body {
-            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-        }
-    </style>
-<?php
+    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/images/background.webp" as="image" type="image/webp">' . "\n";
 }
-add_action('wp_head', 's7design_font_priority_loader', 1);
+add_action('wp_head', 's7design_preload_background', 5);
 
 /**
  * Deregistruje Google Fonts koje drugi plugini možda učitavaju

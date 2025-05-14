@@ -240,7 +240,6 @@
     .navbar-toggler {
         padding: 0.5rem;
         border: none;
-        z-index: 1050;
 
         &:focus {
             box-shadow: none;
@@ -279,7 +278,7 @@
         }
 
         .offcanvas-body {
-            padding: 1.5rem;
+           // padding: 1.5rem;
 
             .navbar-nav {
                 .nav-item {

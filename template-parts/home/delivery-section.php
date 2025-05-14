@@ -11,7 +11,7 @@ if (!function_exists('get_field') || !have_rows('dostava')) {
 }
 ?>
 
-<section class="delivery-section py-5">
+<section class="delivery-section relative py-5">
     <div class="container">
         <div class="row justify-content-center">
             <?php while (have_rows('dostava')) : the_row();

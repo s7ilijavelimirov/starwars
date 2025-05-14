@@ -3,6 +3,7 @@
  * Uklonjena debugging podrška, dodate sigurnosne provere
  */
 document.addEventListener('DOMContentLoaded', function () {
+
   // Scroll efekti za header - sa proverom da li element postoji
   initHeaderScroll();
 
