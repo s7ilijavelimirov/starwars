@@ -1,152 +1,72 @@
 <?php
 
 /**
- * Theme scripts - optimizovan setup za Bootstrap 5.3 i Swiper
+ * Učitavanje skripti za temu
  *
  * @package s7design
  */
 
-function s7design_load_scripts()
+function s7design_enqueue_scripts()
 {
-    // Definišemo putanju do dist foldera
-    $dist_path = get_template_directory_uri() . '/dist';
+    $dist_uri = get_template_directory_uri() . '/dist';
     $dist_dir = get_template_directory() . '/dist';
 
-    // Bootstrap JS
+    // Bootstrap bundle
     wp_register_script(
-        's7design-bootstrap-js',
-        $dist_path . '/js/bootstrap.bundle.min.js',
-        array(), // Bez zavisnosti
+        's7design-bootstrap',
+        $dist_uri . '/js/bootstrap.bundle.min.js',
+        [],
         file_exists($dist_dir . '/js/bootstrap.bundle.min.js') ? filemtime($dist_dir . '/js/bootstrap.bundle.min.js') : null,
         true
     );
-    wp_enqueue_script('s7design-bootstrap-js');
-    wp_script_add_data('s7design-bootstrap-js', 'defer', true);
 
-    // Glavni JS fajl teme
+    // Swiper core
     wp_register_script(
-        's7design-main-js',
-        $dist_path . '/js/frontend-build.js',
-        array('s7design-bootstrap-js'),
+        's7design-swiper',
+        $dist_uri . '/js/swiper-bundle.min.js',
+        [],
+        file_exists($dist_dir . '/js/swiper-bundle.min.js') ? filemtime($dist_dir . '/js/swiper-bundle.min.js') : null,
+        true
+    );
+
+    // Swiper INIT skripta
+    wp_register_script(
+        's7design-swiper-init',
+        $dist_uri . '/js/swiper-init-build.js',
+        ['s7design-swiper'],
+        file_exists($dist_dir . '/js/swiper-init-build.js') ? filemtime($dist_dir . '/js/swiper-init-build.js') : null,
+        true
+    );
+
+    // Glavni frontend JS
+    wp_enqueue_script(
+        's7design-frontend',
+        $dist_uri . '/js/frontend-build.js',
+        ['s7design-bootstrap', 's7design-swiper-init'],
         file_exists($dist_dir . '/js/frontend-build.js') ? filemtime($dist_dir . '/js/frontend-build.js') : null,
         true
     );
-    wp_enqueue_script('s7design-main-js');
-    wp_script_add_data('s7design-main-js', 'defer', true);
 
-    // Swiper JS - učitavamo samo na stranicama gde je potreban
-    if (is_front_page() || is_home() || is_shop() || is_product_category()) {
-        // Swiper CSS - već je uključen kroz Webpack
-
-        // Swiper JS
-        wp_register_script(
-            's7design-swiper-js',
-            $dist_path . '/js/swiper-bundle.min.js',
-            array(),
-            file_exists($dist_dir . '/js/swiper-bundle.min.js') ? filemtime($dist_dir . '/js/swiper-bundle.min.js') : null,
-            true
-        );
-        wp_enqueue_script('s7design-swiper-js');
-        wp_script_add_data('s7design-swiper-js', 'defer', true);
-
-        // Inicijalizacioni JS za Swiper
-        wp_register_script(
-            's7design-swiper-init',
-            $dist_path . '/js/swiper-init-build.js',
-            array('s7design-swiper-js', 'jquery'),
-            file_exists($dist_dir . '/js/swiper-init-build.js') ? filemtime($dist_dir . '/js/swiper-init-build.js') : null,
-            true
-        );
-        wp_enqueue_script('s7design-swiper-init');
-        wp_script_add_data('s7design-swiper-init', 'defer', true);
-    }
-
-    // Prosleđujemo varijable u JS
-    wp_localize_script(
-        's7design-main-js',
-        'wp_data',
-        array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('s7design-nonce'),
-            'site_url' => site_url(),
-            'is_home' => is_home(),
-            'is_front_page' => is_front_page(),
-            'theme_url' => get_template_directory_uri(),
-        )
-    );
+    // Preload u <head>
+    add_action('wp_head', 's7design_preload_resources', 1);
 }
-add_action('wp_enqueue_scripts', 's7design_load_scripts');
+add_action('wp_enqueue_scripts', 's7design_enqueue_scripts');
 
 /**
- * Optimizacija WooCommerce skripti
+ * Preload JS, CSS i fontova
  */
-function s7design_optimize_woocommerce_scripts()
+function s7design_preload_resources()
 {
-    // Samo ako WooCommerce postoji
-    if (!class_exists('WooCommerce')) {
-        return;
-    }
+    $uri = get_template_directory_uri();
 
-    if (!is_woocommerce() && !is_cart() && !is_checkout() && !is_account_page() && !is_shop()) {
-        // Potpuno isključi WooCommerce stilove na ne-WooCommerce stranicama
-        add_filter('woocommerce_enqueue_styles', '__return_empty_array');
+    echo '<link rel="preload" href="' . $uri . '/dist/css/frontend.min.css" as="style">' . "\n";
 
-        // Ukloni sve nepotrebne skripte
-        wp_dequeue_script('woocommerce');
-        wp_dequeue_script('wc-add-to-cart');
-        wp_dequeue_script('js-cookie');
-        wp_dequeue_script('jquery-blockui');
+    echo '<link rel="preload" href="' . $uri . '/dist/js/bootstrap.bundle.min.js" as="script">' . "\n";
+    echo '<link rel="preload" href="' . $uri . '/dist/js/frontend-build.js" as="script">' . "\n";
+    echo '<link rel="preload" href="' . $uri . '/dist/js/swiper-bundle.min.js" as="script">' . "\n";
+    echo '<link rel="preload" href="' . $uri . '/dist/js/swiper-init-build.js" as="script">' . "\n";
 
-        wp_dequeue_style('woocommerce-general');
-        wp_dequeue_style('woocommerce-layout');
-        wp_dequeue_style('woocommerce-smallscreen');
-        wp_dequeue_style('woocommerce-blockui');
-
-        wp_dequeue_style('wc-blocks-style');
-        wp_dequeue_style('wc-blocks-vendors-style');
-    }
-
-    // Ukloni posebne skripte samo na određenim stranicama
-    if (!is_checkout()) {
-        wp_dequeue_script('wc-order-attribution');
-        wp_dequeue_script('wc-checkout');
-        wp_dequeue_script('wc-credit-card-form');
-    }
-
-    // Cart fragments optimizacija - samo na relevantnim stranicama
-    if (!is_cart() && !is_checkout()) {
-        wp_dequeue_script('wc-cart-fragments');
-    }
+    echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">' . "\n";
+    echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
+    echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Medium.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
 }
-add_action('wp_enqueue_scripts', 's7design_optimize_woocommerce_scripts', 99);
-
-/**
- * Optimizacija JS za scroll efekat header-a
- */
-function s7design_optimize_scroll_effects()
-{
-    // Implementiraj direktno ako se koristi samo na nekim stranicama,
-    // inače ovo može ostati u frontend.js
-    if (is_front_page() || is_home() || is_single()) {
-        // Već implementirano u frontend.js
-    }
-}
-add_action('wp_footer', 's7design_optimize_scroll_effects', 99);
-
-
-
-/**
- * Optimizacija zaglavlja za preload resursa
- */
-function s7design_preload_resources_script()
-{
-    // Preload CSS i JS
-    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/css/frontend.min.css" as="style">';
-    echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/js/bootstrap.bundle.min.js" as="script">';
-
-    // Preload Swiper resursa na relevantnim stranicama
-    if (is_front_page() || is_home() || is_shop() || is_product_category()) {
-        echo '<link rel="preload" href="' . get_template_directory_uri() . '/dist/js/swiper-bundle.min.js" as="script">';
-    }
-}
-add_action('wp_head', 's7design_preload_resources_script', 1);

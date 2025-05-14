@@ -1,19 +1,15 @@
 /**
- * Poboljšana inicijalizacija Swiper-a sa boljim lazy loading-om
+ * Optimizovana inicijalizacija Swiper-a bez konsolnih logova
+ * Bez dodatnih CSS stilova, koristi postojeći SCSS
  * 
  * @package s7design
- * @version 3.0.0
+ * @version 3.1.0
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOMContentLoaded event triggered - pokretanje inicijalizacije Swipera');
-
     // Provera da li je Swiper dostupan
     if (typeof Swiper === 'undefined') {
-        console.error('GREŠKA: Swiper biblioteka nije učitana. Proveriti da li je script pravilno učitan.');
         return;
-    } else {
-        console.log('✓ Swiper biblioteka je dostupna (verzija: ' + (Swiper.version || 'nepoznata') + ')');
     }
 
     // Inicijalizacija svih product karusela
@@ -26,52 +22,49 @@ document.addEventListener('DOMContentLoaded', function () {
         // Uzmi sve karusel kontejnere
         const carouselContainers = document.querySelectorAll('.swiper-container[id^="product-section-"]');
 
-        console.log('Tražim karusele sa ID-om product-section-*');
-        console.log('Pronađeno karusela: ' + carouselContainers.length);
-
         if (carouselContainers.length === 0) {
-            console.warn('Nije pronađen nijedan karusel na stranici. Proverite HTML strukturu i ID-ove.');
             return;
         }
 
-        // Inicijalizuj svaki karusel
-        carouselContainers.forEach((container, index) => {
-            console.log('-----------------------------------');
-            console.log(`Inicijalizacija karusela #${index + 1}: ${container.id}`);
+        // Sakrij sve kontejnere dok se ne inicijalizuju
+        carouselContainers.forEach(container => {
+            // Sakrij karusel dok se učitava
+            container.style.visibility = 'hidden';
+            container.style.opacity = '0';
+            container.style.transition = 'opacity 0.5s ease';
+        });
 
+        // Inicijalizuj svaki karusel
+        carouselContainers.forEach((container) => {
             // Proveri DOM strukturu
             const wrapper = container.querySelector('.swiper-wrapper');
             const slides = container.querySelectorAll('.swiper-slide');
             const pagination = container.querySelector('.swiper-pagination');
 
-            console.log(`DOM struktura: wrapper=${wrapper ? 'OK' : 'NIJE PRONAĐEN!'}, slides=${slides.length}, pagination=${pagination ? 'OK' : 'NIJE PRONAĐEN!'}`);
-
             // Proveri da li je karusel već inicijalizovan
             if (container.classList.contains('swiper-initialized')) {
-                console.log(`Karusel ${container.id} je već inicijalizovan - preskačem.`);
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
                 return;
             }
 
             // Pretvaramo sve lazy slike u obične slike pre inicijalizacije
-            // Ovo rešava probleme sa lazy loading-om
             preloadImages(container);
 
             // Čitamo broj slajdova koji treba prikazati iz data atributa
             const slidesPerView = parseInt(container.getAttribute('data-slides') || 5, 10);
-            console.log(`Broj slajdova za prikaz: ${slidesPerView} (iz data-slides atributa)`);
 
             try {
-                console.log(`Pokušavam inicijalizaciju Swiper instance za #${container.id}`);
-
                 // Inicijalizujemo Swiper sa naprednim opcijama
                 const swiper = new Swiper(`#${container.id}`, {
                     // Osnovne opcije
                     slidesPerView: 1,
-                    spaceBetween: 20,
+                    spaceBetween: 5,
                     speed: 600,
                     watchOverflow: true,
                     observer: true,
                     observeParents: true,
+                    preloadImages: true,
 
                     // Optimizacija performansi
                     watchSlidesProgress: true,
@@ -79,11 +72,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     // Responzivne opcije
                     breakpoints: {
-                        320: { slidesPerView: 2, spaceBetween: 10 },
-                        576: { slidesPerView: 2, spaceBetween: 15 },
-                        768: { slidesPerView: 3, spaceBetween: 15 },
-                        992: { slidesPerView: 4, spaceBetween: 20 },
-                        1200: { slidesPerView: slidesPerView, spaceBetween: 20 }
+                        320: { slidesPerView: 2, spaceBetween: 0 },
+                        576: { slidesPerView: 2, spaceBetween: 5 },
+                        768: { slidesPerView: 3, spaceBetween: 5 },
+                        992: { slidesPerView: 4, spaceBetween: 10 },
+                        1200: { slidesPerView: slidesPerView, spaceBetween: 10 }
                     },
 
                     // Navigacija - tražimo dugmiće po ID-u
@@ -105,17 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Događaji
                     on: {
                         init: function () {
-                            console.log(`✓ Swiper instanca za #${container.id} je uspešno inicijalizovana`);
-                            console.log(`  - Broj slidova: ${this.slides.length}`);
-                            console.log(`  - Trenutni slide: ${this.activeIndex}`);
-                            console.log(`  - isBeginning: ${this.isBeginning}, isEnd: ${this.isEnd}`);
-
-                            // Provera navigacije
-                            const nextBtn = document.getElementById(`next-${container.id}`);
-                            const prevBtn = document.getElementById(`prev-${container.id}`);
-                            console.log(`  - Next dugme: ${nextBtn ? 'pronađeno' : 'NIJE PRONAĐENO'}`);
-                            console.log(`  - Prev dugme: ${prevBtn ? 'pronađeno' : 'NIJE PRONAĐENO'}`);
-
                             // Ukloni placeholder efekat ako postoji
                             container.classList.remove('swiper-placeholder');
                             // Dodaj klasu za inicijalizovan swiper
@@ -124,35 +106,35 @@ document.addEventListener('DOMContentLoaded', function () {
                             // Inicijalno ažuriranje navigacionih dugmića
                             updateNavigationState(this, container.id);
                         },
+                        imagesReady: function () {
+                            // Prikaži karusel kada su sve slike učitane
+                            setTimeout(function () {
+                                container.style.visibility = 'visible';
+                                container.style.opacity = '1';
+                            }, 100);
+                        },
                         slideChange: function () {
-                            console.log(`#${container.id} slide promenjen na: ${this.activeIndex}`);
                             // Ažuriranje navigacionih dugmića
                             updateNavigationState(this, container.id);
                         }
                     }
                 });
 
-                // Direktna provera navigacije
-                console.log('Direktna provera navigacionih dugmića:');
-                const nextBtnEl = document.getElementById(`next-${container.id}`);
-                const prevBtnEl = document.getElementById(`prev-${container.id}`);
-                if (nextBtnEl) {
-                    console.log(`Next btn (#next-${container.id}): ${nextBtnEl.outerHTML.substring(0, 50)}...`);
-                } else {
-                    console.error(`Next btn (#next-${container.id}) NIJE PRONAĐEN!`);
-                }
-                if (prevBtnEl) {
-                    console.log(`Prev btn (#prev-${container.id}): ${prevBtnEl.outerHTML.substring(0, 50)}...`);
-                } else {
-                    console.error(`Prev btn (#prev-${container.id}) NIJE PRONAĐEN!`);
-                }
-
                 // Dodatni event listeneri za dugmiće
                 setupExtraNavigation(swiper, container.id);
 
+                // Backup timer - ako se imagesReady ne aktivira iz nekog razloga
+                setTimeout(function () {
+                    if (container.style.visibility !== 'visible') {
+                        container.style.visibility = 'visible';
+                        container.style.opacity = '1';
+                    }
+                }, 2000);
+
             } catch (error) {
-                console.error(`❌ GREŠKA pri inicijalizaciji karusela ${container.id}:`, error);
-                console.error('Detalji greške:', error.stack);
+                // Prikaži karusel u slučaju greške da ne bi ostao sakriven
+                container.style.visibility = 'visible';
+                container.style.opacity = '1';
             }
         });
     }
@@ -165,9 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const lazyImages = container.querySelectorAll('img.swiper-lazy');
 
         if (lazyImages.length > 0) {
-            console.log(`Preloadujem ${lazyImages.length} lazy slika u karuselu ${container.id}`);
-
-            lazyImages.forEach((img, index) => {
+            lazyImages.forEach((img) => {
                 const dataSrc = img.getAttribute('data-src');
                 if (dataSrc) {
                     // Direktno postavi src atribut umesto da koristimo lazy loading
@@ -190,8 +170,6 @@ document.addEventListener('DOMContentLoaded', function () {
      * Ovo je fallback ako standardna Swiper navigacija ne radi
      */
     function setupExtraNavigation(swiper, sectionId) {
-        console.log(`Postavljanje direktnih event listener-a za dugmiće karusela ${sectionId}`);
-
         const prevBtn = document.getElementById(`prev-${sectionId}`);
         const nextBtn = document.getElementById(`next-${sectionId}`);
 
@@ -199,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // Direktan event listener za prev dugme
             prevBtn.addEventListener('click', function (e) {
                 e.preventDefault();
-                console.log(`Kliknuto prev dugme za ${sectionId} - pozivam slidePrev()`);
                 swiper.slidePrev();
                 updateNavigationState(swiper, sectionId);
             });
@@ -211,15 +188,12 @@ document.addEventListener('DOMContentLoaded', function () {
             prevBtn.addEventListener('mouseleave', function () {
                 this.classList.remove('nav-hover');
             });
-
-            console.log(`✓ Postavljen dodatni click handler za prev dugme #prev-${sectionId}`);
         }
 
         if (nextBtn) {
             // Direktan event listener za next dugme
             nextBtn.addEventListener('click', function (e) {
                 e.preventDefault();
-                console.log(`Kliknuto next dugme za ${sectionId} - pozivam slideNext()`);
                 swiper.slideNext();
                 updateNavigationState(swiper, sectionId);
             });
@@ -231,8 +205,6 @@ document.addEventListener('DOMContentLoaded', function () {
             nextBtn.addEventListener('mouseleave', function () {
                 this.classList.remove('nav-hover');
             });
-
-            console.log(`✓ Postavljen dodatni click handler za next dugme #next-${sectionId}`);
         }
     }
 
@@ -245,20 +217,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (prevBtn) {
             if (swiper.isBeginning) {
-                console.log(`#${sectionId} je na početku - disable prev dugme`);
                 prevBtn.classList.add('swiper-button-disabled');
             } else {
-                console.log(`#${sectionId} nije na početku - enable prev dugme`);
                 prevBtn.classList.remove('swiper-button-disabled');
             }
         }
 
         if (nextBtn) {
             if (swiper.isEnd) {
-                console.log(`#${sectionId} je na kraju - disable next dugme`);
                 nextBtn.classList.add('swiper-button-disabled');
             } else {
-                console.log(`#${sectionId} nije na kraju - enable next dugme`);
                 nextBtn.classList.remove('swiper-button-disabled');
             }
         }
@@ -266,14 +234,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Dodatna optimizacija - ažuriranje svih swiper-a nakon učitavanja stranice
     window.addEventListener('load', function () {
-        console.log('Window load event - ažuriranje svih Swiper instanci');
         setTimeout(function () {
             document.querySelectorAll('.swiper-container').forEach(function (container) {
                 if (container.swiper) {
-                    console.log(`Ažuriranje Swiper instance za #${container.id}`);
                     container.swiper.update();
-                } else {
-                    console.warn(`Swiper instanca nije pronađena za #${container.id}`);
+
+                    // Osiguraj da je karusel prikazan
+                    if (container.style.visibility !== 'visible') {
+                        container.style.visibility = 'visible';
+                        container.style.opacity = '1';
+                    }
                 }
             });
         }, 500);

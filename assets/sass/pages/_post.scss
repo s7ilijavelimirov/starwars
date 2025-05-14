@@ -432,15 +432,14 @@ $card-hover-transform: translateY(-10px);
 #blogpage {
     position: relative;
     padding: 2rem 0;
-}
+    // Responzivan grid layout
+    .row {
+        > [class*="col-"] {
+            margin-bottom: 2rem;
 
-// Responzivan grid layout
-.row {
-    > [class*="col-"] {
-        margin-bottom: 2rem;
-
-        @media (max-width: 767px) {
-            margin-bottom: 1.5rem;
+            @media (max-width: 767px) {
+                margin-bottom: 1.5rem;
+            }
         }
     }
 }

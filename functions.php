@@ -10,13 +10,16 @@ require_once get_template_directory() . '/functions/helpers/helpers.php';
 
 // Theme setup.
 include_once get_template_directory() . '/functions/theme/theme-setup.php';
-include_once  get_template_directory() . '/functions/theme/theme-styles.php';
-include_once  get_template_directory() . '/functions/theme/theme-scripts.php';
+include_once get_template_directory() . '/functions/theme/theme-styles.php';
+include_once get_template_directory() . '/functions/theme/theme-scripts.php';
 
 /* Disable WordPress Admin Bar for all users */
 add_filter('show_admin_bar', '__return_false');
 add_filter('use_widgets_block_editor', '__return_false');
 
+/**
+ * Isključivanje emoji funkcionalnosti
+ */
 function disable_emojis()
 {
     remove_action('wp_head', 'print_emoji_detection_script', 7);
@@ -27,8 +30,11 @@ function disable_emojis()
     remove_filter('comment_text_rss', 'wp_staticize_emoji');
     remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 }
-
 add_action('init', 'disable_emojis');
+
+/**
+ * Prioritetno učitavanje fonta - ostaje u functions.php
+ */
 function s7design_font_priority_loader()
 {
 ?>
@@ -70,27 +76,6 @@ function s7design_deregister_external_fonts()
 add_action('wp_enqueue_scripts', 's7design_deregister_external_fonts', 999);
 
 /**
- * Optimizacija pozadinske slike
- */
-
-function s7design_add_defer_attribute($tag, $handle, $src)
-{
-    // Lista skripti koje treba imati defer atribut
-    $defer_scripts = array(
-        's7design-bootstrap-js',
-    );
-
-    // Dodaje defer atribut na listu skripti
-    if (in_array($handle, $defer_scripts)) {
-        return str_replace(' src', ' defer src', $tag);
-    }
-
-    return $tag;
-}
-add_filter('script_loader_tag', 's7design_add_defer_attribute', 10, 3);
-add_action('woocommerce_before_main_content', 'my_theme_wrapper_start', 10);
-add_action('woocommerce_after_main_content', 'my_theme_wrapper_end', 10);
-/**
  * Dodaje lazy-loading atribut svim slikama u sadržaju
  */
 function s7design_add_image_loading_attribute($content)
@@ -105,18 +90,6 @@ add_filter('the_content', 's7design_add_image_loading_attribute');
 add_filter('post_thumbnail_html', 's7design_add_image_loading_attribute');
 add_filter('woocommerce_product_get_image', 's7design_add_image_loading_attribute');
 
-
-function my_theme_wrapper_start()
-{
-    echo '<section id="main">';
-}
-function s7design_conditionally_load_jquery()
-{
-    if (!is_woocommerce() && !is_cart() && !is_checkout() && !is_account_page() && !is_front_page()) {
-        wp_deregister_script('jquery');
-    }
-}
-add_action('wp_enqueue_scripts', 's7design_conditionally_load_jquery', 100);
 /**
  * Asinhrono učitavanje manje kritičnih skripti
  */
@@ -145,12 +118,20 @@ function s7design_async_less_critical_scripts()
 <?php
 }
 add_action('wp_footer', 's7design_async_less_critical_scripts', 99);
+
+// WooCommerce Wrapper funkcije
+function my_theme_wrapper_start()
+{
+    echo '<section id="main">';
+}
 function my_theme_wrapper_end()
 {
     echo '</section>';
 }
+add_action('woocommerce_before_main_content', 'my_theme_wrapper_start', 10);
+add_action('woocommerce_after_main_content', 'my_theme_wrapper_end', 10);
 
-add_action('after_setup_theme', 'mytheme_add_woocommerce_support');
+// WooCommerce podrška
 function mytheme_add_woocommerce_support()
 {
     add_theme_support('woocommerce', array(
@@ -170,7 +151,9 @@ function mytheme_add_woocommerce_support()
     add_theme_support('wc-product-gallery-lightbox');
     add_theme_support('wc-product-gallery-slider');
 }
+add_action('after_setup_theme', 'mytheme_add_woocommerce_support');
 
+// WooCommerce valuta
 add_filter('woocommerce_currency_symbol', 'change_existing_currency_symbol', 10, 2);
 function change_existing_currency_symbol($currency_symbol, $currency)
 {
@@ -180,14 +163,14 @@ function change_existing_currency_symbol($currency_symbol, $currency)
     return $currency_symbol;
 }
 
-
-
+// Broj proizvoda po redu
 add_filter('loop_shop_columns', 'loop_columns', 999);
 function loop_columns()
 {
     return 5; // 5 products per row
 }
 
+// Brojač poseta
 function setPostViews($postID)
 {
     $countKey = 'post_views_count';
@@ -200,6 +183,7 @@ function setPostViews($postID)
     }
 }
 
+// Dodatne klase za galeriju proizvoda
 add_filter('woocommerce_single_product_image_gallery_classes', 'custom_product_gallery_classes');
 function custom_product_gallery_classes($classes)
 {
@@ -207,16 +191,19 @@ function custom_product_gallery_classes($classes)
     return $classes;
 }
 
+// Prikaz navigacije za postove
 function show_posts_nav()
 {
     global $wp_query;
     return $wp_query->max_num_pages > 1;
 }
 
+// Uklanjanje srodnih proizvoda
 remove_action('woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15);
 remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20);
 add_action('woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10);
 
+// Tabela veličina - tab na proizvodu
 add_filter('woocommerce_product_tabs', 'woo_new_product_tab');
 function woo_new_product_tab($tabs)
 {
@@ -227,80 +214,8 @@ function woo_new_product_tab($tabs)
     );
     return $tabs;
 }
-function s7design_optimize_background_image()
-{
-    // Proveri da li slika zaista postoji
-    $bg_image_path = get_template_directory() . '/background.webp';
-    $bg_image_url = get_template_directory_uri() . '/background.webp';
 
-    // Izađi ako slika ne postoji
-    if (!file_exists($bg_image_path)) {
-        error_log('Pozadinska slika nije pronađena: ' . $bg_image_path);
-        return;
-    }
-
-    // Preload sliku sa visokim prioritetom
-    echo '<link rel="preload" fetchpriority="high" href="' . esc_url($bg_image_url) . '" as="image" type="image/webp">';
-
-    // CSS za pozadinsku sliku
-?>
-    <style>
-        body {
-            background-color: #000000;
-            background-image: url('<?php echo esc_url($bg_image_url); ?>');
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-position: center;
-            background-size: cover;
-            opacity: 1;
-            transition: opacity 0.6s ease;
-        }
-
-        /* Fallback rešenje ako slika ne učita */
-        body.bg-loading {
-            opacity: 0;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                background-position: center top;
-            }
-        }
-    </style>
-
-    <script>
-        (function() {
-            // Privremeno sakrij pozadinu dok se slika učitava
-            document.body.classList.add('bg-loading');
-
-            // Kreiraj image objekat za proveru učitavanja
-            const img = new Image();
-
-            img.onload = function() {
-                // Ukloni klasu nakon učitavanja
-                requestAnimationFrame(function() {
-                    document.body.classList.remove('bg-loading');
-                });
-            };
-
-            img.onerror = function() {
-                console.error('Greška pri učitavanju pozadinske slike');
-                // Ukloni klasu i u slučaju greške da bi se prikazala bar osnovna boja
-                document.body.classList.remove('bg-loading');
-            };
-
-            // Postavi src nakon definisanja onload/onerror
-            img.src = '<?php echo esc_url($bg_image_url); ?>';
-
-            // Sigurnosno vrati na vidljivo nakon 3 sekunde bez obzira na sve
-            setTimeout(function() {
-                document.body.classList.remove('bg-loading');
-            }, 3000);
-        })();
-    </script>
-<?php
-}
-add_action('wp_head', 's7design_optimize_background_image', 5);
+// Sadržaj taba sa tabelom veličina
 function woo_new_product_tab_content()
 {
     global $product;
@@ -332,7 +247,7 @@ function woo_new_product_tab_content()
 <?php
 }
 
-
+// Stilovi za input polja za količinu
 add_action('wp_head', 'custom_quantity_fields_css');
 function custom_quantity_fields_css()
 {
@@ -350,63 +265,10 @@ function custom_quantity_fields_css()
             -moz-appearance: textfield;
         }
     </style>
-<?php
-}
-
-
-add_action('wp_footer', 'custom_quantity_fields_script');
-function custom_quantity_fields_script()
-{
-?>
-    <script type='text/javascript'>
-        jQuery(function($) {
-            if (!String.prototype.getDecimals) {
-                String.prototype.getDecimals = function() {
-                    var num = this,
-                        match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-                    if (!match) {
-                        return 0;
-                    }
-                    return Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0));
-                }
-            }
-            // Quantity "plus" and "minus" buttons
-            $(document.body).on('click', '.plus, .minus', function() {
-                var $qty = $(this).closest('.quantity').find('.qty'),
-                    currentVal = parseFloat($qty.val()),
-                    max = parseFloat($qty.attr('max')),
-                    min = parseFloat($qty.attr('min')),
-                    step = $qty.attr('step');
-
-                // Format values
-                if (!currentVal || currentVal === '' || currentVal === 'NaN') currentVal = 0;
-                if (max === '' || max === 'NaN') max = '';
-                if (min === '' || min === 'NaN') min = 0;
-                if (step === 'any' || step === '' || step === undefined || parseFloat(step) === 'NaN') step = 1;
-
-                // Change the value
-                if ($(this).is('.plus')) {
-                    if (max && (currentVal >= max)) {
-                        $qty.val(max);
-                    } else {
-                        $qty.val((currentVal + parseFloat(step)).toFixed(step.getDecimals()));
-                    }
-                } else {
-                    if (min && (currentVal <= min)) {
-                        $qty.val(min);
-                    } else if (currentVal > 0) {
-                        $qty.val((currentVal - parseFloat(step)).toFixed(step.getDecimals()));
-                    }
-                }
-
-                // Trigger change event
-                $qty.trigger('change');
-            });
-        });
-    </script>
     <?php
 }
-// Dodavanje nove kolone u tabelu narudžbina
+
+// Kolona za cenu bez dostave u admin panelu
 add_filter('manage_edit-shop_order_columns', 'add_order_price_without_shipping_column');
 function add_order_price_without_shipping_column($columns)
 {
@@ -433,7 +295,8 @@ function add_order_price_without_shipping_column_data($column, $post_id)
         echo wc_price($price_without_shipping);
     }
 }
-// Prevedite opcije sortiranja u WooCommerce
+
+// Prevod opcija sortiranja
 add_filter('woocommerce_catalog_orderby', 'custom_woocommerce_catalog_orderby');
 function custom_woocommerce_catalog_orderby($orderby)
 {
@@ -446,6 +309,7 @@ function custom_woocommerce_catalog_orderby($orderby)
 
 add_filter('woocommerce_default_catalog_orderby_options', 'custom_woocommerce_catalog_orderby');
 add_filter('woocommerce_catalog_orderby', 'custom_woocommerce_catalog_orderby');
+
 add_filter('woocommerce_orderby_dropdown', 'custom_woocommerce_orderby_dropdown', 10, 1);
 function custom_woocommerce_orderby_dropdown($sortby)
 {
@@ -468,6 +332,7 @@ function custom_product_image_attributes($attr, $attachment, $size)
     }
     return $attr;
 }
+
 // Postavljanje alt i title atributa za slike na arhivi proizvoda
 add_filter('post_thumbnail_html', 'custom_archive_product_image_attributes', 10, 5);
 function custom_archive_product_image_attributes($html, $post_id, $post_thumbnail_id, $size, $attr)
@@ -480,6 +345,7 @@ function custom_archive_product_image_attributes($html, $post_id, $post_thumbnai
     }
     return $html;
 }
+
 // Funkcija za prevođenje datuma na srpski
 function translate_date_to_serbian($date)
 {
@@ -539,16 +405,15 @@ function translate_date_to_serbian($date)
     return $date;
 }
 
-// Filter za prevođenje datuma na srpski u WordPress-u
+// Filteri za prevođenje datuma
 add_filter('the_date', 'translate_date_to_serbian');
 add_filter('get_the_date', 'translate_date_to_serbian');
 add_filter('get_the_time', 'translate_date_to_serbian');
 add_filter('the_time', 'translate_date_to_serbian');
 add_filter('date_i18n', 'translate_date_to_serbian', 10, 4);
 
-// Add custom field to checkout fields array
+// Dodavanje PAK polja na checkout
 add_filter('woocommerce_checkout_fields', 'custom_checkout_fields');
-
 function custom_checkout_fields($fields)
 {
     $fields['billing']['billing_pak'] = array(
@@ -557,19 +422,18 @@ function custom_checkout_fields($fields)
         'placeholder' => __('Unesite PAK', 'woocommerce'),
         'required'    => false,
         'class'       => array('form-row-wide'),
-        'priority'    => 95, // Position it right after the postcode
+        'priority'    => 95,
         'custom_attributes' => array(
-            'maxlength' => 6, // Max length 6 characters
-            'minlength' => 6, // Min length 6 characters
-            'pattern'   => '\d{6}', // Pattern to ensure exactly 6 digits
+            'maxlength' => 6,
+            'minlength' => 6,
+            'pattern'   => '\d{6}',
         ),
     );
     return $fields;
 }
 
-// Validate custom field
+// Validacija PAK polja
 add_action('woocommerce_checkout_process', 'custom_checkout_field_process');
-
 function custom_checkout_field_process()
 {
     if (isset($_POST['billing_pak']) && !empty($_POST['billing_pak']) && !preg_match('/^\d{6}$/', $_POST['billing_pak'])) {
@@ -577,9 +441,8 @@ function custom_checkout_field_process()
     }
 }
 
-// Save custom field value in order meta data
+// Čuvanje PAK vrednosti u metadata
 add_action('woocommerce_checkout_update_order_meta', 'custom_checkout_field_update_order_meta');
-
 function custom_checkout_field_update_order_meta($order_id)
 {
     if (!empty($_POST['billing_pak'])) {
@@ -587,25 +450,23 @@ function custom_checkout_field_update_order_meta($order_id)
     }
 }
 
-// Display custom field value in the order details in admin
+// Prikaz PAK polja u admin panelu
 add_action('woocommerce_admin_order_data_after_billing_address', 'custom_checkout_field_display_admin_order_meta', 10, 1);
-
 function custom_checkout_field_display_admin_order_meta($order)
 {
     echo '<p><strong>' . __('PAK', 'woocommerce') . ':</strong> ' . get_post_meta($order->get_id(), 'PAK', true) . '</p>';
 }
 
-// Add custom field value to order emails
+// Dodavanje PAK polja u email-ove
 add_filter('woocommerce_email_order_meta_keys', 'custom_checkout_field_order_meta_keys');
-
 function custom_checkout_field_order_meta_keys($keys)
 {
     $keys[] = 'PAK';
     return $keys;
 }
 
+// JavaScript za PAK polje
 add_action('wp_footer', 'custom_checkout_field_js');
-
 function custom_checkout_field_js()
 {
     if (is_checkout()) {
@@ -623,6 +484,8 @@ function custom_checkout_field_js()
 <?php
     }
 }
+
+// Ažuriranje cena na osnovu ACF polja
 function update_prices_on_save($post_id)
 {
     // Proverite da li je ovo naš custom post type
@@ -635,18 +498,26 @@ function update_prices_on_save($post_id)
         return;
     }
 
+    // Proverite da li postoji function get_field (ACF)
+    if (!function_exists('get_field')) {
+        return;
+    }
+
     // Dobijanje vrednosti iz ACF polja
     $category = get_field('kategorija', $post_id);
     $new_price = get_field('nova_cena', $post_id);
 
     // Proverite da li su vrednosti postavljene i validne
     if (empty($category)) {
-        error_log('Category is not set or empty');
         return;
     }
 
     if (empty($new_price) || !is_numeric($new_price) || $new_price <= 0) {
-        error_log('New price is not set, not numeric, or less than or equal to zero');
+        return;
+    }
+
+    // Provera da li je WooCommerce aktivan
+    if (!function_exists('wc_get_product')) {
         return;
     }
 
