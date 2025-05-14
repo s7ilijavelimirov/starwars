@@ -394,7 +394,11 @@
             }
         }
     }
-
+    .widget_text.social-icon{
+        h2.rounded{
+            display: none;
+        }
+    }
     // Social Icons
     .social-icons {
         display: flex;

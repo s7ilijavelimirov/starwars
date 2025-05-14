@@ -1,0 +1,124 @@
+/**
+ * Star Wars Space Background Effect
+ * Ovo možeš koristiti za pozadinu blog stranica
+ * Dodaj ovaj fajl u svoje stilove ako želiš Star Wars efekat pozadine
+ */
+
+// Zvezdano nebo za blog sekcije
+.starfield-background {
+    position: relative;
+    overflow: hidden;
+    background-color: #000;
+    z-index: 0;
+
+    // Tačkice za zvezde (male)
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 4px),
+            radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 3px),
+            radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 4px);
+        background-size:
+            550px 550px,
+            350px 350px,
+            250px 250px;
+        background-position:
+            0 0,
+            40px 60px,
+            130px 270px;
+        z-index: -1;
+        opacity: 0.5;
+    }
+
+    // Sloj za animirane zvezde
+    .stars-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: -1;
+    }
+}
+
+// Generisanje zvezda
+.star {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation-name: starAnimation;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+// Prvi set zvezda (velikih)
+@for $i from 1 through 50 {
+    .star:nth-child(#{$i}) {
+        width: 2px;
+        height: 2px;
+        left: random(100) * 1%;
+        top: random(100) * 1%;
+        animation-duration: #{random(100) + 50}s;
+    }
+}
+
+// Drugi set zvezda (malih)
+@for $i from 51 through 150 {
+    .star:nth-child(#{$i}) {
+        width: 1px;
+        height: 1px;
+        left: random(100) * 1%;
+        top: random(100) * 1%;
+        animation-duration: #{random(100) + 30}s;
+    }
+}
+
+// Animacija zvezda
+@keyframes starAnimation {
+    0% {
+        transform: translateX(0);
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(-100vw);
+        opacity: 0.3;
+    }
+}
+
+// Kako dodati ovo na blog stranice:
+// Dodajte klasu 'starfield-background' na glavni kontejner
+// i dodajte sledeći HTML odmah unutar njega:
+/*
+<div class="stars-container">
+    <?php for ($i = 1; $i <= 150; $i++) : ?>
+        <div class="star"></div>
+    <?php endfor; ?>
+</div>
+*/
+
+// Možeš dodati i efekat svetlucanja za naslove
+.starwars-title-glow {
+    color: $secondary-color2;
+    text-shadow: 0 0 15px rgba($secondary-color2, 0.5);
+    animation: titleGlow 3s infinite alternate;
+}
+
+@keyframes titleGlow {
+    0% {
+        text-shadow: 0 0 10px rgba($secondary-color2, 0.4);
+    }
+    100% {
+        text-shadow:
+            0 0 20px rgba($secondary-color2, 0.8),
+            0 0 30px rgba($secondary-color2, 0.4);
+    }
+}

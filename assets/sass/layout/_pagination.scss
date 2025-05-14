@@ -1,0 +1,542 @@
+/**
+ * StarWars Pagination Styles
+ * Moderni stilovi paginacije bez ikonica
+ */
+
+// Star Wars boje
+$sw-yellow: $secondary-color2; // Star Wars žuta
+$sw-blue: #1e90ff; // Lightsaber plava
+$sw-dark: rgba($black, 0.7); // Tamna pozadina
+
+// Osnovne varijable
+$pagination-border-radius: 8px;
+$pagination-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+$pagination-active-glow: 0 0 15px rgba($sw-yellow, 0.5);
+
+// ================================================
+// STANDARDNA PAGINACIJA (brojevi stranica)
+// ================================================
+.starwars-pagination {
+    margin: 3rem 0;
+    text-align: center;
+
+    // Kontejner za paginaciju
+    ul.page-numbers {
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        @media (max-width: 576px) {
+            gap: 5px;
+        }
+
+        li {
+            margin: 0 3px;
+            display: inline-block;
+        }
+    }
+
+    // Zajednički stil za sve elemente
+    .page-numbers {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 45px;
+        height: 45px;
+        padding: 0 12px;
+        border-radius: $pagination-border-radius;
+        background-color: rgba($white, 0.05);
+        color: $white;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: $pagination-transition;
+        border: 1px solid rgba($sw-yellow, 0.15);
+        position: relative;
+        overflow: hidden;
+
+        // Efekat preliva svetlosti na svim dugmadima
+        &::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba($sw-yellow, 0.5) 50%, transparent 100%);
+            transition: left 0.5s ease;
+        }
+
+        // Hover efekat
+        &:hover {
+            background-color: rgba($sw-yellow, 0.15);
+            border-color: rgba($sw-yellow, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            color: $sw-yellow;
+
+            &::before {
+                left: 100%;
+            }
+        }
+
+        // Active style
+        &.current {
+            background-color: $sw-yellow;
+            color: $black;
+            border-color: $sw-yellow;
+            box-shadow: $pagination-active-glow;
+
+            &:hover {
+                transform: translateY(-3px);
+            }
+        }
+
+        // Dots style (...)
+        &.dots {
+            background-color: transparent;
+            border-color: transparent;
+            pointer-events: none;
+            width: auto;
+            min-width: auto;
+            padding: 0 5px;
+
+            &:hover,
+            &:focus {
+                box-shadow: none;
+                transform: none;
+            }
+
+            &::before {
+                display: none;
+            }
+        }
+
+        // Responsive prilagođavanja
+        @media (max-width: 576px) {
+            min-width: 40px;
+            height: 40px;
+            font-size: 0.9rem;
+            padding: 0 10px;
+        }
+    }
+
+    // Prev/Next dugmad
+    .prev,
+    .next {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 15px;
+
+        @media (max-width: 576px) {
+            padding: 0 12px;
+        }
+    }
+
+    // Strelice - levo, desno
+    .arrow {
+        position: relative;
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-style: solid;
+        border-width: 0 2px 2px 0;
+        margin: 0 5px;
+
+        &.prev-arrow {
+            transform: rotate(135deg);
+        }
+
+        &.next-arrow {
+            transform: rotate(-45deg);
+        }
+    }
+
+    // Posebni stilovi za hover prev/next
+    .prev:hover .prev-arrow {
+        animation: arrowLeftAnim 0.5s infinite alternate;
+    }
+
+    .next:hover .next-arrow {
+        animation: arrowRightAnim 0.5s infinite alternate;
+    }
+
+    @keyframes arrowLeftAnim {
+        0% {
+            transform: rotate(135deg) translateX(0);
+        }
+        100% {
+            transform: rotate(135deg) translateX(-3px);
+        }
+    }
+
+    @keyframes arrowRightAnim {
+        0% {
+            transform: rotate(-45deg) translateX(0);
+        }
+        100% {
+            transform: rotate(-45deg) translateX(3px);
+        }
+    }
+}
+
+// ================================================
+// PREV-NEXT PAGINACIJA (starije/novije objave)
+// ================================================
+.nav-links-prev-next {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+
+    .nav-previous,
+    .nav-next {
+        a {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            background-color: rgba($white, 0.05);
+            border: 1px solid rgba($sw-yellow, 0.2);
+            border-radius: $pagination-border-radius;
+            color: $white;
+            text-decoration: none;
+            transition: $pagination-transition;
+
+            .nav-subtitle {
+                display: flex;
+                align-items: center;
+                font-weight: 600;
+
+                .arrow {
+                    position: relative;
+                    display: inline-block;
+                    width: 8px;
+                    height: 8px;
+                    border-style: solid;
+                    border-width: 0 2px 2px 0;
+                    margin: 0 8px;
+                    transition: transform 0.3s ease;
+
+                    &.prev-arrow {
+                        transform: rotate(135deg);
+                    }
+
+                    &.next-arrow {
+                        transform: rotate(-45deg);
+                    }
+                }
+            }
+
+            &:hover {
+                background-color: rgba($sw-yellow, 0.15);
+                color: $sw-yellow;
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+                .nav-subtitle {
+                    .prev-arrow {
+                        transform: rotate(135deg) translateX(-3px);
+                    }
+
+                    .next-arrow {
+                        transform: rotate(-45deg) translateX(3px);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ================================================
+// POST NAVIGACIJA (između pojedinačnih postova)
+// ================================================
+.post-navigation-wrapper {
+    margin: 3rem 0;
+
+    // Enhanced paginacija (sa thumbnailima)
+    .post-navigation.enhanced {
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+
+            @media (max-width: 768px) {
+                flex-direction: column;
+            }
+
+            .nav-previous,
+            .nav-next {
+                position: relative;
+                flex: 0 0 48%;
+                overflow: hidden;
+                border-radius: $pagination-border-radius;
+                background-color: rgba($white, 0.03);
+                transition: $pagination-transition;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+                @media (max-width: 768px) {
+                    flex: 0 0 100%;
+                    margin-bottom: 1.5rem;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                }
+
+                &:hover {
+                    transform: translateY(-5px);
+                    background-color: rgba($sw-yellow, 0.1);
+                    box-shadow:
+                        0 8px 20px rgba(0, 0, 0, 0.15),
+                        0 0 15px rgba($sw-yellow, 0.2);
+
+                    .nav-thumb img {
+                        transform: scale(1.1) rotate(2deg);
+                    }
+
+                    .nav-direction {
+                        color: $sw-yellow;
+                    }
+
+                    .nav-title {
+                        color: $white;
+                    }
+
+                    .arrow {
+                        border-color: $sw-yellow;
+                    }
+
+                    .nav-content {
+                        .arrow.prev-arrow {
+                            transform: rotate(135deg) translateX(-3px);
+                        }
+
+                        .arrow.next-arrow {
+                            transform: rotate(-45deg) translateX(3px);
+                        }
+                    }
+                }
+
+                a {
+                    display: flex;
+                    text-decoration: none;
+                    color: $white;
+                    height: 100%;
+                }
+
+                // Thumbnail slika
+                &.has-thumb {
+                    .nav-thumb {
+                        position: absolute;
+                        top: 0;
+                        bottom: 0;
+                        width: 110px;
+                        overflow: hidden;
+
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            transition: transform 0.5s ease;
+                        }
+
+                        .nav-overlay {
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            bottom: 0;
+                            width: 20px;
+                            background: linear-gradient(to right, transparent, rgba($black, 0.7));
+                        }
+                    }
+
+                    .nav-content {
+                        padding-left: 120px;
+                    }
+                }
+
+                .nav-content {
+                    flex: 1;
+                    padding: 1.5rem;
+                    position: relative;
+                    z-index: 2;
+
+                    .nav-direction {
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        color: rgba($sw-yellow, 0.8);
+                        margin-bottom: 0.75rem;
+                        font-size: 0.9rem;
+                        letter-spacing: 0.03em;
+                        display: flex;
+                        align-items: center;
+
+                        .arrow {
+                            position: relative;
+                            display: inline-block;
+                            width: 8px;
+                            height: 8px;
+                            border-style: solid;
+                            border-color: $white;
+                            border-width: 0 2px 2px 0;
+                            margin: 0 8px;
+                            transition: all 0.3s ease;
+
+                            &.prev-arrow {
+                                transform: rotate(135deg);
+                            }
+
+                            &.next-arrow {
+                                transform: rotate(-45deg);
+                            }
+                        }
+                    }
+
+                    .nav-title {
+                        font-size: 1.1rem;
+                        font-weight: 600;
+                        color: rgba($white, 0.9);
+                        line-height: 1.4;
+
+                        @media (max-width: 576px) {
+                            font-size: 1rem;
+                        }
+                    }
+                }
+
+                // Specifični stilovi za prethodni članak
+                &.nav-previous {
+                    &.has-thumb {
+                        .nav-thumb {
+                            left: 0;
+
+                            .nav-overlay {
+                                left: auto;
+                                right: 0;
+                                background: linear-gradient(to right, transparent, rgba($black, 0.7));
+                            }
+                        }
+                    }
+                }
+
+                // Specifični stilovi za sledeći članak
+                &.nav-next {
+                    text-align: right;
+
+                    &.has-thumb {
+                        .nav-thumb {
+                            right: 0;
+
+                            .nav-overlay {
+                                right: auto;
+                                left: 0;
+                                background: linear-gradient(to left, transparent, rgba($black, 0.7));
+                            }
+                        }
+
+                        .nav-content {
+                            padding-right: 120px;
+                            padding-left: 1.5rem;
+                        }
+                    }
+
+                    .nav-content {
+                        .nav-direction {
+                            justify-content: flex-end;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ================================================
+// DODATNI RESPONZIVNI STILOVI
+// ================================================
+@media (max-width: 576px) {
+    .starwars-pagination {
+        ul.page-numbers {
+            li {
+                margin: 0 2px;
+            }
+        }
+
+        .page-numbers {
+            padding: 0 8px;
+            min-width: 36px;
+            height: 36px;
+            font-size: 0.85rem;
+        }
+
+        .prev,
+        .next {
+            // Prikaži samo strelice (sakrij tekst) na malim ekranima
+            span:not(.arrow) {
+                display: none;
+            }
+
+            .arrow {
+                margin: 0;
+            }
+        }
+    }
+
+    // Single post navigacija na malim ekranima
+    .post-navigation-wrapper {
+        .post-navigation.enhanced {
+            .nav-links {
+                .nav-previous,
+                .nav-next {
+                    &.has-thumb {
+                        .nav-thumb {
+                            width: 80px;
+                        }
+
+                        .nav-content {
+                            padding-left: 90px;
+
+                            &.nav-next {
+                                padding-right: 90px;
+                                padding-left: 1rem;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Dodat lightsaber glow efekat za aktivnu stranicu
+.starwars-pagination .page-numbers.current {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at center, rgba($sw-yellow, 0.3) 0%, transparent 70%);
+        opacity: 0;
+        animation: pagePulse 2s infinite;
+    }
+}
+
+@keyframes pagePulse {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
