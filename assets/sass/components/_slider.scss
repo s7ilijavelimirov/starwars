@@ -1,229 +1,631 @@
-// Hero Carousel Styles
-.hero-carousel {
+// Modern Hero Slider - Advanced Version
+// ================================
+
+// Glavne varijable
+$hero-overlay-opacity: 0.2;
+$hero-text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+$hero-transition-speed: 0.6s;
+$hero-indicator-size: 12px;
+$hero-mobile-height: 500px;
+$hero-min-height: 760px;
+$hero-blur-amount: 5px;
+$hero-blur-opacity: 0.55;
+$hero-text-box-radius: 12px;
+
+// Glavni kontejner
+.hero-slider {
     position: relative;
-    width: 100%;
-    height: 100vh;
-    max-height: 900px;
     overflow: hidden;
+    min-height: $hero-min-height;
+    margin-bottom: 0; // Menjajte ako je potreban razmak ispod slidera
 
-    @media (max-width: 1400px) {
-        height: 85vh;
-        max-height: 800px;
+    // Slider wrapper
+    .carousel-inner {
+        min-height: $hero-min-height;
+        position: relative;
     }
 
-    @media (max-width: 992px) {
-        height: 70vh;
-        max-height: 700px;
-    }
+    // Pojedinačni slajdovi
+    .carousel-item {
+        min-height: $hero-min-height;
+        transition:
+            transform $hero-transition-speed ease,
+            opacity 1s ease-out;
 
-    @media (max-width: 768px) {
-        height: 60vh;
-        max-height: 600px;
-    }
-
-    @media (max-width: 576px) {
-        height: 50vh;
-        max-height: 500px;
-    }
-
-    // Animacije
-    @keyframes fadeInUp {
-        0% {
-            opacity: 0;
-            transform: translateY(20px);
+        // Postavljanje slike
+        picture {
+            width: 100%;
+            height: 100%;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
-        100% {
+
+        img.carousel-img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            transform: scale(1.01); // Sprečava moguće bele ivice tokom animacije
+        }
+    }
+
+    // Overlay preko slike
+    .carousel-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            135deg,
+            rgba(0, 0, 0, $hero-overlay-opacity + 0.1) 0%,
+            rgba(0, 0, 0, $hero-overlay-opacity - 0.1) 100%
+        );
+        z-index: 2;
+        &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 150px;
+            background: linear-gradient(
+                to bottom,
+                rgba(2, 2, 2, 0) 0%,
+                rgba(2, 2, 2, 0.7) 70%,
+                rgba(2, 2, 2, 0.98) 100%
+            );
+            z-index: 3;
+        }
+    }
+
+    // Kontejner za sadržaj
+    .carousel-caption {
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        text-align: left;
+
+        .container {
+            width: 100%;
+            position: relative;
+        }
+
+        .caption-content {
+            padding: 2.5rem;
+            max-width: 800px;
+            width: 100%;
+            animation-duration: 1.2s;
+            animation-fill-mode: both;
+            position: relative;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.11);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.6s ease;
+        }
+
+        // Poravnanje sadržaja
+        &.align-left {
+            text-align: left;
+            .caption-content {
+                margin-right: auto;
+                margin-left: 0;
+            }
+        }
+
+        &.align-center {
+            text-align: center;
+            .caption-content {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+
+        &.align-right {
+            text-align: right;
+            .caption-content {
+                margin-left: auto;
+                margin-right: 0;
+            }
+        }
+    }
+
+    // Aktivacija blur efekta kada je slajd aktivan
+    .carousel-item.active {
+        .caption-content::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    // Tipografija
+    .hero-title {
+        font-size: 3.2rem;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        text-shadow: $hero-text-shadow;
+        line-height: 1.15;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+            opacity 0.6s ease 0.3s,
+            transform 0.6s ease 0.3s;
+        color: #ffffff;
+    }
+
+    .hero-subtitle {
+        font-size: 1.35rem;
+        margin-bottom: 1.5rem;
+        text-shadow: $hero-text-shadow;
+        font-weight: 400;
+        line-height: 1.5;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+            opacity 0.6s ease 0.5s,
+            transform 0.6s ease 0.5s;
+        color: #ffffff;
+    }
+
+    // Aktivacija teksta kada je slajd aktivan
+    .carousel-item.active {
+        .hero-title,
+        .hero-subtitle {
             opacity: 1;
             transform: translateY(0);
         }
     }
 
-    @keyframes slideInRight {
-        from {
-            opacity: 0;
-            transform: translateX(100%);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    @keyframes slideInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-100%);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    .carousel-inner {
-        height: 100%;
-    }
-
-    .carousel-item {
-        position: relative;
-        width: 100%;
-        height: 100%;
-
-        .carousel-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .carousel-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.7) 100%);
-            z-index: 1;
-        }
-
-        // Animacije za prelazak između slajdova
-        &.slide-right-enter {
-            animation: slideInRight 1s ease-out;
-        }
-
-        &.slide-left-enter {
-            animation: slideInLeft 1s ease-out;
-        }
-
-        &.fade-enter {
-            animation: fadeInUp 1s ease-in;
-        }
-    }
-
-    .carousel-caption {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        z-index: 2;
-        width: 80%;
-        max-width: 800px;
-        padding: 20px;
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 10px;
-
-        @media (max-width: 768px) {
-            width: 90%;
-            padding: 15px;
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-
-            @media (max-width: 992px) {
-                font-size: 2.5rem;
-            }
-
-            @media (max-width: 576px) {
-                font-size: 2rem;
-            }
-        }
-
-        .hero-subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-
-            @media (max-width: 992px) {
-                font-size: 1.2rem;
-            }
-
-            @media (max-width: 576px) {
-                font-size: 1rem;
-            }
-        }
+    // Dugme
+    .hero-button-wrapper {
+        margin-top: 2rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+            opacity 0.6s ease 0.7s,
+            transform 0.6s ease 0.7s;
 
         .hero-btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 1.1rem;
+            padding: 0.85rem 2.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
             border-radius: 50px;
-            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 
             &:hover {
-                transform: scale(1.05);
-                opacity: 0.9;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            }
+
+            &:active {
+                transform: translateY(-1px);
+            }
+
+            span {
+                position: relative;
+                z-index: 2;
+            }
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.2);
+                transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+                z-index: 1;
+            }
+
+            &:hover::before {
+                left: 0;
+                width: 100%;
             }
         }
     }
 
-    .carousel-indicators {
-        bottom: 30px;
-        z-index: 3;
+    // Aktivacija dugmeta kada je slajd aktivan
+    .carousel-item.active {
+        .hero-button-wrapper {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-        .indicator {
-            width: 12px;
-            height: 12px;
+    // Indikatori
+    .carousel-indicators {
+        z-index: 5;
+        margin-bottom: 2rem;
+
+        button {
+            width: $hero-indicator-size;
+            height: $hero-indicator-size;
             border-radius: 50%;
+            margin: 0 6px;
             background-color: rgba(255, 255, 255, 0.5);
-            margin: 0 5px;
-            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            opacity: 0.8;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+
+            &::after {
+                content: "";
+                position: absolute;
+                top: -4px;
+                left: -4px;
+                right: -4px;
+                bottom: -4px;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                transition: all 0.3s ease;
+            }
 
             &.active {
-                width: 16px;
-                background-color: white;
+                background-color: #fff;
+                transform: scale(1.1);
+                opacity: 1;
+
+                &::after {
+                    border-color: rgba(255, 255, 255, 0.5);
+                }
             }
 
-            @media (max-width: 576px) {
-                width: 10px;
-                height: 10px;
-
-                &.active {
-                    width: 14px;
-                }
+            &:hover {
+                transform: scale(1.2);
             }
         }
     }
 
+    // Kontrolne strelice
     .carousel-control-prev,
     .carousel-control-next {
-        width: 50px;
-        height: 50px;
-        top: 50%;
-        transform: translateY(-50%);
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 50%;
-        transition: all 0.3s ease;
-        z-index: 3;
+        z-index: 5;
+        width: 60px;
+        opacity: 0;
+        transition: all 0.4s ease;
 
-        &:hover {
-            background-color: rgba(0, 0, 0, 0.7);
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            width: 32px;
+            height: 32px;
+            background-size: 100%;
+            transition: transform 0.3s ease;
         }
 
-        @media (max-width: 576px) {
-            width: 40px;
-            height: 40px;
+        &:hover {
+            opacity: 1;
+
+            .carousel-control-prev-icon {
+                transform: translateX(-5px);
+            }
+
+            .carousel-control-next-icon {
+                transform: translateX(5px);
+            }
+        }
+    }
+
+    &:hover {
+        .carousel-control-prev,
+        .carousel-control-next {
+            opacity: 0.7;
         }
     }
 }
 
-// Dodatne stilizacije za različite alignmente
-.hero-carousel .carousel-caption {
-    &[style*="text-align: left"] {
-        left: 10%;
-        transform: translate(0, -50%);
-        text-align: left;
+// Bootstrap Carousel Fade efekat
+// ================================
+.carousel-fade {
+    .carousel-item {
+        opacity: 0;
+        transition-property: opacity;
+        transform: none;
+
+        &.active {
+            opacity: 1;
+        }
     }
 
-    &[style*="text-align: right"] {
-        left: 90%;
-        transform: translate(-100%, -50%);
-        text-align: right;
+    .carousel-item.active,
+    .carousel-item-next.carousel-item-start,
+    .carousel-item-prev.carousel-item-end {
+        z-index: 1;
+        opacity: 1;
     }
+
+    .carousel-item-next,
+    .carousel-item-prev,
+    .carousel-item.active,
+    .active.carousel-item-start,
+    .active.carousel-item-end {
+        transition: opacity 0.8s ease-in-out;
+    }
+
+    .active.carousel-item-start,
+    .active.carousel-item-end {
+        opacity: 0;
+    }
+}
+
+// Animacije sadržaja
+// ================================
+.carousel-item {
+    &[data-animation="fade-enter"] {
+        .caption-content {
+            animation-name: fadeInUp;
+        }
+    }
+
+    &[data-animation="slide-right-enter"] {
+        .caption-content {
+            animation-name: slideInRight;
+        }
+    }
+
+    &[data-animation="slide-left-enter"] {
+        .caption-content {
+            animation-name: slideInLeft;
+        }
+    }
+
+    &[data-animation="zoom-in"] {
+        .caption-content {
+            animation-name: zoomIn;
+        }
+    }
+
+    &[data-animation="bounce"] {
+        .caption-content {
+            animation-name: bounceIn;
+        }
+    }
+}
+
+// Animacije keyframes
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 40px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translate3d(-60px, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translate3d(60px, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale3d(0.8, 0.8, 0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+@keyframes bounceIn {
+    from,
+    20%,
+    40%,
+    60%,
+    80%,
+    to {
+        animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+    0% {
+        opacity: 0;
+        transform: scale3d(0.3, 0.3, 0.3);
+    }
+    20% {
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+    40% {
+        transform: scale3d(0.9, 0.9, 0.9);
+    }
+    60% {
+        opacity: 1;
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+    80% {
+        transform: scale3d(0.97, 0.97, 0.97);
+    }
+    to {
+        opacity: 1;
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+// Responzivnost
+// ================================
+@media (max-width: 1400px) {
+    .hero-slider {
+        .hero-title {
+            font-size: 2.8rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+        }
+
+        .caption-content {
+            max-width: 580px;
+            padding: 2rem;
+        }
+    }
+}
+
+@media (max-width: 1200px) {
+    .hero-slider {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+        }
+
+        .caption-content {
+            max-width: 520px;
+        }
+    }
+}
+
+@media (max-width: 992px) {
+    .hero-slider {
+        min-height: $hero-min-height - 100px;
+
+        .carousel-inner,
+        .carousel-item {
+            min-height: $hero-min-height - 100px;
+        }
+
+        .hero-title {
+            font-size: 2.2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .carousel-caption .caption-content {
+            max-width: 480px;
+            padding: 1.8rem;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-slider {
+        min-height: $hero-mobile-height;
+
+        .carousel-inner,
+        .carousel-item {
+            min-height: $hero-mobile-height;
+        }
+
+        .hero-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-button-wrapper {
+            margin-top: 1.25rem;
+
+            .hero-btn {
+                padding: 0.7rem 1.8rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        .carousel-caption {
+            .caption-content {
+                padding: 1.5rem;
+                max-width: 460px;
+            }
+        }
+
+        .carousel-indicators {
+            margin-bottom: 1rem;
+
+            button {
+                width: $hero-indicator-size - 2px;
+                height: $hero-indicator-size - 2px;
+                margin: 0 4px;
+            }
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-slider {
+        min-height: $hero-mobile-height - 50px;
+
+        .carousel-inner,
+        .carousel-item {
+            min-height: $hero-mobile-height - 50px;
+        }
+
+        .hero-title {
+            font-size: 1.6rem;
+        }
+
+        .hero-subtitle {
+            font-size: 0.95rem;
+        }
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 40px;
+        }
+    }
+}
+
+// Podrška za Firefox fix
+// ================================
+@supports (-moz-appearance: none) {
+    .hero-slider .carousel-item {
+        will-change: opacity;
+    }
+
+    .hero-slider .caption-content {
+        background: rgba(0, 0, 0, 0.15); // direktno na element, ne na ::before
+    }
+}
+
+// Podrška za preload tehniku i mobilne slike
+// ================================
+.hero-slider img[loading="eager"] {
+    will-change: transform;
+}
+
+// Podrška za situacije kada nema mobilne slike
+// ================================
+.hero-slider picture:not(:has(source)) img {
+    object-position: center;
 }

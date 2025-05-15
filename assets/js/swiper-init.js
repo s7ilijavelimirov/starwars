@@ -1,14 +1,15 @@
 /**
- * Optimizovana inicijalizacija Swiper-a bez konsolnih logova
- * Bez dodatnih CSS stilova, koristi postojeći SCSS
+ * Optimizovana inicijalizacija Swiper-a
+ * Ispravljena verzija koja radi sa Star Wars temom
  * 
  * @package s7design
- * @version 3.1.0
+ * @version 3.2.1
  */
 
 document.addEventListener('DOMContentLoaded', function () {
     // Provera da li je Swiper dostupan
     if (typeof Swiper === 'undefined') {
+        console.error('Swiper biblioteka nije dostupna. Proverite da li je pravilno učitana.');
         return;
     }
 
@@ -19,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
      * Glavna funkcija za inicijalizaciju svih karusela
      */
     function initProductCarousels() {
-        // Uzmi sve karusel kontejnere
-        const carouselContainers = document.querySelectorAll('.swiper-container[id^="product-section-"]');
+        // Uzmi SVE karusel kontejnere - prošireni selektor
+        const carouselContainers = document.querySelectorAll('.swiper-container');
 
         if (carouselContainers.length === 0) {
             return;
@@ -144,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Zamenjuje data-src atribut sa src za pouzdaniji prikaz
      */
     function preloadImages(container) {
-        const lazyImages = container.querySelectorAll('img.swiper-lazy');
+        const lazyImages = container.querySelectorAll('img.swiper-lazy, img[data-src]');
 
         if (lazyImages.length > 0) {
             lazyImages.forEach((img) => {

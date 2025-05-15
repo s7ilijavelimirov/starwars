@@ -1,40 +1,217 @@
 /**
- * Optimizovani JavaScript za Star Wars temu
- * Uklonjena debugging podrška, dodate sigurnosne provere
+ * Glavni frontend JavaScript - Sa specifičnim rešenjem za loop animacije
  */
+
 document.addEventListener('DOMContentLoaded', function () {
+  // Inicijalizacija samo animacija teksta u slideru
+  initSliderTextAnimations();
 
-  // Scroll efekti za header - sa proverom da li element postoji
+  // Ostale inicijalizacije
   initHeaderScroll();
-
-  // Debug mod - samo ako je potreban
-  if (window.location.search.includes('debug=true')) {
-    analyzeSitePerformance();
-  }
-
-  // Inicijalizuj sve komponente
   initImageModals();
   initBackToTop();
 });
 
 /**
+ * Inicijalizuje animacije teksta u Bootstrap slideru
+ * Sa posebnim rešenjem za ponavljanje animacije kod povratka na prvi slajd
+ */
+function initSliderTextAnimations() {
+  const heroSlider = document.getElementById('heroSlider');
+  if (!heroSlider) return;
+
+  // Globalno stanje za praćenje slajdova
+  let currentSlideIndex = 0;
+  let previousSlideIndex = 0;
+  let totalSlides = 0;
+  let firstSlideAnimated = false;
+
+  // Dobavljamo sve slajdove
+  const allSlides = heroSlider.querySelectorAll('.carousel-item');
+  totalSlides = allSlides.length;
+
+  // Postavljamo inicijalni indeks
+  allSlides.forEach((slide, index) => {
+    if (slide.classList.contains('active')) {
+      currentSlideIndex = index;
+    }
+  });
+
+  // Resetujemo SVE slajdove na početku - važno za rešavanje problema sa prvim slajdom
+  allSlides.forEach((slide) => {
+    const content = slide.querySelector('.caption-content');
+    const title = slide.querySelector('.hero-title');
+    const subtitle = slide.querySelector('.hero-subtitle');
+    const button = slide.querySelector('.hero-button-wrapper');
+
+    if (content) content.style.opacity = '0';
+    if (title) title.style.opacity = '0';
+    if (subtitle) subtitle.style.opacity = '0';
+    if (button) button.style.opacity = '0';
+  });
+
+  /**
+   * Resetuje animacije na određenom slajdu
+   */
+  function resetSlideAnimations(slideIndex) {
+    if (slideIndex < 0 || slideIndex >= totalSlides) return;
+
+    const slide = allSlides[slideIndex];
+    if (!slide) return;
+
+    const content = slide.querySelector('.caption-content');
+    const title = slide.querySelector('.hero-title');
+    const subtitle = slide.querySelector('.hero-subtitle');
+    const button = slide.querySelector('.hero-button-wrapper');
+
+    // Odmah resetujemo sve elemente
+    if (content) {
+      content.style.opacity = '0';
+      content.style.animationName = 'none';
+    }
+    if (title) title.style.opacity = '0';
+    if (subtitle) subtitle.style.opacity = '0';
+    if (button) button.style.opacity = '0';
+  }
+
+  /**
+   * Animira tekstualne elemente određenog slajda
+   */
+  function animateSlideContent(slideIndex) {
+    if (slideIndex < 0 || slideIndex >= totalSlides) return;
+
+    const slide = allSlides[slideIndex];
+    if (!slide) return;
+
+    // Poseban slučaj za prvi slajd u drugom krugu
+    const isFirstSlideAgain = (slideIndex === 0 && firstSlideAnimated);
+
+    // Pronađimo elemente
+    const content = slide.querySelector('.caption-content');
+    const title = slide.querySelector('.hero-title');
+    const subtitle = slide.querySelector('.hero-subtitle');
+    const button = slide.querySelector('.hero-button-wrapper');
+    const animationType = slide.getAttribute('data-animation');
+
+    // Poseban slučaj: ako je prvi slajd opet, prvo ga resetujemo
+    if (isFirstSlideAgain) {
+      if (content) {
+        content.style.opacity = '0';
+        content.style.animationName = 'none';
+      }
+      if (title) title.style.opacity = '0';
+      if (subtitle) subtitle.style.opacity = '0';
+      if (button) button.style.opacity = '0';
+
+      // Sačekaj reflow browsersa da registruje reset
+      void slide.offsetWidth;
+    }
+
+    // Zatim primenimo animacije
+    setTimeout(() => {
+      if (content) {
+        content.style.opacity = '1';
+
+        // Primeni odgovarajuću animaciju
+        if (animationType) {
+          switch (animationType) {
+            case 'fade-enter':
+              content.style.animationName = 'fadeInUp';
+              break;
+            case 'slide-right-enter':
+              content.style.animationName = 'slideInRight';
+              break;
+            case 'slide-left-enter':
+              content.style.animationName = 'slideInLeft';
+              break;
+            default:
+              content.style.animationName = 'fadeInUp';
+          }
+        }
+      }
+
+      if (title) title.style.opacity = '1';
+      if (subtitle) subtitle.style.opacity = '1';
+      if (button) button.style.opacity = '1';
+
+      // Označi da je prvi slajd animiran ako je ovo prvi slajd
+      if (slideIndex === 0) {
+        firstSlideAnimated = true;
+      }
+    }, isFirstSlideAgain ? 50 : 20); // Malo duži delay za prvi slajd u ponovljenom ciklusu
+  }
+
+  // Prvi slide događaj: resetujemo sve slajdove
+  heroSlider.addEventListener('slide.bs.carousel', function (event) {
+    // Pratimo indekse slajdova
+    previousSlideIndex = currentSlideIndex;
+
+    // Ako imamo event indekse, koristimo njih
+    if (typeof event.from !== 'undefined' && typeof event.to !== 'undefined') {
+      previousSlideIndex = event.from;
+      currentSlideIndex = event.to;
+    } else {
+      // Inače, pretpostavljamo da idemo na sledeći slajd
+      currentSlideIndex = (previousSlideIndex + 1) % totalSlides;
+    }
+
+    // Posebna obrada za slučaj kad se vraćamo na prvi slajd
+    if (currentSlideIndex === 0 && previousSlideIndex === totalSlides - 1) {
+      // Ovo je povratak sa poslednjeg na prvi slajd
+      // Resetujemo prvi slajd eksplicitno pre animacije
+      resetSlideAnimations(0);
+    } else {
+      // Normalno resetovanje prethodnog slajda
+      resetSlideAnimations(previousSlideIndex);
+    }
+  });
+
+  // Drugi slide događaj: animiramo novi aktivni slajd
+  heroSlider.addEventListener('slid.bs.carousel', function (event) {
+    // Ažuriramo indeks ako je dostupan
+    if (typeof event.to !== 'undefined') {
+      currentSlideIndex = event.to;
+    }
+
+    // Animiramo novi slajd
+    animateSlideContent(currentSlideIndex);
+  });
+
+  // Hvatanje promene slajda po tranziciji za dodatnu sigurnost
+  heroSlider.addEventListener('transitionend', function (e) {
+    // Samo reagujemo na carousel-item tranzicije
+    if (e.target.classList.contains('carousel-item') && e.propertyName === 'opacity') {
+      // Ako je ovo završetak prikazivanja slajda
+      if (e.target.classList.contains('active')) {
+        // Pronađi indeks ovog slajda
+        let slideIndex = Array.from(allSlides).indexOf(e.target);
+
+        // Samo ako ne odgovara trenutnom indeksu
+        if (slideIndex !== -1 && slideIndex !== currentSlideIndex) {
+          currentSlideIndex = slideIndex;
+          animateSlideContent(currentSlideIndex);
+        }
+      }
+    }
+  });
+
+  // Animiraj prvi slajd nakon učitavanja
+  setTimeout(() => {
+    animateSlideContent(currentSlideIndex);
+  }, 100);
+}
+
+/**
  * Inicijalizacija scroll efekta za header
- * Sa sigurnosnim proverama elemenata
  */
 function initHeaderScroll() {
   const navbar = document.getElementById('navbar');
-
-  // Sigurnosna provera - izađi ako element ne postoji
   if (!navbar) return;
 
   const body = document.body;
 
-  // Optimizovana funkcija za scroll
   function checkScroll() {
-    // Koristi konstantu umesto ponovnog računanja
     const scrolled = window.scrollY > 50;
-
-    // Optimizacija - proveri trenutno stanje pre promene DOM-a
     const hasScrolledClass = navbar.classList.contains('scrolled');
 
     if (scrolled && !hasScrolledClass) {
@@ -46,10 +223,8 @@ function initHeaderScroll() {
     }
   }
 
-  // Inicijalno stanje - proverimo odmah
   checkScroll();
 
-  // Throttling za scroll event
   let ticking = false;
   window.addEventListener('scroll', function () {
     if (!ticking) {
@@ -63,35 +238,30 @@ function initHeaderScroll() {
 }
 
 /**
- * Funkcija za inicijalizaciju modala za slike (npr. tabele veličina)
+ * Funkcija za inicijalizaciju modala za slike
  */
 function initImageModals() {
-  // Elementi za modal
   const modal = document.getElementById('myModal');
   const img = document.getElementById('myImg');
 
-  // Proveri da li elementi postoje
   if (!modal || !img) return;
 
   const modalImg = document.getElementById('img01');
   const captionText = document.getElementById('caption');
   const closeBtn = document.querySelector('.close');
 
-  // Event listener za otvaranje modala
   img.onclick = function () {
     modal.style.display = "block";
     if (modalImg) modalImg.src = this.src;
     if (captionText) captionText.innerHTML = this.alt;
   }
 
-  // Event listener za zatvaranje modala
   if (closeBtn) {
     closeBtn.onclick = function () {
       modal.style.display = "none";
     }
   }
 
-  // Zatvaranje na klik izvan slike
   modal.onclick = function (e) {
     if (e.target === modal) {
       modal.style.display = "none";
@@ -104,10 +274,8 @@ function initImageModals() {
  */
 function initBackToTop() {
   const backToTopBtn = document.querySelector('.back-to-top-btn');
-
   if (!backToTopBtn) return;
 
-  // Kada se skroluje više od 300px, prikaži dugme
   window.addEventListener('scroll', function () {
     if (window.scrollY > 300) {
       backToTopBtn.classList.add('show');
@@ -116,7 +284,6 @@ function initBackToTop() {
     }
   }, { passive: true });
 
-  // Scroll na vrh kada se klikne dugme
   backToTopBtn.addEventListener('click', function (e) {
     e.preventDefault();
     window.scrollTo({
