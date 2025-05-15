@@ -250,3 +250,70 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 500);
     });
 });
+/**
+ * Blog Swiper inicijalizacija - Osnovna verzija bez centriranja
+ * Optimizovana za mobilne uređaje i da ne izlazi iz kontejnera
+ */
+
+document.addEventListener('DOMContentLoaded', function () {
+    initBasicBlogSwiper();
+
+    /**
+     * Osnovna inicijalizacija blog Swiper-a 
+     * Jednostavna verzija koja kliza po 1 karticu
+     */
+    function initBasicBlogSwiper() {
+        const blogSwiper = document.getElementById('blog-swiper');
+
+        if (!blogSwiper) return;
+
+        try {
+            // Inicijalizacija Swiper-a za blog - osnovne opcije
+            const swiper = new Swiper('#blog-swiper', {
+                // Osnovne opcije - po jedna kartica
+                slidesPerView: 3,
+                slidesPerGroup: 1, // Pomera se po jedna kartica
+                spaceBetween: 20,
+                grabCursor: true,
+                speed: 500,
+
+                // Ključno: isključujemo centriranje i ostale napredne opcije
+                centeredSlides: false,
+                loop: false,
+
+                // Responzivne opcije
+                breakpoints: {
+                    320: { slidesPerView: 1, spaceBetween: 15 },
+                    576: { slidesPerView: 1, spaceBetween: 15 },
+                    768: { slidesPerView: 2, spaceBetween: 20 },
+                    992: { slidesPerView: 3, spaceBetween: 20 },
+                    1200: { slidesPerView: 3, spaceBetween: 20 }
+                },
+
+                // Navigacija
+                navigation: {
+                    nextEl: '#next-blog-swiper',
+                    prevEl: '#prev-blog-swiper',
+                    disabledClass: 'swiper-button-disabled'
+                },
+
+                // Paginacija
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true
+                },
+
+                // Jednostavan efekat bez komplikovanih animacija
+                effect: 'slide'
+            });
+
+            // Dodavanje event listener-a za resize
+            window.addEventListener('resize', function () {
+                swiper.update();
+            }, { passive: true });
+
+        } catch (error) {
+            console.error('Blog Swiper inicijalizacija nije uspela:', error);
+        }
+    }
+});

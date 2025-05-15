@@ -1,109 +1,128 @@
 <?php
 
 /**
- * Template Part: Blog Section - Unapređena Swiper.js implementacija
+ * Template Part: Blog Sekcija - Minimalistička verzija bez animacija
  *
  * @package s7design
- * @version 2.1.0
+ * @version 2.5.0
  */
 
-// Opciona ACF polja za prilagođavanje
-$blog_title = function_exists('get_field') ? get_field('blog_section_title') : 'Najnovije vesti';
-$blog_posts_count = function_exists('get_field') ? get_field('blog_posts_count') : 3;
+// Parametri sekcije
+$blog_title = 'Najnovije vesti';
+$blog_posts_count = 6;
 ?>
-<div class="container my-5">
-    <!-- Unapređeni header za blog sekciju sa navigacijom -->
-    <div class="swiper-section-header">
-        <h2 class="swiper-heading fs-1" id="news"><?php echo esc_html($blog_title); ?></h2>
-
-        <div class="swiper-nav-controls">
-            <?php if (get_permalink(get_option('page_for_posts'))) : ?>
-                <a class="links-all" href="<?php echo esc_url(get_permalink(get_option('page_for_posts'))); ?>" aria-label="Pogledaj sve vesti">
-                    Pogledaj sve vesti <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-                </a>
-            <?php endif; ?>
-
-            <!-- Custom navigacione strelice za blog slider -->
-            <div class="blog-swiper-prev swiper-custom-nav">
-                <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+<section id="homepage-blog-section" class="py-5">
+    <div class="container">
+        <!-- Header za blog sekciju sa navigacijom -->
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h2 class="swiper-heading fs-1" id="news"><?php echo esc_html($blog_title); ?></h2>
             </div>
-            <div class="blog-swiper-next swiper-custom-nav">
-                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            <div class="col-auto ms-auto">
+                <div class="d-flex align-items-center">
+                    <?php if (get_permalink(get_option('page_for_posts'))) : ?>
+                        <!-- Jednostavno dugme bez efekata -->
+                        <a class="view-all-btn" href="<?php echo esc_url(get_permalink(get_option('page_for_posts'))); ?>" aria-label="Pogledaj sve vesti">
+                            Pogledaj sve vesti <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    <?php endif; ?>
+
+                    <!-- Navigacija -->
+                    <div class="product-nav-buttons">
+                        <button type="button" class="product-nav-prev" id="prev-<?php echo esc_attr($section_id); ?>" aria-label="Prethodni proizvodi" role="button" <?php echo $prev_disabled ? 'disabled' : ''; ?>>
+                            <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $prev_disabled ? 'Nema prethodnih proizvoda' : 'Prethodno'; ?>" />
+                        </button>
+                        <button type="button" class="product-nav-next" id="next-<?php echo esc_attr($section_id); ?>" aria-label="Sledeći proizvodi" role="button" <?php echo $next_disabled ? 'disabled' : ''; ?>>
+                            <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $next_disabled ? 'Nema sledećih proizvoda' : 'Sledeće'; ?>" />
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Swiper Blog Container -->
-    <div class="swiper-container with-pagination" id="blog-swiper">
-        <div class="swiper-wrapper">
-            <?php
-            $args = array(
-                'posts_per_page' => $blog_posts_count,
-                'post_status' => 'publish',
-                'no_found_rows' => true, // Optimizacija
-            );
-            $latest_posts = new WP_Query($args);
+        <!-- Swiper Blog Container -->
+        <div class="swiper-container" id="blog-swiper" data-slides="3">
+            <div class="swiper-wrapper">
+                <?php
+                $args = array(
+                    'posts_per_page' => $blog_posts_count,
+                    'post_type' => 'post',
+                    'post_status' => 'publish',
+                    'no_found_rows' => true,
+                );
+                $latest_posts = new WP_Query($args);
 
-            if ($latest_posts->have_posts()) :
-                while ($latest_posts->have_posts()) : $latest_posts->the_post();
-            ?>
-                    <div class="swiper-slide">
-                        <a href="<?php the_permalink(); ?>" class="blog-card">
-                            <div class="blog-card-inner">
-                                <?php if (has_post_thumbnail()) : ?>
-                                    <div class="blog-image swiper-lazy"
-                                        data-background="<?php echo esc_url(get_the_post_thumbnail_url(get_the_ID(), 'medium_large')); ?>">
-                                        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-                                    </div>
-                                <?php else : ?>
-                                    <div class="blog-image swiper-lazy"
-                                        data-background="<?php echo esc_url(get_template_directory_uri() . '/assets/images/placeholder.jpg'); ?>">
-                                        <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
-                                    </div>
-                                <?php endif; ?>
+                if ($latest_posts->have_posts()) :
+                    while ($latest_posts->have_posts()) : $latest_posts->the_post();
+                        // Dobavljamo URL slike i postavljamo fallback ako slika ne postoji
+                        $image_url = has_post_thumbnail() ? get_the_post_thumbnail_url(get_the_ID(), 'medium_large') : get_template_directory_uri() . '/dist/images/placeholder.jpg';
 
-                                <div class="blog-details">
-                                    <div class="blog-meta">
-                                        <span class="blog-date"><?php echo get_the_date('d M Y'); ?></span>
-                                        <?php if (get_the_author()) : ?>
-                                            <span class="blog-author"><?php the_author(); ?></span>
+                        // Dobavljamo kategoriju i tagove
+                        $categories = get_the_category();
+                        $category_name = !empty($categories) ? esc_html($categories[0]->name) : '';
+                        $post_tags = get_the_tags();
+                ?>
+                        <div class="swiper-slide">
+                            <article class="blog-card">
+                                <a href="<?php the_permalink(); ?>" class="card-link">
+                                    <!-- Card Header sa slikom -->
+                                    <div class="card-header">
+                                        <img class="card-img"
+                                            src="<?php echo esc_url($image_url); ?>"
+                                            alt="<?php the_title_attribute(); ?>"
+                                            loading="lazy">
+
+                                        <?php if ($category_name) : ?>
+                                            <span class="category-badge">
+                                                <?php echo $category_name; ?>
+                                            </span>
                                         <?php endif; ?>
                                     </div>
 
-                                    <h3 class="blog-title"><?php the_title(); ?></h3>
+                                    <!-- Card Body sa sadržajem -->
+                                    <div class="card-body">
+                                        <div class="card-meta">
+                                            <span class="post-date">
+                                                <?php echo get_the_date(); ?>
+                                            </span>
+                                            <span class="post-author">
+                                                <?php the_author(); ?>
+                                            </span>
+                                        </div>
 
-                                    <div class="blog-excerpt">
-                                        <?php echo wp_trim_words(get_the_excerpt(), 15, '...'); ?>
+                                        <h3 class="card-title">
+                                            <?php the_title(); ?>
+                                        </h3>
+
+                                        <div class="card-excerpt">
+                                            <?php echo wp_trim_words(get_the_excerpt(), 15, '...'); ?>
+                                        </div>
+
+                                        <?php if ($post_tags && !is_wp_error($post_tags)) : ?>
+                                            <div class="post-tags">
+                                                <?php foreach ($post_tags as $tag) : ?>
+                                                    <span class="post-tag"><?php echo esc_html($tag->name); ?></span>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
 
-                                    <div class="blog-tags">
-                                        <?php
-                                        $posttags = get_the_tags();
-                                        if ($posttags) {
-                                            $tag_names = array();
-                                            foreach ($posttags as $tag) {
-                                                $tag_names[] = $tag->name;
-                                            }
-                                            echo '<span>' . esc_html(implode(' | ', $tag_names)) . '</span>';
-                                        }
-                                        ?>
+                                    <!-- Card Footer -->
+                                    <div class="card-footer">
+                                        <span class="read-more">Pročitaj više</span>
                                     </div>
+                                </a>
+                            </article>
+                        </div>
+                <?php
+                    endwhile;
+                    wp_reset_postdata();
+                endif;
+                ?>
+            </div>
 
-                                    <div class="read-more">
-                                        <span>Pročitaj više <i class="fa-solid fa-arrow-right"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-            <?php
-                endwhile;
-                wp_reset_postdata();
-            endif;
-            ?>
+            <!-- Paginacija -->
+            <div class="swiper-pagination"></div>
         </div>
-
-        <!-- Paginacija -->
-        <div class="swiper-pagination"></div>
     </div>
-</div>
+</section>
