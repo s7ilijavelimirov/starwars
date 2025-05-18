@@ -19,7 +19,7 @@ if (function_exists('get_field')) {
 }
 ?>
 
-<div class="category-header py-5 bg-dark">
+<div class="category-header py-5">
     <div class="container">
         <h1 class="page-title text-center">
             <?php printf(esc_html__('Kategorija: %s', 'starwars'), single_cat_title('', false)); ?>

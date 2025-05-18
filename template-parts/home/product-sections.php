@@ -133,10 +133,10 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
 
                             <div class="product-nav-buttons">
                                 <button type="button" class="product-nav-prev" id="prev-<?php echo esc_attr($section_id); ?>" aria-label="Prethodni proizvodi" role="button" <?php echo $prev_disabled ? 'disabled' : ''; ?>>
-                                    <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $prev_disabled ? 'Nema prethodnih proizvoda' : 'Prethodno'; ?>" />
+                                    <img src="<?php echo get_template_directory_uri(); ?>/dist/images/arrow.svg" alt="<?php echo $prev_disabled ? 'Nema prethodnih proizvoda' : 'Prethodno'; ?>" />
                                 </button>
                                 <button type="button" class="product-nav-next" id="next-<?php echo esc_attr($section_id); ?>" aria-label="Sledeći proizvodi" role="button" <?php echo $next_disabled ? 'disabled' : ''; ?>>
-                                    <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $next_disabled ? 'Nema sledećih proizvoda' : 'Sledeće'; ?>" />
+                                    <img src="<?php echo get_template_directory_uri(); ?>/dist/images/arrow.svg" alt="<?php echo $next_disabled ? 'Nema sledećih proizvoda' : 'Sledeće'; ?>" />
                                 </button>
                             </div>
 

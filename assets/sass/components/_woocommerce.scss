@@ -1,3 +1,589 @@
+// WooCommerce glavni stilovi
+// ====================================
+
+// Star Wars tema boje - koristimo varijable iz _variables.scss
+$woo-primary: $secondary-color2; // Žuta boja
+$woo-secondary: $white;
+$woo-dark: $primary-color; // Crna boja
+$woo-accent: $third-color; // Plava boja
+$woo-red: #ff3c38; // Crvena boja za akcije, rasprodaje itd.
+
+// Osnovni wrapper
+.star-wars-woocommerce-wrapper {
+    padding: 2rem 0;
+    background-color: rgba($primary-color, 0.7);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba($secondary-color2, 0.3);
+}
+
+// Breadcrumbs
+.woocommerce .woocommerce-breadcrumb {
+    margin-bottom: 2rem;
+    color: $secondary-color2 !important;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+
+    a {
+        color: $white !important;
+        transition: all 0.3s ease;
+
+        &:hover {
+            color: $secondary-color2 !important;
+        }
+    }
+}
+
+// Rešavanje konflikta sa Bootstrap grid-om
+.woocommerce-page {
+    .row {
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    [class*="col-"] {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+/**
+ * Proizvodi u listi
+ */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product {
+    background-color: rgba($primary-color, 0.7);
+    border: 1px solid $secondary-color2;
+    border-radius: 8px;
+    overflow: hidden;
+    padding-bottom: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2.5rem;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba($secondary-color2, 0.5);
+    }
+
+    // Slika proizvoda
+    a img {
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba($secondary-color2, 0.3);
+        transition: transform 0.5s ease;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
+
+    // Naslov proizvoda
+    .woocommerce-loop-product__title {
+        color: $white;
+        font-size: 1rem;
+        padding: 0 0.8rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        transition: color 0.3s ease;
+
+        &:hover {
+            color: $secondary-color2;
+        }
+    }
+
+    // Cena proizvoda
+    .price {
+        color: $secondary-color2 !important;
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+
+        del {
+            color: rgba($white, 0.6);
+            margin-right: 5px;
+        }
+
+        ins {
+            text-decoration: none;
+            font-weight: bold;
+        }
+    }
+
+    // Dugme "Dodaj u korpu"
+    .button {
+        background-color: $secondary-color2;
+        color: $primary-color;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        display: block;
+        margin: 0 auto;
+        width: 80%;
+        text-align: center;
+
+        &:hover {
+            background-color: $white;
+            color: $primary-color;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba($secondary-color2, 0.6);
+        }
+    }
+}
+
+// Badge sa popustom
+.woocommerce span.onsale {
+    background-color: $woo-red;
+    color: $white;
+    border-radius: 0;
+    min-height: auto;
+    min-width: auto;
+    padding: 5px 10px;
+    line-height: 1.5;
+    font-weight: 600;
+    top: 10px;
+    left: 10px;
+}
+
+/**
+ * Paginacija
+ */
+.woocommerce nav.woocommerce-pagination {
+    margin-top: 2rem;
+
+    ul {
+        border: none;
+
+        li {
+            border-right: none;
+            margin: 0 5px;
+
+            a,
+            span {
+                padding: 0.8rem 1rem;
+                background-color: rgba($primary-color, 0.7);
+                color: $white;
+                border-radius: 8px;
+                border: 1px solid $secondary-color2;
+
+                &:hover,
+                &.current {
+                    background-color: $secondary-color2;
+                    color: $primary-color;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Single product
+ */
+.woocommerce div.product {
+    margin-top: 2rem;
+
+    // Galerija slika
+    div.images img {
+        border-radius: 8px;
+        border: 1px solid $secondary-color2;
+    }
+
+    // Naslov proizvoda
+    .product_title {
+        color: $secondary-color2;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    // Cena proizvoda
+    p.price,
+    span.price {
+        color: $secondary-color2;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+
+        del {
+            color: rgba($white, 0.6);
+            margin-right: 10px;
+        }
+
+        ins {
+            text-decoration: none;
+            font-weight: bold;
+        }
+    }
+
+    // Dugme "Dodaj u korpu"
+    form.cart .button {
+        background-color: $secondary-color2;
+        color: $primary-color;
+        font-weight: 600;
+        padding: 0.8rem 2rem;
+        border-radius: 30px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: $white;
+            color: $primary-color;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba($secondary-color2, 0.6);
+        }
+    }
+
+    // Tabovi
+    .woocommerce-tabs {
+        ul.tabs {
+            padding: 0;
+
+            li {
+                background-color: rgba($primary-color, 0.7);
+                border: 1px solid $secondary-color2;
+                border-radius: 8px 8px 0 0;
+                margin-right: 5px;
+
+                a {
+                    color: $white;
+                    font-weight: 600;
+                    padding: 0.8rem 1.5rem;
+
+                    &:hover {
+                        color: $secondary-color2;
+                    }
+                }
+
+                &.active {
+                    a {
+                        color: $secondary-color2;
+                    }
+                }
+
+                &::after,
+                &::before {
+                    display: none;
+                }
+            }
+        }
+
+        .panel {
+            background-color: rgba($primary-color, 0.7);
+            border: 1px solid $secondary-color2;
+            border-radius: 0 0 8px 8px;
+            padding: 1.5rem;
+            color: $white;
+
+            h2 {
+                color: $secondary-color2;
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+        }
+    }
+
+    // Opis proizvoda
+    .woocommerce-product-details__short-description {
+        margin-bottom: 2rem;
+        color: $white;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    // Meta podaci
+    .product_meta {
+        border-top: 1px solid rgba($secondary-color2, 0.3);
+        padding-top: 1rem;
+        margin-top: 1.5rem;
+        color: $white;
+        font-size: 0.9rem;
+
+        > span {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        a {
+            color: $secondary-color2;
+            transition: all 0.3s ease;
+
+            &:hover {
+                color: $white;
+            }
+        }
+    }
+}
+
+/**
+ * Korpa i checkout
+ */
+.woocommerce-cart {
+    table.cart {
+        td.actions {
+            .coupon {
+                .input-text {
+                    padding: 0.6rem 1rem;
+                    width: 150px;
+                    background-color: rgba($white, 0.9);
+                    border: 1px solid $secondary-color2;
+                    border-radius: 4px;
+                }
+            }
+        }
+
+        img {
+            width: 80px;
+            border-radius: 4px;
+            border: 1px solid rgba($secondary-color2, 0.3);
+        }
+
+        .product-remove {
+            a.remove {
+                color: $woo-red !important;
+
+                &:hover {
+                    background-color: $woo-red;
+                    color: $white !important;
+                }
+            }
+        }
+    }
+}
+
+.woocommerce table.shop_table {
+    border-radius: 8px;
+    border: 1px solid $secondary-color2;
+    background-color: rgba($primary-color, 0.7);
+
+    th {
+        color: $secondary-color2;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        padding: 1rem;
+    }
+
+    td {
+        color: $white;
+        padding: 1rem;
+        border-top: 1px solid rgba($secondary-color2, 0.3);
+
+        a {
+            color: $secondary-color2;
+
+            &:hover {
+                color: $white;
+            }
+        }
+    }
+}
+
+.woocommerce-cart .cart-collaterals .cart_totals {
+    h2 {
+        color: $secondary-color2;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+}
+
+.woocommerce-checkout {
+    #payment {
+        background-color: rgba($primary-color, 0.7);
+        border-radius: 8px;
+        border: 1px solid $secondary-color2;
+
+        div.payment_box {
+            background-color: rgba($secondary-color2, 0.1);
+            color: $white;
+
+            &::before {
+                border-bottom-color: rgba($secondary-color2, 0.1);
+            }
+        }
+    }
+
+    .woocommerce-billing-fields,
+    .woocommerce-shipping-fields,
+    .woocommerce-additional-fields {
+        h3 {
+            color: $secondary-color2;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+/* Input polja */
+.woocommerce form .form-row {
+    input.input-text,
+    textarea {
+        padding: 0.8rem;
+        background-color: rgba($white, 0.9);
+        border: 1px solid $secondary-color2;
+        border-radius: 8px;
+    }
+
+    label {
+        color: $secondary-color2;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/**
+ * Poruke
+ */
+.woocommerce-message,
+.woocommerce-info {
+    border-top-color: $secondary-color2;
+    background-color: rgba($primary-color, 0.7);
+    color: $white;
+    border-radius: 8px;
+
+    &::before {
+        color: $secondary-color2;
+    }
+
+    a {
+        color: $secondary-color2;
+        font-weight: bold;
+
+        &:hover {
+            color: $white;
+        }
+    }
+}
+
+.woocommerce-error {
+    border-top-color: $woo-red;
+    background-color: rgba($primary-color, 0.7);
+    color: $white;
+    border-radius: 8px;
+
+    &::before {
+        color: $woo-red;
+    }
+}
+
+/**
+ * Količina (quantity) input
+ */
+.woocommerce .quantity .qty {
+    width: 70px;
+    text-align: center;
+    padding: 8px;
+    border: 1px solid $secondary-color2;
+    background: transparent;
+    color: $white;
+}
+
+/**
+ * Moj nalog (My Account)
+ */
+.woocommerce-account {
+    .woocommerce-MyAccount-navigation {
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid $secondary-color2;
+            border-radius: 8px;
+            overflow: hidden;
+
+            li {
+                border-bottom: 1px solid rgba($secondary-color2, 0.3);
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                a {
+                    display: block;
+                    padding: 1rem;
+                    color: $white;
+                    background-color: rgba($primary-color, 0.7);
+                    transition: all 0.3s ease;
+
+                    &:hover {
+                        background-color: rgba($secondary-color2, 0.1);
+                        color: $secondary-color2;
+                    }
+                }
+
+                &.is-active {
+                    a {
+                        background-color: $secondary-color2;
+                        color: $primary-color;
+                        font-weight: 600;
+                    }
+                }
+            }
+        }
+    }
+
+    .woocommerce-MyAccount-content {
+        color: $white;
+
+        h2,
+        h3 {
+            color: $secondary-color2;
+        }
+
+        a {
+            color: $secondary-color2;
+
+            &:hover {
+                color: $white;
+            }
+        }
+    }
+}
+
+/**
+ * Responsive
+ */
+@media (max-width: 768px) {
+    .woocommerce ul.products[class*="columns-"] li.product,
+    .woocommerce-page ul.products[class*="columns-"] li.product {
+        width: 48%;
+        margin: 0 0 2.992em 0;
+
+        &:nth-child(2n) {
+            margin-left: 3.8%;
+        }
+    }
+
+    .woocommerce div.product .product_title {
+        font-size: 1.5rem;
+    }
+
+    .woocommerce-cart table.cart td.actions .coupon .input-text {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .woocommerce-cart table.cart td.actions .coupon .button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .woocommerce ul.products[class*="columns-"] li.product,
+    .woocommerce-page ul.products[class*="columns-"] li.product {
+        width: 100%;
+        margin: 0 0 2em 0;
+    }
+
+    .woocommerce div.product form.cart div.quantity {
+        margin-bottom: 1rem;
+    }
+
+    .woocommerce div.product form.cart .button {
+        width: 100%;
+    }
+}
+
 span.xoo-wsc-sc-count {
     background-color: #ffdd55;
     color: black;
@@ -28,5 +614,223 @@ span.xoo-wsc-sc-count {
         background-color: rgba(255, 255, 255, 0.74);
         padding: 6px 12px;
         border-radius: 12px;
+    }
+}
+/**
+ * Dodatni checkout stilovi
+ */
+
+/* Glavni checkout container */
+.star-wars-checkout {
+    margin-top: 2rem;
+}
+
+/* Sekcije checkout-a */
+.checkout-section {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid #ffdd55;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Naslovi sekcija */
+.checkout-section-title {
+    color: #ffdd55;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 221, 85, 0.3);
+}
+
+/* Polja forme */
+.star-wars-checkout .form-row {
+    margin-bottom: 1rem;
+}
+
+.star-wars-checkout .form-row label {
+    color: #ffdd55;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.star-wars-checkout .form-row input,
+.star-wars-checkout .form-row textarea,
+.star-wars-checkout .form-row select {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ffdd55;
+    border-radius: 4px;
+}
+
+/* Checkbox stilovi */
+.star-wars-checkout .form-row.woocommerce-validated input[type="checkbox"] {
+    border-color: #ffdd55;
+}
+
+/* Pregled porudžbine */
+#order_review_heading {
+    color: #ffdd55;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 221, 85, 0.3);
+}
+
+/* Tabela za pregled */
+.woocommerce-checkout-review-order-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.woocommerce-checkout-review-order-table th {
+    color: #ffdd55;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 221, 85, 0.3);
+}
+
+.woocommerce-checkout-review-order-table td {
+    color: #ffffff;
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(255, 221, 85, 0.2);
+}
+
+.woocommerce-checkout-review-order-table .product-name {
+    width: 60%;
+}
+
+.woocommerce-checkout-review-order-table .product-total {
+    text-align: right;
+}
+
+.woocommerce-checkout-review-order-table .cart-subtotal td,
+.woocommerce-checkout-review-order-table .order-total td {
+    text-align: right;
+}
+
+.woocommerce-checkout-review-order-table .order-total th,
+.woocommerce-checkout-review-order-table .order-total td {
+    font-size: 1.1rem;
+    color: #ffdd55;
+    font-weight: 700;
+}
+
+/* Načini plaćanja */
+#payment {
+    background-color: transparent !important;
+    border-radius: 4px;
+}
+
+#payment ul.payment_methods {
+    border-bottom: 1px solid rgba(255, 221, 85, 0.3);
+    padding: 1rem 0;
+}
+
+#payment ul.payment_methods li {
+    line-height: 2;
+    margin-bottom: 0.5rem;
+}
+
+#payment ul.payment_methods li label {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+#payment div.form-row {
+    padding: 1rem 0;
+}
+
+#payment div.payment_box {
+    background-color: rgba(255, 221, 85, 0.1) !important;
+    color: #ffffff !important;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0.5rem 0 1rem;
+}
+
+#payment div.payment_box::before {
+    border-bottom-color: rgba(255, 221, 85, 0.1) !important;
+}
+
+/* Dugme za naručivanje */
+#place_order {
+    background-color: #ffdd55 !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    padding: 0.8rem 1.5rem !important;
+    border-radius: 30px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    width: 100% !important;
+    transition: all 0.3s ease !important;
+}
+
+#place_order:hover {
+    background-color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(255, 221, 85, 0.5) !important;
+    transform: translateY(-3px) !important;
+}
+
+/* Checkout loading */
+.checkout-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 8px;
+}
+
+.checkout-loading .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 221, 85, 0.3);
+    border-top: 4px solid #ffdd55;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.checkout-loading span {
+    color: #ffdd55;
+    font-weight: 600;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive prilagođavanja */
+@media (max-width: 767px) {
+    .checkout-section {
+        padding: 1rem;
+    }
+
+    .checkout-section-title,
+    #order_review_heading {
+        font-size: 1.3rem;
+    }
+
+    .woocommerce-checkout-review-order-table th,
+    .woocommerce-checkout-review-order-table td {
+        padding: 0.5rem;
     }
 }

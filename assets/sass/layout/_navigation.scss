@@ -84,7 +84,142 @@
         margin-top: 20px;
     }
 }
+// SCSS stilovi samo za offcanvas-footer
 
+// Stilizovani offcanvas footer
+.offcanvas-footer {
+    padding: 0.5rem;
+    border-top: 1px solid rgba($secondary-color2, 0.3);
+    background-color: rgba($black, 0.4);
+    position: relative;
+    overflow: hidden;
+
+    // Svetleći efekat na vrhu
+    &:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, rgba($secondary-color2, 0.6) 50%, transparent 100%);
+        box-shadow: 0 0 10px 1px rgba($secondary-color2, 0.5);
+    }
+
+    // Footer socijalne ikone - prilagođavanje stilova
+    .footer-social-icons {
+        margin: 0 0 1rem;
+        text-align: center;
+
+        // Naslov sekcije
+        h2.rounded {
+            color: $secondary-color2;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            display: inline-block;
+
+            // Stilizovana linija ispod naslova
+            &:after {
+                content: "";
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                width: 40px;
+                height: 2px;
+                background-color: $secondary-color2;
+                transform: translateX(-50%);
+                box-shadow: 0 0 5px rgba($secondary-color2, 0.5);
+            }
+        }
+
+        // Kontejner za ikone
+        .social-icons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin: 15px 0;
+
+            // Pojedinačne ikone
+            .social-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                color: $black;
+                border-radius: 50%;
+                background-color: $secondary-color2;
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                border: 2px solid transparent;
+                position: relative;
+                box-shadow: 0 3px 10px rgba($secondary-color2, 0.3);
+
+                svg {
+                    position: relative;
+                    z-index: 1;
+                    width: 22px;
+                    height: 22px;
+                    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                }
+
+                &:hover {
+                    transform: scale(1.15) rotate(5deg);
+                    box-shadow: 0 5px 15px rgba($secondary-color2, 0.5);
+                    border-color: rgba($black, 0.2);
+
+                    svg {
+                        transform: scale(1.2) rotate(-5deg);
+                    }
+                }
+
+                &:active {
+                    transform: scale(0.95);
+                    transition: all 0.1s;
+                }
+            }
+        }
+    }
+
+    // Copyright tekst
+    .offcanvas-copyright {
+        text-align: center;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba($secondary-color2, 0.2);
+
+        p {
+            font-size: 0.75rem;
+            color: rgba($white, 0.7);
+            margin: 0;
+        }
+    }
+
+    // Responsive prilagođavanja
+    @media (max-width: 400px) {
+        .footer-social-icons {
+            .social-icons {
+                gap: 12px;
+
+                .social-icon {
+                    width: 42px;
+                    height: 42px;
+
+                    svg {
+                        width: 20px;
+                        height: 20px;
+                    }
+                }
+            }
+        }
+    }
+}
 // Dodatak za footer widget
 .footer-social-icons {
     .widget-title {
@@ -95,6 +230,58 @@
 
         @media (max-width: 767.98px) {
             text-align: center;
+        }
+    }
+}
+.breadcrumbs-container {
+    background-color: rgba($primary-color, 0.9);
+    padding: 10px 0;
+    border-bottom: 1px solid rgba($secondary-color2, 0.3);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.yoast-breadcrumbs {
+    font-size: 0.9rem;
+    padding: 6px 0;
+    color: $white;
+
+    a {
+        color: $secondary-color2;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        padding: 0 2px;
+
+        &:hover {
+            color: lighten($secondary-color2, 15%);
+            text-decoration: none;
+        }
+    }
+
+    span.breadcrumb_last {
+        color: rgba($white, 0.75);
+        font-weight: 400;
+    }
+
+    // Strelica između linkova
+    .breadcrumb-separator {
+        margin: 0 8px;
+        color: rgba($white, 0.5);
+    }
+
+    // Stil za mobilne uređaje
+    @media (max-width: 767.98px) {
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow-x: auto;
+        padding: 10px 0;
+        display: block;
+
+        &::-webkit-scrollbar {
+            height: 2px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba($secondary-color2, 0.5);
         }
     }
 }

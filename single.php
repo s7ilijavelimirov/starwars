@@ -112,7 +112,15 @@ while (have_posts()) : the_post();
                 </div>
             </div>
         <?php endif; ?>
-
+        <div class="breadcrumbs-container">
+            <div class="container">
+                <?php
+                if (function_exists('yoast_breadcrumb')) {
+                    yoast_breadcrumb('<div id="breadcrumbs" class="yoast-breadcrumbs">', '</div>');
+                }
+                ?>
+            </div>
+        </div>
         <div class="content-wrapper">
             <div class="container">
                 <div class="row">

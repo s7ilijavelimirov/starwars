@@ -1,39 +1,44 @@
 <?php
 
 /**
- * Template Part: Blog Sekcija - Minimalistička verzija bez animacija
+ * Template Part: Blog Sekcija - Sa strelicama za navigaciju kao kod product-carousel
  *
  * @package s7design
- * @version 2.5.0
+ * @version 2.6.0
  */
 
 // Parametri sekcije
 $blog_title = 'Najnovije vesti';
 $blog_posts_count = 6;
+$section_id = 'blog-swiper'; // ID za navigaciju
+
+// Resetuj disable status za navigacione dugmiće
+$prev_disabled = false;
+$next_disabled = false;
 ?>
 <section id="homepage-blog-section" class="py-5">
     <div class="container">
-        <!-- Header za blog sekciju sa navigacijom -->
+        <!-- Header za blog sekciju sa navigacijom - responsivan -->
         <div class="row align-items-center mb-4">
-            <div class="col">
+            <div class="col-md-6">
                 <h2 class="swiper-heading fs-1" id="news"><?php echo esc_html($blog_title); ?></h2>
             </div>
-            <div class="col-auto ms-auto">
-                <div class="d-flex align-items-center">
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <div class="d-flex align-items-center justify-content-md-end">
                     <?php if (get_permalink(get_option('page_for_posts'))) : ?>
-                        <!-- Jednostavno dugme bez efekata -->
+                        <!-- Dugme za prikaz svih vesti -->
                         <a class="view-all-btn" href="<?php echo esc_url(get_permalink(get_option('page_for_posts'))); ?>" aria-label="Pogledaj sve vesti">
                             Pogledaj sve vesti <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                         </a>
                     <?php endif; ?>
 
-                    <!-- Navigacija -->
+                    <!-- Navigacija - identična kao kod product-carousel -->
                     <div class="product-nav-buttons">
-                        <button type="button" class="product-nav-prev" id="prev-<?php echo esc_attr($section_id); ?>" aria-label="Prethodni proizvodi" role="button" <?php echo $prev_disabled ? 'disabled' : ''; ?>>
-                            <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $prev_disabled ? 'Nema prethodnih proizvoda' : 'Prethodno'; ?>" />
+                        <button type="button" class="product-nav-prev" id="prev-<?php echo esc_attr($section_id); ?>" aria-label="Prethodni blogovi" role="button" <?php echo $prev_disabled ? 'disabled' : ''; ?>>
+                            <img src="<?php echo get_template_directory_uri(); ?>/dist/images/arrow.svg" alt="<?php echo $prev_disabled ? 'Nema prethodnih blogova' : 'Prethodno'; ?>" />
                         </button>
-                        <button type="button" class="product-nav-next" id="next-<?php echo esc_attr($section_id); ?>" aria-label="Sledeći proizvodi" role="button" <?php echo $next_disabled ? 'disabled' : ''; ?>>
-                            <img src="<?php echo get_template_directory_uri(); ?>/arrow.svg" alt="<?php echo $next_disabled ? 'Nema sledećih proizvoda' : 'Sledeće'; ?>" />
+                        <button type="button" class="product-nav-next" id="next-<?php echo esc_attr($section_id); ?>" aria-label="Sledeći blogovi" role="button" <?php echo $next_disabled ? 'disabled' : ''; ?>>
+                            <img src="<?php echo get_template_directory_uri(); ?>/dist/images/arrow.svg" alt="<?php echo $next_disabled ? 'Nema sledećih blogova' : 'Sledeće'; ?>" />
                         </button>
                     </div>
                 </div>

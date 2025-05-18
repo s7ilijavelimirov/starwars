@@ -154,12 +154,17 @@
 				<hr>
 			</div>
 			<div class="offcanvas-footer">
-				<!-- Widgeti za mobilni menu ako postoje -->
+				<!-- Widgeti za mobilni menu sa poboljšanim stilovima -->
 				<?php if (is_active_sidebar('footer_3')) : ?>
 					<div class="footer-social-icons" role="complementary">
 						<?php dynamic_sidebar('footer_3'); ?>
 					</div>
 				<?php endif; ?>
+
+				<!-- Copyright tekst -->
+				<div class="offcanvas-copyright">
+					<p>&copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?>. Sva prava zadržana.</p>
+				</div>
 			</div>
 		</div>
 	</header>

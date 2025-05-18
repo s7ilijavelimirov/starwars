@@ -251,35 +251,40 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 /**
- * Blog Swiper inicijalizacija - Osnovna verzija bez centriranja
- * Optimizovana za mobilne uređaje i da ne izlazi iz kontejnera
+ * Blog Swiper inicijalizacija - Sa istom navigacijom kao product-carousel
+ * Optimizovana za mobilne uređaje i sa konzistentnim UI
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-    initBasicBlogSwiper();
+    initBlogSwiper();
 
     /**
-     * Osnovna inicijalizacija blog Swiper-a 
-     * Jednostavna verzija koja kliza po 1 karticu
+     * Inicijalizacija blog Swiper-a sa navigacijom
      */
-    function initBasicBlogSwiper() {
+    function initBlogSwiper() {
         const blogSwiper = document.getElementById('blog-swiper');
-
         if (!blogSwiper) return;
 
+        const prevButton = document.getElementById('prev-blog-swiper');
+        const nextButton = document.getElementById('next-blog-swiper');
+
         try {
-            // Inicijalizacija Swiper-a za blog - osnovne opcije
+            // Inicijalizacija Swiper-a za blog sa navigacionim dugmićima
             const swiper = new Swiper('#blog-swiper', {
-                // Osnovne opcije - po jedna kartica
+                // Osnovne opcije - 3 kartice na desktop-u
                 slidesPerView: 3,
-                slidesPerGroup: 1, // Pomera se po jedna kartica
+                slidesPerGroup: 1,
                 spaceBetween: 20,
                 grabCursor: true,
                 speed: 500,
 
-                // Ključno: isključujemo centriranje i ostale napredne opcije
+                // Isključujemo loop i centriranje
                 centeredSlides: false,
                 loop: false,
+
+                // Omogućimo preload slika
+                preloadImages: true,
+                watchSlidesProgress: true,
 
                 // Responzivne opcije
                 breakpoints: {
@@ -290,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     1200: { slidesPerView: 3, spaceBetween: 20 }
                 },
 
-                // Navigacija
+                // Navigacija - ciljanje preciznih ID-eva
                 navigation: {
                     nextEl: '#next-blog-swiper',
                     prevEl: '#prev-blog-swiper',
@@ -299,21 +304,67 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Paginacija
                 pagination: {
-                    el: '.swiper-pagination',
+                    el: '#blog-swiper .swiper-pagination',
                     clickable: true
                 },
 
-                // Jednostavan efekat bez komplikovanih animacija
-                effect: 'slide'
+                // Događaji
+                on: {
+                    init: function () {
+                        updateNavigationState(this, 'blog-swiper');
+                    },
+                    slideChange: function () {
+                        updateNavigationState(this, 'blog-swiper');
+                    }
+                }
             });
 
-            // Dodavanje event listener-a za resize
+            // Eksplicitno dodajemo event listenere za dugmiće
+            if (prevButton) {
+                prevButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    swiper.slidePrev();
+                });
+            }
+
+            if (nextButton) {
+                nextButton.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    swiper.slideNext();
+                });
+            }
+
+            // Dodavanje resize handlera
             window.addEventListener('resize', function () {
                 swiper.update();
             }, { passive: true });
 
         } catch (error) {
             console.error('Blog Swiper inicijalizacija nije uspela:', error);
+        }
+    }
+
+    /**
+     * Ažurira stanje navigacionih dugmića
+     */
+    function updateNavigationState(swiper, sectionId) {
+        const prevBtn = document.getElementById(`prev-${sectionId}`);
+        const nextBtn = document.getElementById(`next-${sectionId}`);
+
+        if (prevBtn) {
+            if (swiper.isBeginning) {
+                prevBtn.classList.add('swiper-button-disabled');
+            } else {
+                prevBtn.classList.remove('swiper-button-disabled');
+            }
+        }
+
+        if (nextBtn) {
+            if (swiper.isEnd) {
+                nextBtn.classList.add('swiper-button-disabled');
+            } else {
+                nextBtn.classList.remove('swiper-button-disabled');
+            }
         }
     }
 });

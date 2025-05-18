@@ -7,13 +7,13 @@
     position: relative;
     width: 100%;
     overflow: hidden;
-    margin-bottom: 3rem;
+    margin-bottom: 0rem;
 
     &.fixed-height {
-        height: 400px;
+        height: 500px;
 
         @media (max-width: 767px) {
-            height: 350px;
+            height: 400px;
         }
 
         @media (max-width: 576px) {
@@ -35,6 +35,7 @@
             align-items: center;
             justify-content: center;
             background-color: $black;
+            
         }
 
         // Featured image sa očuvanjem odnosa i centriranjem
@@ -98,7 +99,11 @@
             font-weight: 700;
             margin-bottom: 1.5rem;
             color: $white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
 
             @media (max-width: 991px) {
                 font-size: 2rem;
@@ -306,6 +311,11 @@
         b {
             color: $secondary-color2;
             font-weight: 700;
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
         }
 
         em,

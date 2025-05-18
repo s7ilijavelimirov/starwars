@@ -9,7 +9,7 @@
 get_header();
 ?>
 
-<div class="blog-header py-5 bg-dark">
+<div class="blog-header py-5">
     <div class="container">
         <h1 class="page-title text-center">
             <?php echo esc_html(get_the_title(get_option('page_for_posts'))); ?>

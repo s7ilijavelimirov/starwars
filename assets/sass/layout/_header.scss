@@ -6,7 +6,44 @@
         opacity: 1;
     }
 }
+:root {
+    --scrollbar-width: calc(100vw - 100%); /* Automatski računa širinu scrollbara */
+}
 
+body {
+    overflow-x: hidden; /* Sprečava horizontalni scrollbar */
+}
+
+.site-header {
+    /* Koristi calc da kompenzuje širinu scrollbara za sticky header */
+    width: calc(100% - var(--scrollbar-width));
+}
+/* Sprečava skakanje prilikom navigacije zbog scrollbara */
+html {
+    scrollbar-gutter: stable; /* Moderna CSS opcija, radi u novijim browserima */
+}
+
+/* Alternativno rešenje za starije browsere */
+html.legacy-browser {
+    overflow-y: scroll; /* Uvek prikazuje scrollbar */
+}
+
+/* Fixira header kontejner da ne skače */
+.site-header .container {
+    width: 100%;
+}
+
+/* Osigurava da body nikad nema horizontalni scroll */
+body {
+    overflow-x: hidden;
+}
+
+/* Osigurava da sticky header radi pravilno */
+.site-header.sticky-top {
+    width: 100%;
+    left: 0;
+    right: 0;
+}
 // Header
 .site-header {
     position: sticky;
@@ -278,7 +315,7 @@
         }
 
         .offcanvas-body {
-           // padding: 1.5rem;
+            // padding: 1.5rem;
 
             .navbar-nav {
                 .nav-item {
