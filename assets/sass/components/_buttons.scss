@@ -1,0 +1,1106 @@
+$sw-yellow: #ffdd55;
+$sw-black: #000;
+$sw-grey: #222;
+$sw-white: #fff;
+$sw-border: #444;
+$sw-radius: 8px;
+
+// WooCommerce form inputs
+.woocommerce input[type="text"],
+.woocommerce input[type="email"],
+.woocommerce input[type="tel"],
+.woocommerce input[type="number"],
+.woocommerce input[type="password"],
+.woocommerce input[type="search"],
+.woocommerce textarea,
+.woocommerce select {
+    background-color: $sw-grey;
+    color: $sw-yellow;
+    border: 1px solid $sw-border;
+    border-radius: $sw-radius;
+    padding: 12px 16px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 5px rgba(255, 221, 85, 0.2);
+
+    &:focus {
+        border-color: $sw-yellow;
+        outline: none;
+        box-shadow: 0 0 10px rgba(255, 221, 85, 0.5);
+    }
+
+    &::placeholder {
+        color: lighten($sw-yellow, 20%);
+    }
+}
+
+// Select arrow styling
+.woocommerce select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%23ffdd55' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px;
+}
+
+// Add to Cart & Buttons
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit,
+.woocommerce input[type="submit"] {
+    background-color: $sw-yellow;
+    color: $sw-black;
+    border: none;
+    border-radius: $sw-radius;
+    padding: 12px 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 221, 85, 0.6);
+
+    &:hover {
+        background-color: darken($sw-yellow, 10%);
+        box-shadow: 0 0 15px rgba(255, 221, 85, 0.9);
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        background-color: lighten($sw-yellow, 30%);
+        color: #aaa;
+        cursor: not-allowed;
+    }
+}
+
+// // Checkout form sections
+// .woocommerce-checkout .woocommerce-billing-fields,
+// .woocommerce-checkout .woocommerce-shipping-fields,
+// .woocommerce-checkout .woocommerce-additional-fields {
+//     background-color: $sw-black;
+//     padding: 20px;
+//     border-radius: $sw-radius;
+//     border: 1px solid $sw-border;
+//     color: $sw-yellow;
+
+//     h3,
+//     h2,
+//     h4 {
+//         color: $sw-yellow;
+//     }
+// }
+
+// Cart Table Styling
+.woocommerce-cart table.cart {
+    background-color: $sw-black;
+    border: 1px solid $sw-border;
+    color: $sw-yellow;
+
+    th,
+    td {
+        border-color: $sw-border;
+        padding: 12px;
+    }
+
+    .product-remove a {
+        color: red;
+
+        &:hover {
+            color: darkred;
+        }
+    }
+}
+
+// Notices (Success/Error)
+.woocommerce-message,
+.woocommerce-error,
+.woocommerce-info {
+    background-color: $sw-grey;
+    color: $sw-yellow;
+    border-radius: $sw-radius;
+}
+.quantity.buttons-added {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffe81f;
+    border-radius: 6px;
+    padding: 6px 8px;
+    gap: 6px;
+    width: fit-content;
+    box-shadow: 0 0 8px rgba(255, 232, 31, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 0 12px rgba(255, 232, 31, 0.5);
+        transform: scale(1.01);
+    }
+
+    button.minus,
+    button.plus {
+        background-color: #ffe81f;
+        color: #000;
+        font-size: 1.3rem;
+        font-weight: bold;
+        border: none;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        //transition: all 0.2s ease;
+        border-radius: 5px;
+        text-shadow: 1px 1px #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+
+        &:hover {
+            background-color: #fff200;
+            box-shadow: 0 0 6px rgba(255, 232, 31, 0.6);
+            transform: scale(1.05);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+
+    input.qty {
+        width: 44px;
+        height: 34px;
+        text-align: center;
+        border: none;
+        font-size: 1.1rem;
+        background: transparent;
+        color: #fff;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+        outline: none;
+        -moz-appearance: textfield;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    }
+
+    // 📱 Responsive - za manje ekrane
+    @media (max-width: 480px) {
+        padding: 5px 6px;
+        gap: 4px;
+
+        button.minus,
+        button.plus {
+            width: 28px;
+            height: 28px;
+            font-size: 1rem;
+        }
+
+        input.qty {
+            width: 36px;
+            height: 28px;
+            font-size: 1rem;
+        }
+    }
+}
+// Load More dugme i paginacija stilovi - za Star Wars temu
+// =====================================================
+
+// Varijable - koristi postojeće iz teme
+$load-more-color: $secondary-color2; // Žuta boja
+$load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
+
+// Glavni kontejner za paginaciju
+.sw-pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem 0;
+    padding: 1rem 0;
+    position: relative;
+    width: 100%;
+    gap: 1.5rem;
+}
+
+// Kontejner za Load More dugme
+.sw-load-more-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+// Stilovi za Load More dugme
+.sw-load-more-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    padding: 0.9rem 2rem;
+    background-color: $load-more-bg;
+    color: $load-more-color;
+    border: 2px solid $load-more-color;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+
+    // Sadržaj dugmeta
+    span {
+        position: relative;
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+
+    // Hover efekti
+    &:hover {
+        background-color: $load-more-color;
+        color: $primary-color;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba($load-more-color, 0.5);
+
+        .sw-loading-spinner {
+            border-color: $primary-color;
+            border-top-color: transparent;
+        }
+    }
+
+    // Aktivni efekt
+    &:active {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 10px rgba($load-more-color, 0.3);
+    }
+
+    // Stanje učitavanja
+    &.loading {
+        cursor: wait;
+
+        span {
+            opacity: 0.5;
+            transform: translateY(-10px);
+        }
+
+        .sw-loading-spinner {
+            opacity: 1;
+            transform: translateY(0) translateX(-50%) rotate(0deg);
+        }
+    }
+
+    // Sakriveno stanje
+    &.hidden {
+        opacity: 0;
+        transform: translateY(20px);
+        pointer-events: none;
+    }
+}
+
+// Spinner za učitavanje
+.sw-loading-spinner {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid $load-more-color;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    opacity: 0;
+    transform: translateY(10px) translateX(-50%) rotate(0deg);
+    transition: all 0.3s ease;
+    animation: sw-spin 1s linear infinite;
+    z-index: 2;
+}
+
+// Animacija za spinner
+@keyframes sw-spin {
+    0% {
+        transform: translateY(0) translateX(-50%) rotate(0deg);
+    }
+    100% {
+        transform: translateY(0) translateX(-50%) rotate(360deg);
+    }
+}
+
+// Informacije o paginaciji
+.sw-pagination-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: $white;
+    margin-bottom: 0.5rem;
+
+    .sw-current-page {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $load-more-color;
+        margin-bottom: 0.5rem;
+    }
+
+    .sw-products-count {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+}
+
+// Numerička paginacija
+.sw-pagination-numbers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+
+    .sw-page-text {
+        color: $white;
+        margin-right: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .sw-page-numbers {
+        display: flex;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+
+        li {
+            margin: 0 3px;
+        }
+
+        .sw-page-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba($primary-color, 0.7);
+            color: $white;
+            border: 1px solid rgba($load-more-color, 0.5);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+
+            &:hover {
+                background-color: rgba($load-more-color, 0.2);
+                border-color: $load-more-color;
+                transform: translateY(-2px);
+            }
+
+            &.current {
+                background-color: $load-more-color;
+                color: $primary-color;
+                border-color: $load-more-color;
+                font-weight: 700;
+                box-shadow: 0 2px 8px rgba($load-more-color, 0.4);
+            }
+        }
+
+        .sw-dots {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: $load-more-color;
+            width: 36px;
+            height: 36px;
+            font-weight: 700;
+        }
+    }
+}
+
+// Poruka kada nema više proizvoda
+.no-more-products {
+    text-align: center;
+    color: $white;
+    font-size: 1rem;
+    padding: 1rem;
+    background-color: rgba($primary-color, 0.7);
+    border: 1px solid rgba($load-more-color, 0.3);
+    border-radius: 8px;
+    margin: 2rem auto;
+    max-width: 400px;
+}
+
+// Responzivna prilagođavanja
+@media (max-width: 767px) {
+    .sw-pagination-container {
+        gap: 1rem;
+    }
+
+    .sw-load-more-btn {
+        min-width: 180px;
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .sw-pagination-info {
+        .sw-current-page {
+            font-size: 1rem;
+        }
+
+        .sw-products-count {
+            font-size: 0.85rem;
+        }
+    }
+
+    .sw-pagination-numbers {
+        .sw-page-text {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-right: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .sw-page-numbers {
+            justify-content: center;
+
+            .sw-page-number {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+        }
+    }
+}
+
+@media (max-width: 575px) {
+    .sw-load-more-btn {
+        min-width: 160px;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+    }
+
+    .sw-pagination-numbers {
+        .sw-page-numbers {
+            .sw-page-number {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+        }
+    }
+}
+// Quick View stilovi za Star Wars temu
+// =======================================
+
+// Varijable - koristi postojeće iz teme
+$qv-color: $secondary-color2; // Žuta boja
+$qv-bg: $primary-color;
+$qv-overlay-opacity: 0.85;
+$qv-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+$qv-animation-speed: 0.3s;
+
+// Stil za Quick View dugme na proizvodu
+.sw-quick-view-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    opacity: 0;
+    transition: all $qv-animation-speed ease;
+
+    // Kada prelazimo preko proizvoda
+    .product:hover & {
+        opacity: 1;
+    }
+}
+
+// Quick View dugme
+.sw-quick-view-button {
+    background-color: rgba($qv-bg, 0.8);
+    color: $qv-color;
+    border: 2px solid $qv-color;
+    border-radius: 30px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all $qv-animation-speed ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    // Ikonica oka
+    .sw-quick-view-icon {
+        position: relative;
+        width: 18px;
+        height: 18px;
+        margin-right: 6px;
+
+        &:before {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid $qv-color;
+            border-radius: 50%;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        &:after {
+            content: "";
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: $qv-color;
+            border-radius: 50%;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+    }
+
+    // Hover efekti
+    &:hover {
+        background-color: $qv-color;
+        color: $qv-bg;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba($qv-color, 0.5);
+
+        .sw-quick-view-icon {
+            &:before {
+                border-color: $qv-bg;
+            }
+
+            &:after {
+                background-color: $qv-bg;
+            }
+        }
+    }
+
+    // Fokus efekti
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($qv-color, 0.3);
+    }
+}
+
+// Modalno prozor
+.sw-quick-view-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999999;
+    display: none;
+
+    // Overlay podloga
+    .sw-quick-view-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba($qv-bg, $qv-overlay-opacity);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 1;
+    }
+
+    // Container za sadržaj
+    .sw-quick-view-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        padding: 20px;
+    }
+
+    // Glavni content kontejner
+    .sw-quick-view-content {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        max-height: 90vh;
+        background-color: $qv-bg;
+        border: 2px solid $qv-color;
+        border-radius: 8px;
+        overflow: auto;
+        box-shadow: $qv-box-shadow;
+        animation: sw-qv-fadein $qv-animation-speed ease;
+
+        // Scrollbar stilovi
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: rgba($qv-color, 0.1);
+            border-radius: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba($qv-color, 0.5);
+            border-radius: 4px;
+
+            &:hover {
+                background-color: $qv-color;
+            }
+        }
+    }
+
+    // Dugme za zatvaranje
+    .sw-quick-view-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        background-color: rgba($qv-bg, 0.8);
+        border: 1px solid $qv-color;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all $qv-animation-speed ease;
+
+        .sw-quick-view-close-icon {
+            color: $qv-color;
+            font-size: 24px;
+            line-height: 1;
+            transition: all $qv-animation-speed ease;
+        }
+
+        &:hover {
+            background-color: $qv-color;
+            transform: rotate(90deg);
+
+            .sw-quick-view-close-icon {
+                color: $qv-bg;
+            }
+        }
+    }
+
+    // Unutrašnji kontejner
+    .sw-quick-view-inner {
+        padding: 20px;
+        position: relative;
+    }
+
+    // Loader za učitavanje
+    .sw-quick-view-loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba($qv-bg, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+    }
+
+    // Spinner za učitavanje
+    .sw-quick-view-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba($qv-color, 0.3);
+        border-top: 3px solid $qv-color;
+        border-radius: 50%;
+        animation: sw-qv-spin 1s linear infinite;
+    }
+}
+
+// Struktura proizvoda u Quick View
+.sw-quick-view-product {
+    padding: 10px;
+
+    .sw-quick-view-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+    }
+
+    // Leva kolona - slike
+    .sw-quick-view-images {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 15px;
+
+        .sw-quick-view-image {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            border: 1px solid rgba($qv-color, 0.2);
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+
+        // Thumbnails za galeriju
+        .sw-quick-view-thumbnails {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+
+            .sw-quick-view-thumbnail {
+                width: 70px;
+                height: 70px;
+                border-radius: 4px;
+                border: 1px solid rgba($qv-color, 0.2);
+                overflow: hidden;
+                cursor: pointer;
+                transition: all $qv-animation-speed ease;
+
+                .sw-quick-view-thumbnail-img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform $qv-animation-speed ease;
+                }
+
+                &:hover {
+                    border-color: $qv-color;
+                    box-shadow: 0 0 8px rgba($qv-color, 0.4);
+
+                    .sw-quick-view-thumbnail-img {
+                        transform: scale(1.1);
+                    }
+                }
+
+                &.active {
+                    border: 2px solid $qv-color;
+                    box-shadow: 0 0 8px rgba($qv-color, 0.5);
+                }
+            }
+        }
+    }
+
+    // Desna kolona - informacije o proizvodu
+    .sw-quick-view-summary {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 15px;
+
+        // Naslov
+        .sw-quick-view-title {
+            font-size: 1.8rem;
+            color: $qv-color;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        // Cena
+        .sw-quick-view-price {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+
+            .woocommerce-Price-amount {
+                color: $qv-color;
+                font-weight: 700;
+            }
+
+            del {
+                color: rgba($white, 0.6);
+                margin-right: 10px;
+                font-size: 1.1rem;
+
+                .woocommerce-Price-amount {
+                    color: rgba($white, 0.6);
+                    font-weight: normal;
+                }
+            }
+
+            ins {
+                text-decoration: none;
+            }
+        }
+
+        // Opis
+        .sw-quick-view-description {
+            margin-bottom: 1.5rem;
+            color: $white;
+            font-size: 0.95rem;
+            line-height: 1.6;
+
+            p {
+                margin-bottom: 0.8rem;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        // Dugmadi akcija
+        .sw-quick-view-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            position: relative;
+
+            .button {
+                padding: 12px 20px;
+                border-radius: 30px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                transition: all $qv-animation-speed ease;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+
+                &.sw-quick-view-details {
+                    background-color: rgba($white, 0.1);
+                    color: $white;
+                    border: 1px solid rgba($white, 0.3);
+
+                    &:hover {
+                        background-color: rgba($white, 0.2);
+                        transform: translateY(-2px);
+                    }
+                }
+
+                &.sw-quick-view-add-to-cart {
+                    background-color: $qv-color;
+                    color: $qv-bg;
+                    border: 1px solid $qv-color;
+                    position: relative;
+
+                    &:hover {
+                        background-color: darken($qv-color, 5%);
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 10px rgba($qv-color, 0.4);
+                    }
+
+                    &.loading {
+                        opacity: 0.7;
+                        padding-right: 40px;
+
+                        &:after {
+                            content: "";
+                            position: absolute;
+                            top: 50%;
+                            right: 15px;
+                            transform: translateY(-50%);
+                            width: 16px;
+                            height: 16px;
+                            border: 2px solid rgba($qv-bg, 0.3);
+                            border-top: 2px solid $qv-bg;
+                            border-radius: 50%;
+                            animation: sw-qv-spin 1s linear infinite;
+                        }
+                    }
+                }
+            }
+
+            // Poruka o uspešnom dodavanju u korpu
+            .sw-quick-view-message {
+                position: absolute;
+                left: 0;
+                bottom: calc(100% + 10px);
+                width: 100%;
+                padding: 10px 15px;
+                border-radius: 4px;
+                font-size: 0.95rem;
+                animation: sw-qv-slide-in $qv-animation-speed ease;
+
+                &.success {
+                    background-color: rgba(46, 204, 113, 0.2);
+                    border: 1px solid rgba(46, 204, 113, 0.5);
+                    color: #2ecc71;
+                }
+
+                &.error {
+                    background-color: rgba(231, 76, 60, 0.2);
+                    border: 1px solid rgba(231, 76, 60, 0.5);
+                    color: #e74c3c;
+                }
+            }
+        }
+
+        // Meta podaci
+        .sw-quick-view-meta {
+            border-top: 1px solid rgba($qv-color, 0.2);
+            padding-top: 1rem;
+            font-size: 0.9rem;
+            color: rgba($white, 0.8);
+
+            .sw-quick-view-categories,
+            .sw-quick-view-tags {
+                margin-bottom: 0.5rem;
+            }
+
+            .sw-meta-label {
+                color: $qv-color;
+                font-weight: 600;
+                margin-right: 5px;
+            }
+
+            a {
+                color: $white;
+                transition: color $qv-animation-speed ease;
+
+                &:hover {
+                    color: $qv-color;
+                }
+            }
+        }
+    }
+}
+
+// Animacije
+@keyframes sw-qv-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes sw-qv-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes sw-qv-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Fiksiranje body-ja kada je modal otvoren
+body.sw-quick-view-open {
+    overflow: hidden;
+}
+
+// Responzivna prilagođavanja
+@media (max-width: 767px) {
+    .sw-quick-view-product {
+        .sw-quick-view-row {
+            flex-direction: column;
+        }
+
+        .sw-quick-view-images,
+        .sw-quick-view-summary {
+            flex: 0 0 100%;
+            max-width: 100%;
+            padding: 0;
+        }
+
+        .sw-quick-view-images {
+            margin-bottom: 2rem;
+
+            .sw-quick-view-thumbnails {
+                justify-content: center;
+
+                .sw-quick-view-thumbnail {
+                    width: 60px;
+                    height: 60px;
+                }
+            }
+        }
+
+        .sw-quick-view-title {
+            font-size: 1.5rem;
+        }
+
+        .sw-quick-view-price {
+            font-size: 1.2rem;
+        }
+
+        .sw-quick-view-actions {
+            flex-direction: column;
+
+            .button {
+                width: 100%;
+            }
+        }
+    }
+}
+
+@media (max-width: 575px) {
+    .sw-quick-view-button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+
+        .sw-quick-view-icon {
+            width: 16px;
+            height: 16px;
+
+            &:before {
+                width: 10px;
+                height: 10px;
+            }
+
+            &:after {
+                width: 5px;
+                height: 5px;
+                left: 2.5px;
+            }
+        }
+    }
+
+    .sw-quick-view-modal {
+        .sw-quick-view-container {
+            padding: 15px;
+        }
+
+        .sw-quick-view-content {
+            max-height: 95vh;
+        }
+
+        .sw-quick-view-inner {
+            padding: 15px;
+        }
+    }
+
+    .sw-quick-view-product {
+        padding: 5px;
+
+        .sw-quick-view-title {
+            font-size: 1.3rem;
+        }
+
+        .sw-quick-view-price {
+            font-size: 1.1rem;
+        }
+
+        .sw-quick-view-images {
+            .sw-quick-view-thumbnails {
+                .sw-quick-view-thumbnail {
+                    width: 50px;
+                    height: 50px;
+                }
+            }
+        }
+    }
+}

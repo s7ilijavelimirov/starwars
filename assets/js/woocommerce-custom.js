@@ -1,5 +1,6 @@
 /**
- * WooCommerce JavaScript funkcionalnosti
+ * Star Wars WooCommerce Custom JS
+ * Optimizacije i poboljšanja za WooCommerce
  */
 document.addEventListener('DOMContentLoaded', function () {
     // Proveri da li je jQuery dostupan
@@ -138,23 +139,64 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Fiksiraj header korpe za mobilne
-        function fixMobileCartHeader() {
-            if (window.innerWidth < 768 && $('.woocommerce-cart').length) {
-                var $cartHeader = $('.shop_table thead tr');
-                var headerOffset = $cartHeader.offset().top;
 
-                $(window).on('scroll', function () {
-                    if ($(window).scrollTop() > headerOffset) {
-                        if (!$cartHeader.hasClass('fixed-header')) {
-                            $cartHeader.addClass('fixed-header');
-                            $cartHeader.closest('table').addClass('has-fixed-header');
+        // Optimizacija za kategorije
+        function enhanceCategories() {
+            // Ako smo na strani kategorije
+            if ($('body').hasClass('woocommerce-product-category')) {
+                // Izjednači visinu kartica
+                equalizeProductHeights();
+
+                // Dodaj efekat na hover za kategorije
+                $('.subcategory-item a').hover(
+                    function () {
+                        $(this).find('.subcategory-name').css('color', '#ffdd55');
+                    },
+                    function () {
+                        $(this).find('.subcategory-name').css('color', '');
+                    }
+                );
+            }
+        }
+
+        // Funkcija za izjednačavanje visine kartica sa proizvodima
+        function equalizeProductHeights() {
+            if (window.innerWidth >= 768) {
+                // Reset heights
+                $('.products li.product').css('height', 'auto');
+
+                var row = [];
+                var tallest = 0;
+                var $products = $('.products li.product');
+
+                // Pronađi najviši element u svakom redu
+                $products.each(function (i) {
+                    var $this = $(this);
+                    var height = $this.outerHeight();
+
+                    // Dodaj u trenutni red
+                    row.push($this);
+
+                    if (height > tallest) {
+                        tallest = height;
+                    }
+
+                    // Proveri da li je ovo kraj reda
+                    var nextTop = i < $products.length - 1 ? $products.eq(i + 1).offset().top : null;
+                    if (nextTop === null || nextTop > $this.offset().top) {
+                        // Postavi visinu svima u redu
+                        for (var j = 0; j < row.length; j++) {
+                            row[j].css('height', tallest + 'px');
                         }
-                    } else {
-                        $cartHeader.removeClass('fixed-header');
-                        $cartHeader.closest('table').removeClass('has-fixed-header');
+
+                        // Reset za sledeći red
+                        row = [];
+                        tallest = 0;
                     }
                 });
+            } else {
+                // Na malim ekranima vrati na auto height
+                $('.products li.product').css('height', 'auto');
             }
         }
 
@@ -167,12 +209,18 @@ document.addEventListener('DOMContentLoaded', function () {
             lazyLoadImages();
             enhanceAddToCart();
             enhanceMobileExperience();
-            fixMobileCartHeader();
+            initQuickView();
+            enhanceCategories();
 
             // Pokreni ponovo pri promeni veličine ekrana
             $(window).on('resize', function () {
                 enhanceMobileExperience();
-                fixMobileCartHeader();
+                equalizeProductHeights();
+            });
+
+            // Load event - neki efekti su bolji nakon kompletnog učitavanja
+            $(window).on('load', function () {
+                setTimeout(equalizeProductHeights, 500);
             });
         }
 

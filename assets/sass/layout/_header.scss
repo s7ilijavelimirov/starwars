@@ -38,6 +38,40 @@ body {
     overflow-x: hidden;
 }
 
+
+
+span.xoo-wsc-sc-count {
+    background-color: #ffdd55;
+    color: black;
+    font-weight: 700;
+}
+.xoo-wsc-cart-trigger {
+    span.xoo-wsc-sc-subt {
+        color: #ffdd55 !important;
+        font-weight: 700;
+        text-shadow:
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
+    }
+}
+.xoo-wsc-sc-bki {
+    color: #ffdd55 !important;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+}
+.cart-icon-wrapper {
+    .xoo-wsc-sc-cont {
+        transition: 0.3s ease-in-out;
+        background-color: rgba(255, 255, 255, 0.74);
+        padding: 6px 12px;
+        border-radius: 12px;
+    }
+}
 /* Osigurava da sticky header radi pravilno */
 .site-header.sticky-top {
     width: 100%;
