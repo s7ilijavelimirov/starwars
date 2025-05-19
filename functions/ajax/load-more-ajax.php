@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 /**
  * AJAX funkcija za učitavanje više proizvoda
- * Optimizovana verzija sa boljim performansama i rukovanjem grešaka
+ * Optimizovana verzija sa podrškom za Quick View funkcionalnost
  */
 function sw_load_more_products()
 {
@@ -126,10 +126,16 @@ function sw_load_more_products()
     if ($products_query->have_posts()) {
         ob_start();
 
+        // KLJUČNA MODIFIKACIJA: Osigurava da će quick-view funkcija biti pozvana
+        // ======================================================================
+
+        // Ova funkcija osigurava da će quick-view biti dostupan na AJAX-om učitanim proizvodima
+        add_action('woocommerce_before_shop_loop_item_title', 'sw_add_quick_view_button', 15);
+
         // Dodajemo atribute za lazy loading
         add_filter('wp_get_attachment_image_attributes', 'sw_add_lazy_loading_to_images', 10, 3);
 
-        // Sad učitaj kompletne podatke proizvoda
+        // Učitaj kompletne podatke proizvoda
         foreach ($products_query->posts as $product_id) {
             $GLOBALS['post'] = get_post($product_id);
             setup_postdata($GLOBALS['post']);

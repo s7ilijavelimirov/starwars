@@ -1,26 +1,27 @@
 /**
- * Optimizovana Quick View funkcionalnost za WooCommerce proizvode
- * Sa podrškom za dinamički učitane proizvode
+ * Optimizovani Quick View JS sa podrškom za varijacije
+ * Sada zatvara modal klikom bilo gde izvan sadržaja
  * 
  * @package s7design
+ * @version 2.2
  */
 
 (function ($) {
     'use strict';
 
-    // Globalna funkcija za inicijalizaciju Quick View - optimizovana verzija bez AJAX-a
+    // Globalna funkcija za inicijalizaciju Quick View 
     window.initQuickView = function () {
         // Quick View varijable
         const $modal = $('#sw-quick-view-modal');
+        const $modalContent = $modal.find('.sw-quick-view-content');
         const $closeBtn = $modal.find('.sw-quick-view-close');
         const $overlay = $modal.find('.sw-quick-view-overlay');
-        const quickViewButtons = document.querySelectorAll('.sw-quick-view-button');
+        const $container = $modal.find('.sw-quick-view-container');
 
         // Ako nema modalnog prozora, izađi
         if (!$modal.length) return;
 
         // Dodavanje click događaja na svako Quick View dugme
-        // Koristimo delegaciju događaja da bi radilo i na dinamički učitanim dugmadima
         $(document).off('click', '.sw-quick-view-button').on('click', '.sw-quick-view-button', function (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -31,15 +32,20 @@
 
             if (!productId) return;
 
-            // Učitaj osnovne podatke direktno iz data atributa (brži pristup)
+            // KLJUČNA IZMENA: Koristi attr umesto data za varijacije
+            // Učitaj osnovne podatke iz data atributa
             const productTitle = $button.data('product-title') || '';
-            const productImage = $button.data('product-image') || '';
+            let productImage = $button.data('product-image') || '';
+            // Osiguraj HTTPS za sliku
+            productImage = productImage.replace(/^http:\/\//i, 'https://');
+
             const productImageAlt = $button.data('product-image-alt') || productTitle;
             const productPrice = $button.data('product-price') || '';
             const productDesc = $button.data('product-description') || '';
             const productPermalink = $button.data('product-permalink') || '#';
             const productDimensions = $button.data('product-dimensions') || '';
-            const productVariations = $button.data('product-variations') || '';
+            // Uzimamo varijacije iz ATTR umesto iz DATA
+            const productVariations = $button.attr('data-product-variations') || '';
 
             // Reference na modal elemente
             const $title = $modal.find('.sw-quick-view-title');
@@ -94,22 +100,30 @@
             }, 300);
         });
 
-        // Zatvaranje modala na klik X - koristimo off().on() da izbegnemo višestruko vezivanje događaja
+        // Zatvaranje modala na klik X
         $closeBtn.off('click').on('click', function () {
             closeModal();
         });
 
-        // Zatvaranje modala na klik overlaya
+        // Zatvaranje modala na klik overlaya - POSTOJEĆI KOD
         $overlay.off('click').on('click', function () {
             closeModal();
         });
 
-        // Dodatni slušač za overlay (za sigurnost)
-        $(document).off('click', '.sw-quick-view-overlay').on('click', '.sw-quick-view-overlay', function () {
-            closeModal();
+        // NOVO: Zatvaranje modala na klik bilo gde izvan sadržaja
+        $container.off('click').on('click', function (e) {
+            // Proveri da li je klik bio direktno na container-u, a ne na njegovoj deci
+            if (e.target === this) {
+                closeModal();
+            }
         });
 
-        // Zatvaranje modala pritiskom escape tastera - koristimo namespace za događaj
+        // NOVO: Spreči zatvaranje modala kada se klikne na sadržaj
+        $modalContent.off('click').on('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Zatvaranje modala pritiskom escape tastera
         $(document).off('keyup.quickview').on('keyup.quickview', function (e) {
             if (e.key === 'Escape' && $modal.is(':visible')) {
                 closeModal();
@@ -137,10 +151,13 @@
                 'opacity': 0
             });
 
-            // Aktiviraj zoom na hover - koristimo delegaciju za sve mouseenter/leave/move događaje
+            // Aktiviraj zoom na hover - optimizovana verzija
             $container.off('mouseenter mouseleave mousemove')
                 .on('mouseenter', function () {
-                    const imageUrl = $mainImage.attr('src');
+                    // Osiguraj HTTPS za sliku
+                    let imageUrl = $mainImage.attr('src');
+                    imageUrl = imageUrl.replace(/^http:\/\//i, 'https://');
+
                     $zoomOverlay.attr('src', imageUrl);
                     $container.addClass('sw-image-zoom-active');
                 })
@@ -188,7 +205,7 @@
             const imgUrl = $modal.find('.sw-quick-view-image.main-image').attr('src');
             if (imgUrl) {
                 const img = new Image();
-                img.src = imgUrl;
+                img.src = imgUrl.replace(/^http:\/\//i, 'https://'); // Osiguraj HTTPS
             }
         }
 
@@ -210,35 +227,25 @@
     });
 
     // Event listeneri za različite načine osvežavanja sadržaja
-
-    // 1. WooCommerce post-load event (standardni)
     $(document.body).on('post-load', function () {
         if (typeof window.initQuickView === 'function') {
             window.initQuickView();
         }
     });
 
-    // 2. Sopstveni event koji se može trigerovati nakon učitavanja novih proizvoda
     $(document).on('sw-products-loaded', function () {
         if (typeof window.initQuickView === 'function') {
             window.initQuickView();
         }
     });
 
-    // 3. Event koji se može trigerovati nakon promene strane ili filtriranja
-    $(document).on('sw-content-updated', function () {
-        if (typeof window.initQuickView === 'function') {
-            window.initQuickView();
-        }
-    });
-
-    // 4. Slušanje AJAX Complete događaja - za WooCommerce AJAX filtriranje
+    // Slušanje AJAX Complete događaja - optimizovana verzija
     $(document).ajaxComplete(function (event, xhr, settings) {
-        // Proveri da li je AJAX zahtev vezan za proizvode
-        if (settings.url.indexOf('wc-ajax=') > -1 ||
+        // Proveri da li je AJAX zahtev vezan za proizvode - brza provera
+        if (settings.url && settings.url.indexOf('admin-ajax.php') > -1 &&
             settings.data && (
-                settings.data.indexOf('action=load_more_products') > -1 ||
-                settings.data.indexOf('action=woocommerce_') > -1
+                settings.data.indexOf('load_more_products') > -1 ||
+                settings.data.indexOf('fetch_product_variations') > -1
             )
         ) {
             // Malo odložiti izvršavanje da se DOM potpuno učita
@@ -246,63 +253,8 @@
                 if (typeof window.initQuickView === 'function') {
                     window.initQuickView();
                 }
-            }, 100);
+            }, 50); // Brži timeout
         }
     });
-
-    // 5. Posmatraj promene u DOM-u za dinamički dodate elemente (napredna metoda)
-    if (window.MutationObserver) {
-        // Funkcija koja proverava da li je dodat novi proizvod
-        const checkForNewProducts = function (addedNodes) {
-            for (let i = 0; i < addedNodes.length; i++) {
-                const node = addedNodes[i];
-                if (node.nodeType === 1) { // Element node
-                    // Proveri da li je element proizvod ili sadrži quick view dugme
-                    if (node.classList && (
-                        node.classList.contains('product') ||
-                        node.querySelector('.sw-quick-view-button')
-                    )) {
-                        return true;
-                    }
-
-                    // Rekurzivno proveri decu
-                    if (node.childNodes && node.childNodes.length) {
-                        if (checkForNewProducts(node.childNodes)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        };
-
-        // Kreiraj observer
-        const observer = new MutationObserver(function (mutations) {
-            let shouldReinitialize = false;
-
-            mutations.forEach(function (mutation) {
-                if (mutation.addedNodes && mutation.addedNodes.length) {
-                    if (checkForNewProducts(mutation.addedNodes)) {
-                        shouldReinitialize = true;
-                    }
-                }
-            });
-
-            if (shouldReinitialize) {
-                if (typeof window.initQuickView === 'function') {
-                    window.initQuickView();
-                }
-            }
-        });
-
-        // Posmatraj promene u kontejneru za proizvode
-        const productsContainer = document.querySelector('.products');
-        if (productsContainer) {
-            observer.observe(productsContainer, {
-                childList: true,
-                subtree: true
-            });
-        }
-    }
 
 })(jQuery);

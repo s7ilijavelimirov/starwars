@@ -181,7 +181,7 @@ add_filter('script_loader_tag', 's7design_defer_scripts', 10, 3);
 function s7design_optimize_ajax_requests()
 {
     // Pokreni ovo samo na stranicama gde koristimo AJAX
-    if (is_shop() || is_product_category() || is_product_tag() || is_front_page()) {
+    if (is_shop() || is_product_category() || is_product_tag()) {
 ?>
         <script>
             // Optimizacija za AJAX zahteve sa klijentskim keširanjem
@@ -249,5 +249,3 @@ function s7design_optimize_ajax_requests()
     }
 }
 add_action('wp_footer', 's7design_optimize_ajax_requests', 99);
-
-

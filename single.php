@@ -8,11 +8,6 @@
 
 get_header();
 
-// Brojanje pregleda posta ako postoji funkcija
-if (function_exists('setPostViews')) {
-    setPostViews(get_the_ID());
-}
-
 // Start the loop
 while (have_posts()) : the_post();
     // Dobijanje featured image URL-a

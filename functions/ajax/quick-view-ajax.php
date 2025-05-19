@@ -1,8 +1,7 @@
 <?php
-
 /**
  * AJAX funkcije za Quick View funkcionalnost - optimizovana verzija
- * sa ograničenjem prikaza samo na određenim stranicama
+ * sa podrškom za dohvatanje varijacija i paginaciju
  *
  * @package s7design
  */
@@ -14,23 +13,12 @@ if (!defined('ABSPATH')) {
 
 /**
  * Dodaje Quick View dugme i inline podatke na WooCommerce proizvode
- * samo na shop, category, attribute i tag stranicama
  */
 function sw_add_quick_view_button()
 {
-    // Proverimo da li smo na dozvoljenoj stranici
-    // Dozvoljavamo samo shop, kategorije, atribute i tagove, a isključujemo frontpage i single product
-    if (!is_shop() && !is_product_category() && !is_product_tag() && !is_tax('pa_*')) {
-        return; // Izađi iz funkcije ako nismo na željenoj stranici
-    }
-
-    // Provera da nismo na single product stranici ili related products sekciji
-    if (is_product() || is_singular('product')) {
-        return;
-    }
-
-    // Provera da nismo na naslovnoj stranici
-    if (is_front_page()) {
+    // Proverimo da li treba prikazati Quick View
+    // Preskačemo na single product stranici ili na naslovnoj
+    if (is_product() || is_singular('product') || is_front_page()) {
         return;
     }
 
@@ -45,24 +33,26 @@ function sw_add_quick_view_button()
     $product_permalink = $product->get_permalink();
     $product_short_description = wp_trim_words($product->get_short_description(), 20, '...');
 
-    // Slika proizvoda
+    // Slika proizvoda - osigurava HTTPS protokol
     $image_id = $product->get_image_id();
     $image_url = wp_get_attachment_image_url($image_id, 'woocommerce_single');
+    // HTTPS fix - konverzija HTTP u HTTPS
+    $image_url = str_replace('http://', 'https://', $image_url);
     $image_alt = get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: $product_title;
 
     // Podaci o varijacijama
     $variations_data = '';
-    if ($product->is_type('variable')) {
+    if (method_exists($product, 'is_type') && $product->is_type('variable')) {
         $variations = $product->get_available_variations();
         $attributes = $product->get_attributes();
         $variation_items = [];
 
         foreach ($attributes as $attribute) {
-            if ($attribute->get_variation()) {
+            if (method_exists($attribute, 'get_variation') && $attribute->get_variation()) {
                 $attribute_name = wc_attribute_label($attribute->get_name());
                 $attribute_values = [];
 
-                if ($attribute->is_taxonomy()) {
+                if (method_exists($attribute, 'is_taxonomy') && $attribute->is_taxonomy()) {
                     $terms = $attribute->get_terms();
                     foreach ($terms as $term) {
                         $attribute_values[] = $term->name;
@@ -84,16 +74,16 @@ function sw_add_quick_view_button()
 
     // Informacije o dimenzijama i težini
     $dimensions = [];
-    if ($product->get_length()) {
+    if (method_exists($product, 'get_length') && $product->get_length()) {
         $dimensions[] = 'Dužina: ' . $product->get_length() . get_option('woocommerce_dimension_unit');
     }
-    if ($product->get_width()) {
+    if (method_exists($product, 'get_width') && $product->get_width()) {
         $dimensions[] = 'Širina: ' . $product->get_width() . get_option('woocommerce_dimension_unit');
     }
-    if ($product->get_height()) {
+    if (method_exists($product, 'get_height') && $product->get_height()) {
         $dimensions[] = 'Visina: ' . $product->get_height() . get_option('woocommerce_dimension_unit');
     }
-    if ($product->get_weight()) {
+    if (method_exists($product, 'get_weight') && $product->get_weight()) {
         $dimensions[] = 'Težina: ' . $product->get_weight() . get_option('woocommerce_weight_unit');
     }
     $dimensions_str = !empty($dimensions) ? implode(' | ', $dimensions) : '';
@@ -127,21 +117,10 @@ function sw_add_quick_view_button()
 }
 
 /**
- * Dodaje modal za Quick View sa optimizovanim učitavanjem (bez dodatnih AJAX poziva)
- * Prikazuje se samo na shop, category, attribute i tag stranicama
+ * Dodaje modal za Quick View
  */
 function sw_add_quick_view_modal()
 {
-    // Proveravamo da li smo na dozvoljenoj stranici
-    if (!is_shop() && !is_product_category() && !is_product_tag() && !is_tax('pa_*')) {
-        return; // Izađi iz funkcije ako nismo na željenoj stranici
-    }
-
-    // Dodatna provera da nismo na naslovnoj stranici
-    if (is_front_page()) {
-        return;
-    }
-
     // HTML struktura za modal
 ?>
     <div id="sw-quick-view-modal" class="sw-quick-view-modal" style="display: none;">
@@ -202,191 +181,88 @@ function sw_add_quick_view_modal()
             </div>
         </div>
     </div>
-
-    <script>
-        // Pojednostavljeno Quick View - samo informativno, bez AJAX-a
-        (function($) {
-            // Obrada klika na Quick View dugme
-            $(document).on('click', '.sw-quick-view-button', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const $button = $(this);
-                const productId = $button.data('product-id');
-
-                if (!productId) return;
-
-                // Učitaj osnovne podatke iz data atributa
-                const productTitle = $button.data('product-title');
-                const productImage = $button.data('product-image');
-                const productImageAlt = $button.data('product-image-alt');
-                const productPrice = $button.data('product-price');
-                const productDesc = $button.data('product-description');
-                const productPermalink = $button.data('product-permalink');
-                const productDimensions = $button.data('product-dimensions');
-                const productVariations = $button.data('product-variations');
-
-                // Reference na modal
-                const $modal = $('#sw-quick-view-modal');
-                const $title = $modal.find('.sw-quick-view-title');
-                const $mainImage = $modal.find('.sw-quick-view-image.main-image');
-                const $zoomOverlay = $modal.find('.sw-quick-view-image.zoom-overlay');
-                const $price = $modal.find('.sw-quick-view-price');
-                const $desc = $modal.find('.sw-quick-view-description');
-                const $details = $modal.find('.sw-quick-view-details');
-                const $dimensions = $modal.find('.sw-quick-view-dimensions');
-                const $variations = $modal.find('.sw-quick-view-variations');
-
-                // Popuni modal osnovnim podacima
-                $title.html(productTitle);
-
-                // Postavi slike za glavni prikaz i za zoom
-                $mainImage.attr({
-                    'src': productImage,
-                    'alt': productImageAlt
-                });
-
-                $zoomOverlay.attr({
-                    'src': productImage,
-                    'alt': productImageAlt
-                });
-
-                $price.html(productPrice);
-                $desc.html(productDesc);
-                $details.attr('href', productPermalink);
-
-                // Dimenzije ako postoje
-                if (productDimensions) {
-                    $dimensions.html('<div class="sw-dimensions-title">Dimenzije:</div><div class="sw-dimensions-data">' + productDimensions + '</div>');
-                    $dimensions.show();
-                } else {
-                    $dimensions.hide();
-                }
-
-                // Varijacije ako postoje
-                if (productVariations) {
-                    $variations.html('<div class="sw-variations-title">Varijacije:</div><div class="sw-variations-data">' + productVariations + '</div>');
-                    $variations.show();
-                } else {
-                    $variations.hide();
-                }
-
-                // Prikaži modal
-                $modal.fadeIn(200);
-                $('body').addClass('sw-quick-view-open');
-
-                // Inicijalizuj zoom efekat
-                initImageZoom();
-            });
-
-            // Zatvaranje modala
-            $(document).on('click', '.sw-quick-view-close, .sw-quick-view-overlay', function() {
-                closeQuickViewModal();
-            });
-
-            // Zatvaranje modala na escape
-            $(document).on('keyup', function(e) {
-                if (e.key === 'Escape' && $('#sw-quick-view-modal').is(':visible')) {
-                    closeQuickViewModal();
-                }
-            });
-
-            // Funkcija za zatvaranje modala
-            function closeQuickViewModal() {
-                $('#sw-quick-view-modal').fadeOut(150);
-                $('body').removeClass('sw-quick-view-open');
-            }
-
-            /**
-             * Implementacija zoom efekta za slike
-             */
-            function initImageZoom() {
-                const $container = $('.sw-image-zoom-container');
-                if (!$container.length) return;
-
-                const $mainImage = $container.find('.sw-quick-view-image.main-image');
-                const $zoomOverlay = $container.find('.sw-quick-view-image.zoom-overlay');
-
-                // Zoom faktor - koliko puta će slika biti uvećana
-                const zoomFactor = 1.8;
-
-                // Inicijalno sakrij zoom overlay
-                $zoomOverlay.css({
-                    'transform': `scale(${zoomFactor})`,
-                    'opacity': 0
-                });
-
-                // Aktiviraj zoom na hover
-                $container.on('mouseenter', function() {
-                    $container.addClass('sw-image-zoom-active');
-                });
-
-                // Deaktiviraj zoom na mouseout
-                $container.on('mouseleave', function() {
-                    $container.removeClass('sw-image-zoom-active');
-
-                    // Resetuj zoom overlay
-                    $zoomOverlay.css({
-                        'transform': `scale(${zoomFactor})`,
-                        'opacity': 0,
-                        'transform-origin': '50% 50%'
-                    });
-                });
-
-                // Prati kretanje miša za zoom efekat
-                $container.on('mousemove', function(e) {
-                    if (!$container.hasClass('sw-image-zoom-active')) return;
-
-                    const containerWidth = $container.outerWidth();
-                    const containerHeight = $container.outerHeight();
-
-                    // Pozicija miša u containeru (0-1)
-                    const xRatio = (e.pageX - $container.offset().left) / containerWidth;
-                    const yRatio = (e.pageY - $container.offset().top) / containerHeight;
-
-                    // Izračunaj x i y pomak za zoom overlay
-                    const xOffset = Math.max(0, Math.min(100, xRatio * 100));
-                    const yOffset = Math.max(0, Math.min(100, yRatio * 100));
-
-                    // Primeni transformaciju na zoom overlay
-                    $zoomOverlay.css({
-                        'transform-origin': `${xOffset}% ${yOffset}%`,
-                        'transform': `scale(${zoomFactor})`,
-                        'opacity': 1
-                    });
-                });
-            }
-        })(jQuery);
-    </script>
 <?php
 }
 
 /**
- * Funkcija koja uklanja Quick View dugme sa related products sekcije
- * Koristimo je kao proveru da li smo u "related products" sekciji
+ * AJAX akcija za dohvatanje varijacija proizvoda
+ * Koristi se za load more funkcionalnost
  */
-function sw_remove_quick_view_from_related_products()
-{
-    if (!is_product()) {
-        return;
+function sw_fetch_product_variations() {
+    // Sigurnosna provera
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'sw_load_more_nonce')) {
+        wp_send_json_error(['message' => 'Sigurnosna provera nije uspela']);
+        die();
     }
+    
+    // Možemo dobiti jedan ID ili više ID-eva
+    $product_ids = isset($_POST['product_ids']) ? $_POST['product_ids'] : [];
+    $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+    
+    // Ako je pojedinačni ID, obradi ga standardno
+    if ($product_id && empty($product_ids)) {
+        $product_ids = [$product_id];
+    }
+    
+    // Ako nema ID-jeva, vrati grešku
+    if (empty($product_ids)) {
+        wp_send_json_error(['message' => 'Nedostaje ID proizvoda']);
+        die();
+    }
+    
+    $result = [];
+    
+    // Obradi svaki proizvod
+    foreach ($product_ids as $id) {
+        $product = wc_get_product($id);
+        if (!$product) continue;
+        
+        $variations_data = '';
+        
+        if (method_exists($product, 'is_type') && $product->is_type('variable')) {
+            try {
+                $attributes = $product->get_attributes();
+                $variation_items = [];
 
-    // Uklanjamo akciju samo za related products
-    remove_action('woocommerce_before_shop_loop_item_title', 'sw_add_quick_view_button', 15);
+                foreach ($attributes as $attribute) {
+                    if (method_exists($attribute, 'get_variation') && $attribute->get_variation()) {
+                        $attribute_name = wc_attribute_label($attribute->get_name());
+                        $attribute_values = [];
+
+                        if (method_exists($attribute, 'is_taxonomy') && $attribute->is_taxonomy()) {
+                            $terms = $attribute->get_terms();
+                            foreach ($terms as $term) {
+                                $attribute_values[] = $term->name;
+                            }
+                        } else {
+                            $attribute_values = $attribute->get_options();
+                        }
+
+                        if (!empty($attribute_values)) {
+                            $variation_items[] = '<span class="sw-variation-item">' .
+                                $attribute_name . ': ' . implode(', ', $attribute_values) .
+                                '</span>';
+                        }
+                    }
+                }
+
+                $variations_data = !empty($variation_items) ? implode('', $variation_items) : '';
+            } catch (Exception $e) {
+                $variations_data = '';
+            }
+        }
+        
+        $result[$id] = $variations_data;
+    }
+    
+    wp_send_json_success(['variations' => $result]);
+    die();
 }
-add_action('woocommerce_before_single_product_summary', 'sw_remove_quick_view_from_related_products', 5);
 
-// Dodajemo akcije za prikazivanje dugmeta i modala, ali samo na odgovarajućim stranicama
+// Registrovanje AJAX akcije za varijacije
+add_action('wp_ajax_fetch_product_variations', 'sw_fetch_product_variations');
+add_action('wp_ajax_nopriv_fetch_product_variations', 'sw_fetch_product_variations');
+
+// Dodajemo akcije za prikazivanje dugmeta i modala
 add_action('woocommerce_before_shop_loop_item_title', 'sw_add_quick_view_button', 15);
 add_action('wp_footer', 'sw_add_quick_view_modal');
-
-/**
- * Dodatno uklanjanje Quick View funkcionalnosti sa naslovne stranice
- */
-function sw_maybe_remove_quick_view_from_frontpage()
-{
-    if (is_front_page()) {
-        remove_action('woocommerce_before_shop_loop_item_title', 'sw_add_quick_view_button', 15);
-    }
-}
-add_action('wp', 'sw_maybe_remove_quick_view_from_frontpage');
