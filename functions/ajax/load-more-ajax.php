@@ -23,12 +23,32 @@ function sw_load_more_products()
         die();
     }
 
+    // DEBUG: Evidentiraj zahtev
+    error_log('DEBUG Load More: Zahtev primljen za učitavanje proizvoda');
+
     // Osnovni parametri upita
     $paged = isset($_POST['page']) ? absint($_POST['page']) : 1;
     $posts_per_page = isset($_POST['posts_per_page']) ? absint($_POST['posts_per_page']) : get_option('posts_per_page');
 
+    // Evidentiraj parametre za debugging
+    error_log(sprintf('DEBUG Load More: Stranica %d, artikala po stranici: %d', $paged, $posts_per_page));
+
+    // KLJUČNO POBOLJŠANJE: Dohvatanje ID-jeva već učitanih proizvoda
+    $loaded_ids = isset($_POST['loaded_ids']) ? array_map('absint', (array)$_POST['loaded_ids']) : [];
+
+    // Evidentiraj već učitane ID-jeve
+    if (!empty($loaded_ids)) {
+        error_log('DEBUG Load More: Već učitani proizvodi: ' . count($loaded_ids) . ' ID-jeva');
+        error_log('DEBUG Load More: Lista učitanih ID-jeva: ' . implode(', ', array_slice($loaded_ids, 0, 20)) . (count($loaded_ids) > 20 ? '...' : ''));
+    } else {
+        error_log('DEBUG Load More: Nema prethodno učitanih proizvoda');
+    }
+
     // Dohvatanje kategorije, ako je definisana
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
+    if (!empty($category)) {
+        error_log('DEBUG Load More: Filtriranje po kategoriji: ' . $category);
+    }
 
     // Da li treba zameniti postojeći sadržaj (za paginaciju) ili dodati novi (za load more)
     $replace_content = isset($_POST['replace_content']) ? (bool)$_POST['replace_content'] : false;
@@ -45,6 +65,12 @@ function sw_load_more_products()
         'fields'         => 'ids', // Optimizacija - učitaj samo ID-jeve prvo
     ];
 
+    // KLJUČNO POBOLJŠANJE: Isključi već učitane proizvode
+    if (!empty($loaded_ids)) {
+        $args['post__not_in'] = $loaded_ids;
+        error_log('DEBUG Load More: Isključujem već učitane proizvode pomoću post__not_in');
+    }
+
     // Dodajemo podatke za filtriranje po kategoriji ako postoje
     if (!empty($category)) {
         $args['tax_query'] = [
@@ -59,6 +85,7 @@ function sw_load_more_products()
     // Dohvatanje potrebnih filtera iz zahteva (sortiranje, cena itd.)
     if (isset($_POST['orderby']) && !empty($_POST['orderby'])) {
         $orderby = sanitize_text_field($_POST['orderby']);
+        error_log('DEBUG Load More: Koristi sortiranje: ' . $orderby);
 
         switch ($orderby) {
             case 'price':
@@ -91,6 +118,7 @@ function sw_load_more_products()
     // Pretraga
     if (isset($_POST['search']) && !empty($_POST['search'])) {
         $search_term = sanitize_text_field($_POST['search']);
+        error_log('DEBUG Load More: Traženje po terminu: ' . $search_term);
         $args['meta_query']['relation'] = 'OR';
         $args['meta_query'][] = [
             'key'     => '_sku',
@@ -100,9 +128,25 @@ function sw_load_more_products()
         $args['s'] = $search_term;
     }
 
+    error_log('DEBUG Load More: WP_Query argumenti: ' . json_encode($args));
+
     // Izvršavanje WP upita - optimizovano
     $products_query = new WP_Query($args);
 
+    // Log rezultata upita
+    error_log(sprintf(
+        'DEBUG Load More: WP_Query rezultati: %d proizvoda pronađeno, max stranica: %d',
+        $products_query->found_posts,
+        $products_query->max_num_pages
+    ));
+
+    // Proveri da li je trenutna stranica veća od ukupno dostupnih
+    // Proveri da li je trenutna stranica veća od ukupno dostupnih
+    if ($paged > $products_query->max_num_pages && $products_query->max_num_pages > 0) {
+        error_log('DEBUG Load More: Tražena stranica ne postoji, max stranica: ' . $products_query->max_num_pages);
+        wp_send_json_error(['message' => 'Nema više proizvoda.']);
+        die();
+    }
     // Priprema odgovora
     $response = [
         'success' => true,
@@ -124,6 +168,17 @@ function sw_load_more_products()
 
     // Obrada HTML-a samo ako imamo proizvode
     if ($products_query->have_posts()) {
+        // Log ID-jeva koji će biti vraćeni
+        $returned_ids = $products_query->posts;
+        error_log('DEBUG Load More: Vraćam proizvode sa ID-jevima: ' . implode(', ', array_slice($returned_ids, 0, 20)) .
+            (count($returned_ids) > 20 ? '...' : ''));
+
+        // Proveri preklapanja sa već učitanim ID-jevima
+        $duplicates = array_intersect($loaded_ids, $returned_ids);
+        if (!empty($duplicates)) {
+            error_log('DEBUG Load More: UPOZORENJE! Pronađeni duplikati: ' . implode(', ', $duplicates));
+        }
+
         ob_start();
 
         // KLJUČNA MODIFIKACIJA: Osigurava da će quick-view funkcija biti pozvana
@@ -137,6 +192,12 @@ function sw_load_more_products()
 
         // Učitaj kompletne podatke proizvoda
         foreach ($products_query->posts as $product_id) {
+            // DODATNA PROVERA: Preskoči proizvode koji su već učitani
+            if (in_array($product_id, $loaded_ids)) {
+                error_log('DEBUG Load More: Preskačem duplikat proizvoda ID: ' . $product_id);
+                continue;
+            }
+
             $GLOBALS['post'] = get_post($product_id);
             setup_postdata($GLOBALS['post']);
             wc_get_template_part('content', 'product');
@@ -148,10 +209,16 @@ function sw_load_more_products()
         wp_reset_postdata();
 
         $response['data']['html'] = ob_get_clean();
+
+        // Log veličine HTML-a
+        error_log('DEBUG Load More: Generisano HTML za ' . count($products_query->posts) . ' proizvoda, veličina: ' .
+            strlen($response['data']['html']) . ' bajtova');
     } else {
-        $response['data']['html'] = '<p class="no-more-products">' . esc_html__('Nema više proizvoda.', 's7design') . '</p>';
+        error_log('DEBUG Load More: Nema više proizvoda za učitavanje');
+        $response['data']['html'] = ''; // Vratiti prazan HTML umesto poruke o grešci
     }
 
+    error_log('DEBUG Load More: Zahtev uspešno obrađen, vraćam odgovor');
     wp_send_json($response);
     die();
 }

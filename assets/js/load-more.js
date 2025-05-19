@@ -1,9 +1,9 @@
 /**
  * Visoko optimizovana Load More + Quick View funkcionalnost
- * Sa brzo-učitavajućim batch varijacijama
+ * Sa naprednom podrškom za varijacije
  * 
  * @package s7design
- * @version 2.1
+ * @version 2.0
  */
 
 (function ($) {
@@ -48,83 +48,85 @@
     }
 
     /**
-     * Helper funkcija za osiguravanje HTTPS URL-ova slika
-     */
-    function ensureHttps(url) {
-        if (!url) return url;
-        return url.replace(/^http:\/\//i, 'https://');
-    }
-
-    /**
-     * Optimizovana funkcija za dohvatanje varijacija za više proizvoda odjednom
-     * Batch API poziv za minimalno opterećenje servera
+     * Optimizovana funkcija za dohvatanje varijacija proizvoda
+     * Koristi keš za minimalno opterećenje servera
      * 
-     * @param {Array} productIds - Niz ID-ova proizvoda
+     * @param {string} productId - ID proizvoda
      * @param {function} callback - Callback funkcija koja se poziva nakon dohvatanja
      */
-    function getBatchProductVariations(productIds, callback) {
-        // Ako nema ID-jeva, odmah vrati prazan objekat
-        if (!productIds || !productIds.length) {
-            callback({});
+    function getProductVariations(productId, callback) {
+        // Proveri keš prvo
+        if (variationsCache[productId]) {
+            callback(variationsCache[productId]);
             return;
         }
 
-        // Izbaci duplikate
-        const uniqueIds = [...new Set(productIds)];
-
-        // Izbaci ID-jeve koji su već u kešu
-        const idsToFetch = uniqueIds.filter(id => !variationsCache[id]);
-
-        // Ako su svi proizvodi već u kešu, odmah vrati rezultat
-        if (idsToFetch.length === 0) {
-            const cachedResults = uniqueIds.reduce((acc, id) => {
-                acc[id] = variationsCache[id] || '';
-                return acc;
-            }, {});
-            callback(cachedResults);
-            return;
-        }
-
-        // Brži batch AJAX zahtev za sve ID-jeve odjednom
+        // Dohvati preko AJAX-a
         $.ajax({
             url: loadMoreParams.ajaxurl,
             type: 'POST',
             data: {
                 action: 'fetch_product_variations',
                 nonce: loadMoreParams.nonce,
-                product_ids: idsToFetch
+                product_id: productId
             },
             success: function (response) {
-                if (response && response.success && response.data && response.data.variations) {
-                    // Dodaj dohvaćene varijacije u keš
-                    Object.keys(response.data.variations).forEach(id => {
-                        variationsCache[id] = response.data.variations[id];
-                    });
-
-                    // Kombinuj sa postojećim keširanim vrednostima
-                    const allResults = uniqueIds.reduce((acc, id) => {
-                        acc[id] = variationsCache[id] || '';
-                        return acc;
-                    }, {});
-
-                    callback(allResults);
+                if (response && response.success && response.data) {
+                    // Sačuvaj u keš
+                    variationsCache[productId] = response.data.variations;
+                    callback(response.data.variations);
                 } else {
-                    // U slučaju greške, vrati prazne varijacije
-                    const emptyResults = uniqueIds.reduce((acc, id) => {
-                        acc[id] = '';
-                        return acc;
-                    }, {});
-                    callback(emptyResults);
+                    callback('');
                 }
             },
             error: function () {
-                // U slučaju greške, vrati prazne varijacije
-                const emptyResults = uniqueIds.reduce((acc, id) => {
-                    acc[id] = '';
-                    return acc;
-                }, {});
-                callback(emptyResults);
+                callback('');
             }
+        });
+    }
+
+    /**
+     * Funkcija za dohvatanje varijacija za više proizvoda odjednom
+     * Optimizuje broj AJAX poziva
+     * 
+     * @param {Array} productIds - Niz ID-ova proizvoda
+     * @param {function} callback - Callback funkcija koja se poziva nakon dohvatanja
+     */
+    function getMultipleProductVariations(productIds, callback) {
+        // Izbaci duplikate i filtriraj samo proizvode koje nemamo u kešu
+        const uniqueIds = [...new Set(productIds)];
+        const idsToFetch = uniqueIds.filter(id => !variationsCache[id]);
+
+        // Ako su svi proizvodi već u kešu, odmah vrati rezultat
+        if (idsToFetch.length === 0) {
+            callback(uniqueIds.reduce((acc, id) => {
+                acc[id] = variationsCache[id] || '';
+                return acc;
+            }, {}));
+            return;
+        }
+
+        // Kreiraj promises za svaki ID
+        const promises = idsToFetch.map(id => {
+            return new Promise((resolve) => {
+                getProductVariations(id, function (variations) {
+                    resolve({ id, variations });
+                });
+            });
+        });
+
+        // Sačekaj sve promises i vrati rezultat
+        Promise.all(promises).then((results) => {
+            // Dodaj rezultate u keš
+            results.forEach(({ id, variations }) => {
+                variationsCache[id] = variations;
+            });
+
+            // Vrati sve varijacije, uključujući i one koje su već bile u kešu
+            callback(uniqueIds.reduce((acc, id) => {
+                acc[id] = variationsCache[id] || '';
+                return acc;
+            }, {}));
         });
     }
 
@@ -164,7 +166,7 @@
             // Dodaj CSS klasu za tranziciju
             $paginationContainer.addClass('loading');
 
-            // AJAX zahtev za učitavanje proizvoda
+            // AJAX zahtev
             $.ajax({
                 url: loadMoreParams.ajaxurl,
                 type: 'POST',
@@ -183,75 +185,106 @@
                         const $tempDiv = $('<div></div>');
                         $tempDiv.html(response.data.html);
 
-                        // Dohvati sve product IDs brzo iz klasa
+                        // Dohvati sve product IDs za optimizovan batch zahtev
                         const productIds = [];
                         $tempDiv.find('li.product').each(function () {
-                            const classAttr = $(this).attr('class');
-                            if (classAttr) {
-                                const match = classAttr.match(/post-(\d+)/);
-                                if (match && match[1]) {
-                                    productIds.push(match[1]);
-                                }
+                            const productIdMatch = $(this).attr('class').match(/post-(\d+)/);
+                            if (productIdMatch && productIdMatch[1]) {
+                                productIds.push(productIdMatch[1]);
                             }
                         });
 
-                        // Brzi AJAX batch dohvat varijacija za sve odjednom
-                        getBatchProductVariations(productIds, function (variationsData) {
-                            // Ažuriraj proizvode sa quick view dugmadima
-                            $tempDiv.find('li.product').each(function () {
-                                const $product = $(this);
-                                const $link = $product.find('a.woocommerce-LoopProduct-link');
+                        // Dohvati varijacije za sve proizvode odjednom
+                        if (productIds.length > 0) {
+                            getMultipleProductVariations(productIds, function (variationsData) {
+                                // Sada dodaj quick view dugmad sa odgovarajućim varijacijama
+                                $tempDiv.find('li.product').each(function () {
+                                    const $product = $(this);
+                                    const $link = $product.find('a.woocommerce-LoopProduct-link');
 
-                                if (!$link.length) return;
+                                    if (!$link.length) return;
 
-                                // Brzo dohvati product ID iz klase
-                                const classAttr = $product.attr('class');
-                                if (!classAttr) return;
+                                    // Dohvati product ID
+                                    const productIdMatch = $product.attr('class').match(/post-(\d+)/);
+                                    const productId = productIdMatch ? productIdMatch[1] : '';
 
-                                const match = classAttr.match(/post-(\d+)/);
-                                const productId = match ? match[1] : '';
+                                    if (!productId) return;
 
-                                if (!productId) return;
+                                    // Dohvati ostale podatke
+                                    const productTitle = $product.find('.woocommerce-loop-product__title').text();
+                                    const productImage = $product.find('img').attr('src');
+                                    const productImageAlt = $product.find('img').attr('alt') || productTitle;
+                                    let productPrice = $product.find('.price').html() || '';
 
-                                // Dohvati ostale podatke
-                                const productTitle = $product.find('.woocommerce-loop-product__title').text();
-                                let productImage = $product.find('img').attr('src');
-                                // Osiguraj HTTPS za sliku
-                                productImage = ensureHttps(productImage);
+                                    // Dohvati varijacije iz batch rezultata
+                                    const productVariations = variationsData[productId] || '';
 
-                                const productImageAlt = $product.find('img').attr('alt') || productTitle;
-                                let productPrice = $product.find('.price').html() || '';
+                                    // Kreiraj quick view dugme
+                                    const quickViewHTML = `<div class="sw-quick-view-wrapper"><button type="button" 
+                                        class="sw-quick-view-button quick-view-button" 
+                                        data-product-id="${productId}" 
+                                        data-product-title="${escapeHtml(productTitle)}"
+                                        data-product-image="${productImage}"
+                                        data-product-image-alt="${escapeHtml(productImageAlt)}"
+                                        data-product-price='${productPrice}'
+                                        data-product-permalink="${$link.attr('href')}"
+                                        data-product-variations="${escapeHtml(productVariations)}"
+                                        aria-label="Brzi pregled"
+                                        title="Brzi pregled"><span class="sw-quick-view-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 5C5.636 5 1 12 1 12C1 12 5.636 19 12 19C18.364 19 23 12 23 12C23 12 18.364 5 12 5Z" fill="none"></path>
+                                            <circle cx="12" cy="12" r="3" fill="none"></circle>
+                                        </svg></span></button></div>`;
 
-                                // Dohvati varijacije iz batch rezultata
-                                const productVariations = variationsData[productId] || '';
+                                    // Ubaci quick view dugme nakon slike
+                                    $link.find('img').after(quickViewHTML);
+                                });
 
-                                // Kreiraj quick view dugme
-                                const quickViewHTML = `<div class="sw-quick-view-wrapper"><button type="button" 
-                                    class="sw-quick-view-button quick-view-button" 
-                                    data-product-id="${productId}" 
-                                    data-product-title="${escapeHtml(productTitle)}"
-                                    data-product-image="${productImage}"
-                                    data-product-image-alt="${escapeHtml(productImageAlt)}"
-                                    data-product-price='${productPrice}'
-                                    data-product-permalink="${ensureHttps($link.attr('href'))}"
-                                    data-product-variations="${escapeHtml(productVariations)}"
-                                    aria-label="Brzi pregled"
-                                    title="Brzi pregled"><span class="sw-quick-view-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 5C5.636 5 1 12 1 12C1 12 5.636 19 12 19C18.364 19 23 12 23 12C23 12 18.364 5 12 5Z" fill="none"></path>
-                                        <circle cx="12" cy="12" r="3" fill="none"></circle>
-                                    </svg></span></button></div>`;
+                                // Dodaj obrađene proizvode u kontejner
+                                $productsContainer.append($tempDiv.html());
 
-                                // Ubaci quick view dugme nakon slike
-                                $link.find('img').after(quickViewHTML);
+                                // Ažuriraj atribut stranice
+                                $loadMoreBtn.attr('data-page', currentPage + 1);
+
+                                // Ažuriraj paginacione indikatore
+                                updatePaginationInfo(response.data.pagination || {
+                                    current_page: currentPage + 1,
+                                    max_pages: maxPages,
+                                    found_posts: $productsContainer.find('li.product').length,
+                                    posts_per_page: postsPerPage
+                                });
+
+                                // Sakrij dugme ako smo na poslednjoj stranici
+                                if (currentPage + 1 >= maxPages) {
+                                    $loadMoreBtn.addClass('hidden');
+                                }
+
+                                // Ažuriranje URL-a bez ručnog preusmeravanja
+                                updateURLParameter('paged', currentPage + 1);
+
+                                // Zadrži poziciju skrola
+                                $(window).scrollTop(scrollPosition);
+
+                                // Trigger dodatnih događaja za inicijalizaciju
+                                setTimeout(function () {
+                                    // Inicijalizuj Quick View
+                                    if (typeof window.initQuickView === 'function') {
+                                        window.initQuickView();
+                                    }
+
+                                    // Triggeruj WooCommerce event
+                                    $(document.body).trigger('post-load');
+                                }, 10);
+
+                                // Ukloni stanje učitavanja
+                                $loadMoreBtn.removeClass('loading');
+                                $paginationContainer.removeClass('loading');
                             });
-
-                            // Dodaj obrađene proizvode u kontejner
+                        } else {
+                            // Ako nema proizvoda, samo dodaj HTML
                             $productsContainer.append($tempDiv.html());
 
-                            // Ažuriraj atribut stranice
+                            // Ažuriraj podatke paginacije
                             $loadMoreBtn.attr('data-page', currentPage + 1);
-
-                            // Ažuriraj paginacione indikatore
                             updatePaginationInfo(response.data.pagination || {
                                 current_page: currentPage + 1,
                                 max_pages: maxPages,
@@ -270,21 +303,10 @@
                             // Zadrži poziciju skrola
                             $(window).scrollTop(scrollPosition);
 
-                            // Trigger dodatnih događaja za inicijalizaciju
-                            setTimeout(function () {
-                                // Inicijalizuj Quick View
-                                if (typeof window.initQuickView === 'function') {
-                                    window.initQuickView();
-                                }
-
-                                // Triggeruj WooCommerce event
-                                $(document.body).trigger('post-load');
-                            }, 10);
-
                             // Ukloni stanje učitavanja
                             $loadMoreBtn.removeClass('loading');
                             $paginationContainer.removeClass('loading');
-                        });
+                        }
                     } else {
                         // Prikaži poruku o grešci samo ako nema odgovora
                         showErrorMessage('Došlo je do greške prilikom učitavanja proizvoda.');
@@ -382,7 +404,7 @@
 
                     // Proveri da li ima varijacija i prikaži ih
                     if (productVariations) {
-                        $variations.html('<div class="sw-variations-title">Modeli:</div><div class="sw-variations-data">' + productVariations + '</div>');
+                        $variations.html('<div class="sw-variations-title">Varijacije:</div><div class="sw-variations-data">' + productVariations + '</div>');
                         $variations.show();
                     } else {
                         $variations.hide();
