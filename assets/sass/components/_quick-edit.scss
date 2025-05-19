@@ -1,0 +1,587 @@
+// Star Wars tema - Quick View stilovi
+// ========================================
+
+// Varijable - koristi postojeće iz teme
+$qv-color: $secondary-color2; // Žuta boja
+$qv-bg: $primary-color;
+$qv-overlay-opacity: 0.85;
+$qv-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+$qv-animation-speed: 0.3s;
+
+// Stil za Quick View dugme na proizvodu
+.sw-quick-view-wrapper {
+    position: absolute;
+    top: 10px; // Umesto 50% stavljamo 10px od vrha
+    right: 10px; // Umesto left: 50% stavljamo right: 10px
+    transform: none; // Uklanjamo transform: translate(-50%, -50%)
+    z-index: 99;
+    opacity: 0;
+    transition: all $qv-animation-speed ease;
+    will-change: opacity; // Optimizacija za animacije
+
+    // Kada prelazimo preko proizvoda
+    .product:hover & {
+        opacity: 1;
+    }
+}
+
+// Quick View dugme
+.sw-quick-view-button {
+    background-color: rgba($qv-bg, 0.8);
+    color: $qv-color;
+    border: 1px solid $qv-color; // Tanja ivica
+    border-radius: 30px;
+    padding: 6px 12px; // Manji padding
+    font-size: 0.8rem; // Manji font
+    font-weight: 600;
+    cursor: pointer;
+    transition: all $qv-animation-speed ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    will-change: transform;
+
+    // Ikonica oka
+    .sw-quick-view-icon {
+        position: relative;
+        width: 18px;
+        height: 18px;
+        margin-right: 6px;
+
+        &:before {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid $qv-color;
+            border-radius: 50%;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        &:after {
+            content: "";
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: $qv-color;
+            border-radius: 50%;
+            top: 50%;
+            left: 3px;
+            transform: translateY(-50%);
+        }
+    }
+
+    // Hover efekti
+    &:hover {
+        background-color: $qv-color;
+        color: $qv-bg;
+        transform: translateY(-2px); // Manje podizanje
+        box-shadow: 0 3px 8px rgba($qv-color, 0.4);
+
+        .sw-quick-view-icon {
+            &:before {
+                border-color: $qv-bg;
+            }
+
+            &:after {
+                background-color: $qv-bg;
+            }
+        }
+    }
+
+    // Fokus efekti
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba($qv-color, 0.3);
+    }
+}
+
+// Modalno prozor
+.sw-quick-view-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999999;
+    display: none;
+
+    // Overlay podloga - klikabilna za zatvaranje
+    .sw-quick-view-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba($qv-bg, $qv-overlay-opacity);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 1;
+        cursor: pointer; // Pokazuje da je klikabilno
+    }
+
+    // Container za sadržaj
+    .sw-quick-view-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        padding: 20px;
+    }
+
+    // Glavni content kontejner
+    .sw-quick-view-content {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        max-height: 90vh;
+        background-color: $qv-bg;
+        border: 2px solid $qv-color;
+        border-radius: 8px;
+        overflow: auto;
+        box-shadow: $qv-box-shadow;
+        animation: sw-qv-fadein 0.2s ease; // Ubrzana animacija
+
+        // Scrollbar stilovi
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: rgba($qv-color, 0.1);
+            border-radius: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba($qv-color, 0.5);
+            border-radius: 4px;
+
+            &:hover {
+                background-color: $qv-color;
+            }
+        }
+    }
+
+    // Dugme za zatvaranje
+    .sw-quick-view-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        background-color: rgba($qv-bg, 0.8);
+        border: 1px solid $qv-color;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        transition: all $qv-animation-speed ease;
+
+        .sw-quick-view-close-icon {
+            color: $qv-color;
+            font-size: 24px;
+            line-height: 1;
+            transition: all $qv-animation-speed ease;
+        }
+
+        &:hover {
+            background-color: $qv-color;
+            transform: rotate(90deg);
+
+            .sw-quick-view-close-icon {
+                color: $qv-bg;
+            }
+        }
+    }
+
+    // Unutrašnji kontejner
+    .sw-quick-view-inner {
+        padding: 20px;
+        position: relative;
+    }
+}
+
+// Struktura proizvoda u Quick View
+.sw-quick-view-product {
+    padding: 10px;
+
+    .sw-quick-view-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+    }
+
+    // Leva kolona - slike sa zoom efektom
+    .sw-quick-view-images {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 15px;
+        position: relative;
+        overflow: hidden;
+
+        // Container za sliku sa zoom efektom
+        .sw-image-zoom-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid rgba($qv-color, 0.2);
+
+            // CSS ikonica lupe - inicijalno sakrivena
+            &:before {
+                content: "";
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 30px;
+                height: 30px;
+                background-color: rgba($qv-color, 0.8);
+                border-radius: 50%;
+                z-index: 10;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            // Kružić u lupi
+            &:after {
+                content: "";
+                position: absolute;
+                top: 18px;
+                right: 18px;
+                width: 10px;
+                height: 10px;
+                border: 2px solid $qv-bg;
+                border-radius: 50%;
+                z-index: 11;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                // Dodajemo "dršku" lupe
+                box-shadow:
+                    1px 1px 0 $qv-bg,
+                    2px 2px 0 $qv-bg,
+                    3px 3px 0 $qv-bg,
+                    4px 4px 0 $qv-bg;
+                transform: rotate(-45deg);
+            }
+
+            // Prikaz CSS ikonice lupe na hover
+            &:hover:before,
+            &:hover:after {
+                opacity: 1;
+            }
+        }
+
+        // Slika sa zoom efektom
+        .sw-quick-view-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            transition: opacity 0.2s ease;
+
+            // Preklapajuća slika za zoom
+            &.zoom-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                opacity: 0;
+                transform-origin: top left;
+                pointer-events: none;
+            }
+        }
+    }
+
+    // Desna kolona - informacije o proizvodu
+    .sw-quick-view-summary {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 15px;
+
+        // Naslov
+        .sw-quick-view-title {
+            font-size: 1.8rem;
+            color: $qv-color;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        // Cena
+        .sw-quick-view-price {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+
+            .woocommerce-Price-amount {
+                color: $qv-color;
+                font-weight: 700;
+            }
+
+            del {
+                color: rgba($white, 0.6);
+                margin-right: 10px;
+                font-size: 1.1rem;
+
+                .woocommerce-Price-amount {
+                    color: rgba($white, 0.6);
+                    font-weight: normal;
+                }
+            }
+
+            ins {
+                text-decoration: none;
+            }
+        }
+
+        // Opis
+        .sw-quick-view-description {
+            margin-bottom: 1.5rem;
+            color: $white;
+            font-size: 0.95rem;
+            line-height: 1.6;
+
+            p {
+                margin-bottom: 0.8rem;
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+
+        // Dugmadi akcija
+        .sw-quick-view-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            position: relative;
+
+            .button {
+                padding: 12px 20px;
+                border-radius: 30px;
+                font-weight: 600;
+                font-size: 0.95rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                transition: all $qv-animation-speed ease;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                will-change: transform;
+
+                &.sw-quick-view-details {
+                    background-color: $qv-color;
+                    color: $qv-bg;
+                    border: 1px solid $qv-color;
+                    width: 100%; // Puno dugme
+                    box-shadow: 0 4px 10px rgba($qv-color, 0.3);
+
+                    &:hover {
+                        background-color: lighten($qv-color, 5%);
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 15px rgba($qv-color, 0.5);
+                    }
+                }
+            }
+        }
+    }
+}
+// Stanje kad je zoom aktivan
+.sw-image-zoom-active {
+    cursor: zoom-in;
+
+    .sw-quick-view-image {
+        &.zoom-overlay {
+            opacity: 1;
+        }
+    }
+}
+
+// Tekstualna oznaka za zoom
+.sw-zoom-hint {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba($qv-bg, 0.7);
+    color: $qv-color;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 4px;
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
+
+    .sw-image-zoom-container:hover & {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+// Stilovi za prikaz dimenzija i varijacija - poboljšani
+.sw-quick-view-dimensions,
+.sw-quick-view-variations {
+    margin-bottom: 1.5rem;
+    color: $white;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    background-color: rgba($qv-bg, 0.3);
+    border: 1px solid rgba($qv-color, 0.2);
+    border-radius: 6px;
+    padding: 12px 15px;
+
+    .sw-dimensions-title,
+    .sw-variations-title {
+        color: $qv-color;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+    .sw-dimensions-data,
+    .sw-variations-data {
+        color: rgba($white, 0.9);
+    }
+}
+
+// Posebno stilizovanje varijacija sa boljim formatiranjem
+.sw-quick-view-variations {
+    .sw-variations-data {
+        // Razdvajanje varijacija kao zasebnih sekcija
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        // Stil za svaku pojedinačnu varijaciju
+        span.sw-variation-item {
+            position: relative;
+            padding-left: 12px;
+
+            &:before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 5px;
+                height: 5px;
+                background-color: $qv-color;
+                border-radius: 50%;
+            }
+        }
+    }
+}
+
+// Animacije
+@keyframes sw-qv-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Fiksiranje body-ja kada je modal otvoren
+body.sw-quick-view-open {
+    overflow: hidden;
+}
+
+// Responzivna prilagođavanja
+@media (max-width: 767px) {
+    .sw-quick-view-product {
+        .sw-quick-view-row {
+            flex-direction: column;
+        }
+
+        .sw-quick-view-images,
+        .sw-quick-view-summary {
+            flex: 0 0 100%;
+            max-width: 100%;
+            padding: 0;
+        }
+
+        .sw-quick-view-images {
+            margin-bottom: 2rem;
+        }
+
+        .sw-quick-view-title {
+            font-size: 1.5rem;
+        }
+
+        .sw-quick-view-price {
+            font-size: 1.2rem;
+        }
+
+        .sw-quick-view-actions {
+            flex-direction: column;
+
+            .button {
+                width: 100%;
+            }
+        }
+    }
+}
+
+@media (max-width: 575px) {
+    .sw-quick-view-button {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+
+        .sw-quick-view-icon {
+            width: 16px;
+            height: 16px;
+
+            &:before {
+                width: 10px;
+                height: 10px;
+            }
+
+            &:after {
+                width: 5px;
+                height: 5px;
+                left: 2.5px;
+            }
+        }
+    }
+
+    .sw-quick-view-modal {
+        .sw-quick-view-container {
+            padding: 15px;
+        }
+
+        .sw-quick-view-content {
+            max-height: 95vh;
+        }
+
+        .sw-quick-view-inner {
+            padding: 15px;
+        }
+    }
+
+    .sw-quick-view-product {
+        padding: 5px;
+
+        .sw-quick-view-title {
+            font-size: 1.3rem;
+        }
+
+        .sw-quick-view-price {
+            font-size: 1.1rem;
+        }
+    }
+}

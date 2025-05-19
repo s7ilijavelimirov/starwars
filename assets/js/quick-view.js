@@ -1,5 +1,5 @@
 /**
- * Quick View funkcionalnost za WooCommerce proizvode
+ * Optimizovana Quick View funkcionalnost za WooCommerce proizvode
  * 
  * @package s7design
  */
@@ -7,35 +7,89 @@
 (function ($) {
     'use strict';
 
-    // Globalna funkcija za inicijalizaciju Quick View
+    // Globalna funkcija za inicijalizaciju Quick View - optimizovana verzija bez AJAX-a
     window.initQuickView = function () {
         // Quick View varijable
         const $modal = $('#sw-quick-view-modal');
-        const $modalInner = $modal.find('.sw-quick-view-inner');
-        const $modalLoader = $modal.find('.sw-quick-view-loader');
         const $closeBtn = $modal.find('.sw-quick-view-close');
         const $overlay = $modal.find('.sw-quick-view-overlay');
         const quickViewButtons = document.querySelectorAll('.sw-quick-view-button');
 
         // Ako nema potrebnih elemenata, izađi
-        if (!$modal.length || !$modalInner.length || !quickViewButtons.length) return;
+        if (!$modal.length || !quickViewButtons.length) return;
 
         // Dodavanje click događaja na svako Quick View dugme
         $(document).on('click', '.sw-quick-view-button', function (e) {
             e.preventDefault();
             e.stopPropagation();
 
-            // Dohvatanje podataka o proizvodu
-            const productId = $(this).data('product-id');
-            const productTitle = $(this).data('product-title');
+            // Dohvatanje podataka o proizvodu iz data atributa
+            const $button = $(this);
+            const productId = $button.data('product-id');
 
             if (!productId) return;
 
-            // Prikazivanje modala
+            // Učitaj osnovne podatke direktno iz data atributa (brži pristup)
+            const productTitle = $button.data('product-title') || '';
+            const productImage = $button.data('product-image') || '';
+            const productImageAlt = $button.data('product-image-alt') || productTitle;
+            const productPrice = $button.data('product-price') || '';
+            const productDesc = $button.data('product-description') || '';
+            const productPermalink = $button.data('product-permalink') || '#';
+            const productDimensions = $button.data('product-dimensions') || '';
+            const productVariations = $button.data('product-variations') || '';
+
+            // Reference na modal elemente
+            const $title = $modal.find('.sw-quick-view-title');
+            const $mainImage = $modal.find('.sw-quick-view-image.main-image');
+            const $zoomOverlay = $modal.find('.sw-quick-view-image.zoom-overlay');
+            const $price = $modal.find('.sw-quick-view-price');
+            const $desc = $modal.find('.sw-quick-view-description');
+            const $details = $modal.find('.sw-quick-view-details');
+            const $dimensions = $modal.find('.sw-quick-view-dimensions');
+            const $variations = $modal.find('.sw-quick-view-variations');
+
+            // Popuni modal osnovnim podacima
+            $title.html(productTitle);
+
+            // Postavi slike za glavni prikaz i za zoom
+            $mainImage.attr({
+                'src': productImage,
+                'alt': productImageAlt
+            });
+
+            $zoomOverlay.attr({
+                'src': productImage,
+                'alt': productImageAlt
+            });
+
+            $price.html(productPrice);
+            $desc.html(productDesc);
+            $details.attr('href', productPermalink);
+
+            // Dimenzije ako postoje
+            if (productDimensions) {
+                $dimensions.html('<div class="sw-dimensions-title">Dimenzije:</div><div class="sw-dimensions-data">' + productDimensions + '</div>');
+                $dimensions.show();
+            } else {
+                $dimensions.hide();
+            }
+
+            // Varijacije ako postoje
+            if (productVariations) {
+                $variations.html('<div class="sw-variations-title">Varijacije:</div><div class="sw-variations-data">' + productVariations + '</div>');
+                $variations.show();
+            } else {
+                $variations.hide();
+            }
+
+            // Prikaži modal
             showModal();
 
-            // Učitavanje sadržaja proizvoda
-            loadProductContent(productId, productTitle);
+            // Inicijalizuj zoom efekat
+            setTimeout(function () {
+                initImageZoom();
+            }, 300);
         });
 
         // Zatvaranje modala na klik X
@@ -55,173 +109,91 @@
             }
         });
 
-        // Dodavanje u korpu iz Quick View modala
-        $(document).on('click', '.sw-quick-view-add-to-cart', function (e) {
-            e.preventDefault();
+        /**
+         * Implementacija zoom efekta za slike
+         */
+        function initImageZoom() {
+            const $container = $('.sw-image-zoom-container');
+            if (!$container.length) return;
 
-            const $button = $(this);
-            const productId = $button.data('product-id');
+            const $mainImage = $container.find('.sw-quick-view-image.main-image');
+            const $zoomOverlay = $container.find('.sw-quick-view-image.zoom-overlay');
 
-            // Prikazivanje animacije učitavanja
-            $button.addClass('loading');
+            if (!$mainImage.length || !$zoomOverlay.length) return;
 
-            // AJAX zahtev za dodavanje u korpu
-            $.ajax({
-                url: sw_quick_view_params.ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'sw_quick_view_add_to_cart',
-                    nonce: sw_quick_view_params.nonce,
-                    product_id: productId,
-                    quantity: 1
-                },
-                success: function (response) {
-                    if (response.success) {
-                        // Prikazivanje poruke o uspehu
-                        showAddToCartMessage(response.data.message);
+            // Zoom faktor - koliko puta će slika biti uvećana
+            const zoomFactor = 1.8;
 
-                        // Ažuriranje ikonica korpe ako postoje
-                        if (typeof updateCartIcon === 'function') {
-                            updateCartIcon(response.data.cart_count, response.data.cart_total);
-                        }
-
-                        // Zatvaramo modal nakon kratke pauze
-                        setTimeout(function () {
-                            closeModal();
-                        }, 1500);
-                    } else {
-                        // Prikazivanje poruke o grešci
-                        showAddToCartMessage(response.data, 'error');
-                    }
-                },
-                error: function () {
-                    showAddToCartMessage('Došlo je do greške. Pokušajte ponovo.', 'error');
-                },
-                complete: function () {
-                    $button.removeClass('loading');
-                }
+            // Inicijalno sakrij zoom overlay
+            $zoomOverlay.css({
+                'transform': `scale(${zoomFactor})`,
+                'opacity': 0
             });
-        });
 
-        // Funkcionalnost galerije
-        $(document).on('click', '.sw-quick-view-thumbnail', function () {
-            const $this = $(this);
-            const imageId = $this.data('image-id');
+            // Aktiviraj zoom na hover
+            $container.on('mouseenter', function () {
+                const imageUrl = $mainImage.attr('src');
+                $zoomOverlay.attr('src', imageUrl);
+                $container.addClass('sw-image-zoom-active');
+            });
 
-            if (!imageId) return;
+            // Deaktiviraj zoom na mouseout
+            $container.on('mouseleave', function () {
+                $container.removeClass('sw-image-zoom-active');
 
-            // Dohvatanje punog URL-a slike
-            const fullImageSrc = $this.find('img').attr('src').replace('-150x150', '');
+                // Resetuj zoom overlay
+                $zoomOverlay.css({
+                    'transform': `scale(${zoomFactor})`,
+                    'opacity': 0,
+                    'transform-origin': '50% 50%' // Reset na centar
+                });
+            });
 
-            // Ažuriranje glavne slike
-            $('.sw-quick-view-image').attr('src', fullImageSrc);
+            // Prati kretanje miša za zoom efekat
+            $container.on('mousemove', function (e) {
+                if (!$container.hasClass('sw-image-zoom-active')) return;
 
-            // Ažuriranje aktivne thumbnail sličice
-            $('.sw-quick-view-thumbnail').removeClass('active');
-            $this.addClass('active');
-        });
+                const containerWidth = $container.outerWidth();
+                const containerHeight = $container.outerHeight();
+
+                // Pozicija miša u containeru (0-1)
+                const xRatio = (e.pageX - $container.offset().left) / containerWidth;
+                const yRatio = (e.pageY - $container.offset().top) / containerHeight;
+
+                // Izračunaj x i y pomak za zoom overlay
+                const xOffset = Math.max(0, Math.min(100, xRatio * 100));
+                const yOffset = Math.max(0, Math.min(100, yRatio * 100));
+
+                // Primeni transformaciju na zoom overlay
+                $zoomOverlay.css({
+                    'transform-origin': `${xOffset}% ${yOffset}%`,
+                    'transform': `scale(${zoomFactor})`,
+                    'opacity': 1
+                });
+            });
+        }
 
         /**
          * Funkcija za prikazivanje modala
          */
         function showModal() {
-            // Čišćenje prethodnog sadržaja
-            $modalInner.html('<div class="sw-quick-view-loader"><div class="sw-quick-view-spinner"></div></div>');
-
-            // Prikazivanje modala
-            $modal.fadeIn(300);
-
-            // Onemogućavanje skrolovanja body-ja
+            $modal.fadeIn(200); // Ubrzali smo fade-in na 200ms
             $('body').addClass('sw-quick-view-open');
+
+            // Performance optimizacija - pre-fetch slike
+            const imgUrl = $modal.find('.sw-quick-view-image.main-image').attr('src');
+            if (imgUrl) {
+                const img = new Image();
+                img.src = imgUrl;
+            }
         }
 
         /**
          * Funkcija za zatvaranje modala
          */
         function closeModal() {
-            $modal.fadeOut(200);
-
-            // Omogućavanje skrolovanja body-ja
+            $modal.fadeOut(150); // Ubrzali smo fade-out na 150ms
             $('body').removeClass('sw-quick-view-open');
-
-            // Čišćenje sadržaja nakon zatvaranja
-            setTimeout(function () {
-                $modalInner.html('<div class="sw-quick-view-loader"><div class="sw-quick-view-spinner"></div></div>');
-            }, 300);
-        }
-
-        /**
-         * Funkcija za učitavanje sadržaja proizvoda
-         */
-        function loadProductContent(productId, productTitle) {
-            // Prikazivanje loadera
-            $modalLoader.show();
-
-            // AJAX zahtev za dobijanje sadržaja proizvoda
-            $.ajax({
-                url: sw_quick_view_params.ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'sw_load_quick_view',
-                    nonce: sw_quick_view_params.nonce,
-                    product_id: productId
-                },
-                success: function (response) {
-                    if (response.success) {
-                        // Dodajemo sadržaj proizvoda u modal
-                        $modalInner.html(response.data.html);
-
-                        // Ažuriranje title tag-a
-                        document.title = response.data.product_title + ' - Brzi pregled';
-                    } else {
-                        $modalInner.html('<div class="sw-quick-view-error">Došlo je do greške pri učitavanju proizvoda. Molimo pokušajte ponovo.</div>');
-                    }
-                },
-                error: function () {
-                    $modalInner.html('<div class="sw-quick-view-error">Došlo je do greške pri učitavanju proizvoda. Molimo pokušajte ponovo.</div>');
-                },
-                complete: function () {
-                    // Sakrivanje loadera
-                    $modalLoader.hide();
-                }
-            });
-        }
-
-        /**
-         * Funkcija za prikazivanje poruke o dodavanju u korpu
-         */
-        function showAddToCartMessage(message, type = 'success') {
-            // Uklanjanje postojeće poruke
-            $('.sw-quick-view-message').remove();
-
-            // Kreiranje nove poruke
-            const $message = $('<div>', {
-                class: 'sw-quick-view-message ' + type,
-                html: message
-            });
-
-            // Dodavanje poruke u modal
-            $('.sw-quick-view-actions').prepend($message);
-
-            // Sakrivanje poruke nakon 3 sekunde
-            setTimeout(function () {
-                $message.fadeOut(300, function () {
-                    $(this).remove();
-                });
-            }, 3000);
-        }
-
-        /**
-         * Funkcija za ažuriranje ikone korpe (opciono)
-         */
-        function updateCartIcon(count, total) {
-            // Ažuriranje brojača stavki u korpi, ako postoji
-            $('.xoo-wsc-items-count').text(count);
-
-            // Ažuriranje ukupne cene, ako postoji
-            $('.xoo-wsc-sc-subt').html(total);
-
-            // Ako koristite drugi plugin za korpu, ovde možete dodati ažuriranje i za njega
         }
     };
 
