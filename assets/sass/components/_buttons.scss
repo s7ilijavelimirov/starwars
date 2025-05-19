@@ -205,46 +205,136 @@ $sw-radius: 8px;
         }
     }
 }
-// Load More dugme i paginacija stilovi - za Star Wars temu
-// =====================================================
+// Star Wars tema - Poboljšana paginacija i Load More
+// ========================================
 
-// Varijable - koristi postojeće iz teme
-$load-more-color: $secondary-color2; // Žuta boja
-$load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
+// Star Wars tema - Trokolonska paginacija sa centralnim Load More dugmetom
+// ========================================
 
-// Glavni kontejner za paginaciju
+// Varijable
+$pagination-color: $secondary-color2; // Žuta boja
+$pagination-bg: $primary-color; // Crna boja
+$pagination-hover-bg: rgba($secondary-color2, 0.2);
+
+// Glavni kontejner za paginaciju i Load More - tri kolone
 .sw-pagination-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; // Tri kolone: levo, centar, desno
     align-items: center;
     margin: 2rem 0;
     padding: 1rem 0;
+    border-top: 1px solid rgba($secondary-color2, 0.2);
     position: relative;
     width: 100%;
-    gap: 1.5rem;
+    gap: 1rem;
+
+    // Manje verzije ekrana - mobilni i tablet
+    @media (max-width: 991px) {
+        grid-template-columns: 1fr auto; // Dve kolone na tabletu
+        grid-template-areas:
+            "info pagination"
+            "loadmore loadmore";
+    }
+
+    @media (max-width: 767px) {
+        grid-template-columns: 1fr; // Jedna kolona na mobilnom
+        grid-template-areas:
+            "info"
+            "loadmore"
+            "pagination";
+        gap: 1.5rem;
+    }
 }
 
-// Kontejner za Load More dugme
+// Leva strana - samo tekstualne informacije
+.sw-pagination-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    @media (max-width: 991px) {
+        grid-area: info;
+    }
+
+    @media (max-width: 767px) {
+        align-items: center;
+        text-align: center;
+    }
+}
+
+// Centralna kolona - Load More dugme
+.sw-pagination-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-column: 2;
+
+    @media (max-width: 991px) {
+        grid-area: loadmore;
+        grid-column: span 2;
+    }
+
+    @media (max-width: 767px) {
+        grid-column: 1;
+    }
+}
+
+// Desna strana - paginacija i brojevi stranica
+.sw-pagination-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    @media (max-width: 991px) {
+        grid-area: pagination;
+        justify-content: flex-end;
+    }
+
+    @media (max-width: 767px) {
+        justify-content: center;
+    }
+}
+
+// Informacije o paginaciji
+.sw-pagination-info {
+    display: flex;
+    flex-direction: column;
+
+    .sw-current-page {
+        font-size: 1rem;
+        font-weight: 600;
+        color: $pagination-color;
+        margin-bottom: 0.3rem;
+    }
+
+    .sw-products-count {
+        font-size: 0.85rem;
+        color: rgba($white, 0.8);
+    }
+}
+
+// Kontejner za Load More dugme - sada u centralnoj koloni
 .sw-load-more-container {
     display: flex;
     justify-content: center;
     width: 100%;
 }
 
-// Stilovi za Load More dugme
+// Stilovi za Load More dugme - sa plus ikonicom umesto strelice
 .sw-load-more-btn {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 200px;
-    padding: 0.9rem 2rem;
-    background-color: $load-more-bg;
-    color: $load-more-color;
-    border: 2px solid $load-more-color;
+    padding: 0.9rem 1.5rem;
+    background-color: rgba($pagination-bg, 0.7);
+    color: $pagination-color;
+    border: 2px solid $pagination-color;
     border-radius: 50px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     cursor: pointer;
@@ -257,25 +347,43 @@ $load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
         position: relative;
         z-index: 2;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        // Plus ikonica umesto strelice
+        &::after {
+            content: "+";
+            display: inline-block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 1;
+            transition: all 0.3s ease;
+            margin-left: 4px;
+        }
     }
 
     // Hover efekti
     &:hover {
-        background-color: $load-more-color;
-        color: $primary-color;
+        background-color: $pagination-color;
+        color: $pagination-bg;
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba($load-more-color, 0.5);
+        box-shadow: 0 5px 15px rgba($pagination-color, 0.5);
+
+        span::after {
+            transform: rotate(90deg); // Animacija rotacije plusa na hover
+        }
 
         .sw-loading-spinner {
-            border-color: $primary-color;
+            border-color: $pagination-bg;
             border-top-color: transparent;
         }
     }
 
-    // Aktivni efekt
+    // Aktivni efekat
     &:active {
         transform: translateY(-1px);
-        box-shadow: 0 2px 10px rgba($load-more-color, 0.3);
+        box-shadow: 0 2px 10px rgba($pagination-color, 0.3);
     }
 
     // Stanje učitavanja
@@ -283,8 +391,12 @@ $load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
         cursor: wait;
 
         span {
-            opacity: 0.5;
-            transform: translateY(-10px);
+            opacity: 0.7;
+            transform: translateY(-5px);
+
+            &::after {
+                opacity: 0;
+            }
         }
 
         .sw-loading-spinner {
@@ -308,7 +420,7 @@ $load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
     bottom: 12px;
     width: 20px;
     height: 20px;
-    border: 2px solid $load-more-color;
+    border: 2px solid $pagination-color;
     border-top: 2px solid transparent;
     border-radius: 50%;
     opacity: 0;
@@ -328,40 +440,22 @@ $load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
     }
 }
 
-// Informacije o paginaciji
-.sw-pagination-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    color: $white;
-    margin-bottom: 0.5rem;
-
-    .sw-current-page {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: $load-more-color;
-        margin-bottom: 0.5rem;
-    }
-
-    .sw-products-count {
-        font-size: 0.9rem;
-        opacity: 0.8;
-    }
-}
-
-// Numerička paginacija
+// Numerička paginacija - poboljšana
 .sw-pagination-numbers {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 0.5rem 0;
+    justify-content: flex-end;
+    margin: 0;
     flex-wrap: wrap;
 
     .sw-page-text {
         color: $white;
         margin-right: 0.75rem;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+
+        @media (max-width: 767px) {
+            display: none; // Sakrivamo tekst na mobilnom za uštedu prostora
+        }
     }
 
     .sw-page-numbers {
@@ -369,46 +463,56 @@ $load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
         padding: 0;
         margin: 0;
         list-style: none;
+        gap: 5px;
 
         li {
-            margin: 0 3px;
+            margin: 0;
         }
 
+        // Stilovi za paginacijski broj
         .sw-page-number {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 36px;
             height: 36px;
-            background-color: rgba($primary-color, 0.7);
+            background-color: rgba($pagination-bg, 0.5);
             color: $white;
-            border: 1px solid rgba($load-more-color, 0.5);
-            border-radius: 4px;
+            border: 1px solid rgba($pagination-color, 0.3);
+            border-radius: 50%; // Koristi kružne paginacijske brojeve
             font-size: 0.9rem;
             font-weight: 500;
             text-decoration: none;
             transition: all 0.3s ease;
 
             &:hover {
-                background-color: rgba($load-more-color, 0.2);
-                border-color: $load-more-color;
+                background-color: $pagination-hover-bg;
+                border-color: $pagination-color;
                 transform: translateY(-2px);
+                box-shadow: 0 3px 8px rgba($pagination-color, 0.3);
             }
 
             &.current {
-                background-color: $load-more-color;
-                color: $primary-color;
-                border-color: $load-more-color;
+                background-color: $pagination-color;
+                color: $pagination-bg;
+                border-color: $pagination-color;
                 font-weight: 700;
-                box-shadow: 0 2px 8px rgba($load-more-color, 0.4);
+                box-shadow: 0 2px 8px rgba($pagination-color, 0.4);
+            }
+
+            @media (max-width: 480px) {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
             }
         }
 
+        // Stilovi za "..." u paginaciji
         .sw-dots {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: $load-more-color;
+            color: $pagination-color;
             width: 36px;
             height: 36px;
             font-weight: 700;
@@ -422,70 +526,9 @@ $load-more-bg: rgba($primary-color, 0.8); // Crna pozadina
     color: $white;
     font-size: 1rem;
     padding: 1rem;
-    background-color: rgba($primary-color, 0.7);
-    border: 1px solid rgba($load-more-color, 0.3);
+    background-color: rgba($pagination-bg, 0.7);
+    border: 1px solid rgba($pagination-color, 0.3);
     border-radius: 8px;
     margin: 2rem auto;
     max-width: 400px;
-}
-
-// Responzivna prilagođavanja
-@media (max-width: 767px) {
-    .sw-pagination-container {
-        gap: 1rem;
-    }
-
-    .sw-load-more-btn {
-        min-width: 180px;
-        padding: 0.8rem 1.5rem;
-        font-size: 0.9rem;
-    }
-
-    .sw-pagination-info {
-        .sw-current-page {
-            font-size: 1rem;
-        }
-
-        .sw-products-count {
-            font-size: 0.85rem;
-        }
-    }
-
-    .sw-pagination-numbers {
-        .sw-page-text {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-right: 0;
-            margin-bottom: 0.5rem;
-        }
-
-        .sw-page-numbers {
-            justify-content: center;
-
-            .sw-page-number {
-                width: 32px;
-                height: 32px;
-                font-size: 0.85rem;
-            }
-        }
-    }
-}
-
-@media (max-width: 575px) {
-    .sw-load-more-btn {
-        min-width: 160px;
-        padding: 0.7rem 1.2rem;
-        font-size: 0.85rem;
-    }
-
-    .sw-pagination-numbers {
-        .sw-page-numbers {
-            .sw-page-number {
-                width: 30px;
-                height: 30px;
-                font-size: 0.8rem;
-            }
-        }
-    }
 }

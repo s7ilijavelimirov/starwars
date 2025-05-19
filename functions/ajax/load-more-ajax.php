@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX funkcije za Load More funkcionalnost
+ * AJAX funkcije za Load More funkcionalnost - optimizovana verzija
  *
  * @package s7design
  */
@@ -13,12 +13,13 @@ if (!defined('ABSPATH')) {
 
 /**
  * AJAX funkcija za učitavanje više proizvoda
+ * Optimizovana verzija sa boljim performansama i rukovanjem grešaka
  */
 function sw_load_more_products()
 {
     // Provera nonce-a za sigurnost
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'sw_load_more_nonce')) {
-        wp_send_json_error('Sigurnosna provera nije uspela');
+        wp_send_json_error(['message' => 'Sigurnosna provera nije uspela']);
         die();
     }
 
@@ -32,25 +33,27 @@ function sw_load_more_products()
     // Da li treba zameniti postojeći sadržaj (za paginaciju) ili dodati novi (za load more)
     $replace_content = isset($_POST['replace_content']) ? (bool)$_POST['replace_content'] : false;
 
-    // Početni argumenti za upit
-    $args = array(
+    // Početni argumenti za upit - bolja optimizacija
+    $args = [
         'post_type'      => 'product',
         'post_status'    => 'publish',
         'posts_per_page' => $posts_per_page,
         'paged'          => $paged,
         'orderby'        => 'date',
         'order'          => 'DESC',
-    );
+        'no_found_rows'  => false, // Moramo imati found_rows za paginaciju
+        'fields'         => 'ids', // Optimizacija - učitaj samo ID-jeve prvo
+    ];
 
     // Dodajemo podatke za filtriranje po kategoriji ako postoje
     if (!empty($category)) {
-        $args['tax_query'] = array(
-            array(
+        $args['tax_query'] = [
+            [
                 'taxonomy' => 'product_cat',
                 'field'    => 'slug',
                 'terms'    => $category,
-            ),
-        );
+            ],
+        ];
     }
 
     // Dohvatanje potrebnih filtera iz zahteva (sortiranje, cena itd.)
@@ -85,63 +88,65 @@ function sw_load_more_products()
         }
     }
 
-    // Opcionalno dodaj učitavanje po SKU broju ili nazivu
+    // Pretraga
     if (isset($_POST['search']) && !empty($_POST['search'])) {
         $search_term = sanitize_text_field($_POST['search']);
-        // Napredna pretraga: po nazivu, SKU, ili opisu
         $args['meta_query']['relation'] = 'OR';
-        $args['meta_query'][] = array(
+        $args['meta_query'][] = [
             'key'     => '_sku',
             'value'   => $search_term,
             'compare' => 'LIKE'
-        );
-        $args['s'] = $search_term; // Takođe pretraži po nazivu i opisu
+        ];
+        $args['s'] = $search_term;
     }
 
-    // Izvršavanje WP upita
+    // Izvršavanje WP upita - optimizovano
     $products_query = new WP_Query($args);
 
-    ob_start();
+    // Priprema odgovora
+    $response = [
+        'success' => true,
+        'data' => [
+            'max_pages' => $products_query->max_num_pages,
+            'found_posts' => $products_query->found_posts,
+            'replace_content' => $replace_content,
+            'pagination' => [
+                'current_page' => $paged,
+                'max_pages' => $products_query->max_num_pages,
+                'found_posts' => $products_query->found_posts,
+                'posts_per_page' => $posts_per_page,
+                'showing_from' => (($paged - 1) * $posts_per_page) + 1,
+                'showing_to' => min($paged * $posts_per_page, $products_query->found_posts)
+            ],
+            'html' => ''
+        ]
+    ];
 
-    if ($products_query->have_posts()) :
+    // Obrada HTML-a samo ako imamo proizvode
+    if ($products_query->have_posts()) {
+        ob_start();
+
         // Dodajemo atribute za lazy loading
         add_filter('wp_get_attachment_image_attributes', 'sw_add_lazy_loading_to_images', 10, 3);
 
-        // Učitavamo samo listu proizvoda
-        while ($products_query->have_posts()) : $products_query->the_post();
+        // Sad učitaj kompletne podatke proizvoda
+        foreach ($products_query->posts as $product_id) {
+            $GLOBALS['post'] = get_post($product_id);
+            setup_postdata($GLOBALS['post']);
             wc_get_template_part('content', 'product');
-        endwhile;
+        }
 
         // Uklanjamo filter nakon što završimo
         remove_filter('wp_get_attachment_image_attributes', 'sw_add_lazy_loading_to_images', 10);
 
         wp_reset_postdata();
-    else :
-        echo '<p class="no-more-products">' . esc_html__('Nema više proizvoda.', 's7design') . '</p>';
-    endif;
 
-    $output = ob_get_clean();
+        $response['data']['html'] = ob_get_clean();
+    } else {
+        $response['data']['html'] = '<p class="no-more-products">' . esc_html__('Nema više proizvoda.', 's7design') . '</p>';
+    }
 
-    // Priprema informacija o paginaciji
-    $pagination_data = array(
-        'current_page' => $paged,
-        'max_pages' => $products_query->max_num_pages,
-        'found_posts' => $products_query->found_posts,
-        'posts_per_page' => $posts_per_page,
-        'showing_from' => (($paged - 1) * $posts_per_page) + 1,
-        'showing_to' => min($paged * $posts_per_page, $products_query->found_posts)
-    );
-
-    // Priprema odgovora
-    $response = array(
-        'html' => $output,
-        'pagination' => $pagination_data,
-        'max_pages' => $products_query->max_num_pages,
-        'found_posts' => $products_query->found_posts,
-        'replace_content' => $replace_content
-    );
-
-    wp_send_json_success($response);
+    wp_send_json($response);
     die();
 }
 
@@ -167,7 +172,7 @@ function sw_add_lazy_loading_to_images($attr, $attachment, $size)
 }
 
 /**
- * Uklanja standardnu WooCommerce paginaciju i dodaje Load More dugme
+ * Uklanja standardnu WooCommerce paginaciju i dodaje Load More dugme sa stranicama
  */
 function sw_remove_woocommerce_pagination()
 {
@@ -176,7 +181,7 @@ function sw_remove_woocommerce_pagination()
 }
 
 /**
- * Dodaje Load More dugme i paginacione indikatore
+ * Dodaje Load More dugme i paginacione indikatore - poboljšani prikaz
  */
 function sw_add_load_more_button()
 {
@@ -204,7 +209,11 @@ function sw_add_load_more_button()
     $showing_from = ($current_page - 1) * $posts_per_page + 1;
     $showing_to = min($current_page * $posts_per_page, $found_posts);
 
+    // Poboljšana struktura sa TRI kolone
     echo '<div class="sw-pagination-container" data-pagination-info="' . esc_attr($showing_from) . '-' . esc_attr($showing_to) . ' od ' . esc_attr($found_posts) . '">';
+
+    // LEVA KOLONA - samo informacije o paginaciji
+    echo '<div class="sw-pagination-left">';
 
     // Paginacioni indikatori
     echo '<div class="sw-pagination-info">';
@@ -216,6 +225,29 @@ function sw_add_load_more_button()
         $found_posts
     ) . '</span>';
     echo '</div>';
+
+    echo '</div>'; // Kraj sw-pagination-left
+
+    // CENTRALNA KOLONA - Load More dugme
+    echo '<div class="sw-pagination-center">';
+
+    // Load More dugme - sada u centralnoj koloni
+    echo '<div class="sw-load-more-container">';
+    echo '<button id="sw-load-more" class="sw-load-more-btn" 
+        data-page="' . esc_attr($current_page) . '" 
+        data-max-pages="' . esc_attr($wp_query->max_num_pages) . '" 
+        data-category="' . esc_attr($current_cat) . '" 
+        data-orderby="' . esc_attr($current_orderby) . '" 
+        data-posts-per-page="' . esc_attr($posts_per_page) . '">';
+    echo '<span>' . esc_html__('Učitaj još proizvoda', 's7design') . '</span>';
+    echo '<div class="sw-loading-spinner"></div>';
+    echo '</button>';
+    echo '</div>';
+
+    echo '</div>'; // Kraj sw-pagination-center
+
+    // DESNA KOLONA - paginacija sa brojevima stranica
+    echo '<div class="sw-pagination-right">';
 
     // Paginacioni brojevi
     echo '<div class="sw-pagination-numbers">';
@@ -257,20 +289,9 @@ function sw_add_load_more_button()
     echo '</ul>';
     echo '</div>';
 
-    // Load More dugme
-    echo '<div class="sw-load-more-container">';
-    echo '<button id="sw-load-more" class="sw-load-more-btn" 
-        data-page="' . esc_attr($current_page) . '" 
-        data-max-pages="' . esc_attr($wp_query->max_num_pages) . '" 
-        data-category="' . esc_attr($current_cat) . '" 
-        data-orderby="' . esc_attr($current_orderby) . '" 
-        data-posts-per-page="' . esc_attr($posts_per_page) . '">';
-    echo '<span>' . esc_html__('Učitaj još proizvoda', 's7design') . '</span>';
-    echo '<div class="sw-loading-spinner"></div>';
-    echo '</button>';
-    echo '</div>';
+    echo '</div>'; // Kraj sw-pagination-right
 
-    echo '</div>';
+    echo '</div>'; // Kraj sw-pagination-container
 }
 
 // Registrovanje AJAX akcija

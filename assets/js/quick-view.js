@@ -1,5 +1,6 @@
 /**
  * Optimizovana Quick View funkcionalnost za WooCommerce proizvode
+ * Sa podrškom za dinamički učitane proizvode
  * 
  * @package s7design
  */
@@ -15,11 +16,12 @@
         const $overlay = $modal.find('.sw-quick-view-overlay');
         const quickViewButtons = document.querySelectorAll('.sw-quick-view-button');
 
-        // Ako nema potrebnih elemenata, izađi
-        if (!$modal.length || !quickViewButtons.length) return;
+        // Ako nema modalnog prozora, izađi
+        if (!$modal.length) return;
 
         // Dodavanje click događaja na svako Quick View dugme
-        $(document).on('click', '.sw-quick-view-button', function (e) {
+        // Koristimo delegaciju događaja da bi radilo i na dinamički učitanim dugmadima
+        $(document).off('click', '.sw-quick-view-button').on('click', '.sw-quick-view-button', function (e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -92,18 +94,23 @@
             }, 300);
         });
 
-        // Zatvaranje modala na klik X
-        $closeBtn.on('click', function () {
+        // Zatvaranje modala na klik X - koristimo off().on() da izbegnemo višestruko vezivanje događaja
+        $closeBtn.off('click').on('click', function () {
             closeModal();
         });
 
         // Zatvaranje modala na klik overlaya
-        $overlay.on('click', function () {
+        $overlay.off('click').on('click', function () {
             closeModal();
         });
 
-        // Zatvaranje modala pritiskom escape tastera
-        $(document).on('keyup', function (e) {
+        // Dodatni slušač za overlay (za sigurnost)
+        $(document).off('click', '.sw-quick-view-overlay').on('click', '.sw-quick-view-overlay', function () {
+            closeModal();
+        });
+
+        // Zatvaranje modala pritiskom escape tastera - koristimo namespace za događaj
+        $(document).off('keyup.quickview').on('keyup.quickview', function (e) {
             if (e.key === 'Escape' && $modal.is(':visible')) {
                 closeModal();
             }
@@ -122,7 +129,7 @@
             if (!$mainImage.length || !$zoomOverlay.length) return;
 
             // Zoom faktor - koliko puta će slika biti uvećana
-            const zoomFactor = 1.8;
+            const zoomFactor = 4;
 
             // Inicijalno sakrij zoom overlay
             $zoomOverlay.css({
@@ -130,54 +137,51 @@
                 'opacity': 0
             });
 
-            // Aktiviraj zoom na hover
-            $container.on('mouseenter', function () {
-                const imageUrl = $mainImage.attr('src');
-                $zoomOverlay.attr('src', imageUrl);
-                $container.addClass('sw-image-zoom-active');
-            });
+            // Aktiviraj zoom na hover - koristimo delegaciju za sve mouseenter/leave/move događaje
+            $container.off('mouseenter mouseleave mousemove')
+                .on('mouseenter', function () {
+                    const imageUrl = $mainImage.attr('src');
+                    $zoomOverlay.attr('src', imageUrl);
+                    $container.addClass('sw-image-zoom-active');
+                })
+                .on('mouseleave', function () {
+                    $container.removeClass('sw-image-zoom-active');
 
-            // Deaktiviraj zoom na mouseout
-            $container.on('mouseleave', function () {
-                $container.removeClass('sw-image-zoom-active');
+                    // Resetuj zoom overlay
+                    $zoomOverlay.css({
+                        'transform': `scale(${zoomFactor})`,
+                        'opacity': 0,
+                        'transform-origin': '50% 50%' // Reset na centar
+                    });
+                })
+                .on('mousemove', function (e) {
+                    if (!$container.hasClass('sw-image-zoom-active')) return;
 
-                // Resetuj zoom overlay
-                $zoomOverlay.css({
-                    'transform': `scale(${zoomFactor})`,
-                    'opacity': 0,
-                    'transform-origin': '50% 50%' // Reset na centar
+                    const containerWidth = $container.outerWidth();
+                    const containerHeight = $container.outerHeight();
+
+                    // Pozicija miša u containeru (0-1)
+                    const xRatio = (e.pageX - $container.offset().left) / containerWidth;
+                    const yRatio = (e.pageY - $container.offset().top) / containerHeight;
+
+                    // Izračunaj x i y pomak za zoom overlay
+                    const xOffset = Math.max(0, Math.min(100, xRatio * 100));
+                    const yOffset = Math.max(0, Math.min(100, yRatio * 100));
+
+                    // Primeni transformaciju na zoom overlay
+                    $zoomOverlay.css({
+                        'transform-origin': `${xOffset}% ${yOffset}%`,
+                        'transform': `scale(${zoomFactor})`,
+                        'opacity': 1
+                    });
                 });
-            });
-
-            // Prati kretanje miša za zoom efekat
-            $container.on('mousemove', function (e) {
-                if (!$container.hasClass('sw-image-zoom-active')) return;
-
-                const containerWidth = $container.outerWidth();
-                const containerHeight = $container.outerHeight();
-
-                // Pozicija miša u containeru (0-1)
-                const xRatio = (e.pageX - $container.offset().left) / containerWidth;
-                const yRatio = (e.pageY - $container.offset().top) / containerHeight;
-
-                // Izračunaj x i y pomak za zoom overlay
-                const xOffset = Math.max(0, Math.min(100, xRatio * 100));
-                const yOffset = Math.max(0, Math.min(100, yRatio * 100));
-
-                // Primeni transformaciju na zoom overlay
-                $zoomOverlay.css({
-                    'transform-origin': `${xOffset}% ${yOffset}%`,
-                    'transform': `scale(${zoomFactor})`,
-                    'opacity': 1
-                });
-            });
         }
 
         /**
          * Funkcija za prikazivanje modala
          */
         function showModal() {
-            $modal.fadeIn(200); // Ubrzali smo fade-in na 200ms
+            $modal.fadeIn(200);
             $('body').addClass('sw-quick-view-open');
 
             // Performance optimizacija - pre-fetch slike
@@ -192,7 +196,7 @@
          * Funkcija za zatvaranje modala
          */
         function closeModal() {
-            $modal.fadeOut(150); // Ubrzali smo fade-out na 150ms
+            $modal.fadeOut(150);
             $('body').removeClass('sw-quick-view-open');
         }
     };
@@ -203,13 +207,102 @@
         if (typeof window.initQuickView === 'function') {
             window.initQuickView();
         }
+    });
 
-        // Ponovno inicijalizovanje nakon AJAX učitavanja kroz Load More
-        $(document.body).on('post-load', function () {
-            if (typeof window.initQuickView === 'function') {
-                window.initQuickView();
+    // Event listeneri za različite načine osvežavanja sadržaja
+
+    // 1. WooCommerce post-load event (standardni)
+    $(document.body).on('post-load', function () {
+        if (typeof window.initQuickView === 'function') {
+            window.initQuickView();
+        }
+    });
+
+    // 2. Sopstveni event koji se može trigerovati nakon učitavanja novih proizvoda
+    $(document).on('sw-products-loaded', function () {
+        if (typeof window.initQuickView === 'function') {
+            window.initQuickView();
+        }
+    });
+
+    // 3. Event koji se može trigerovati nakon promene strane ili filtriranja
+    $(document).on('sw-content-updated', function () {
+        if (typeof window.initQuickView === 'function') {
+            window.initQuickView();
+        }
+    });
+
+    // 4. Slušanje AJAX Complete događaja - za WooCommerce AJAX filtriranje
+    $(document).ajaxComplete(function (event, xhr, settings) {
+        // Proveri da li je AJAX zahtev vezan za proizvode
+        if (settings.url.indexOf('wc-ajax=') > -1 ||
+            settings.data && (
+                settings.data.indexOf('action=load_more_products') > -1 ||
+                settings.data.indexOf('action=woocommerce_') > -1
+            )
+        ) {
+            // Malo odložiti izvršavanje da se DOM potpuno učita
+            setTimeout(function () {
+                if (typeof window.initQuickView === 'function') {
+                    window.initQuickView();
+                }
+            }, 100);
+        }
+    });
+
+    // 5. Posmatraj promene u DOM-u za dinamički dodate elemente (napredna metoda)
+    if (window.MutationObserver) {
+        // Funkcija koja proverava da li je dodat novi proizvod
+        const checkForNewProducts = function (addedNodes) {
+            for (let i = 0; i < addedNodes.length; i++) {
+                const node = addedNodes[i];
+                if (node.nodeType === 1) { // Element node
+                    // Proveri da li je element proizvod ili sadrži quick view dugme
+                    if (node.classList && (
+                        node.classList.contains('product') ||
+                        node.querySelector('.sw-quick-view-button')
+                    )) {
+                        return true;
+                    }
+
+                    // Rekurzivno proveri decu
+                    if (node.childNodes && node.childNodes.length) {
+                        if (checkForNewProducts(node.childNodes)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        };
+
+        // Kreiraj observer
+        const observer = new MutationObserver(function (mutations) {
+            let shouldReinitialize = false;
+
+            mutations.forEach(function (mutation) {
+                if (mutation.addedNodes && mutation.addedNodes.length) {
+                    if (checkForNewProducts(mutation.addedNodes)) {
+                        shouldReinitialize = true;
+                    }
+                }
+            });
+
+            if (shouldReinitialize) {
+                if (typeof window.initQuickView === 'function') {
+                    window.initQuickView();
+                }
             }
         });
-    });
+
+        // Posmatraj promene u kontejneru za proizvode
+        const productsContainer = document.querySelector('.products');
+        if (productsContainer) {
+            observer.observe(productsContainer, {
+                childList: true,
+                subtree: true
+            });
+        }
+    }
 
 })(jQuery);

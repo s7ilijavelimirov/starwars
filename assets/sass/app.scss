@@ -116,7 +116,21 @@ a {
 button:focus {
   background: transparent;
 }
+// Uslovni prikaz QuickView dugmeta - sakrivenog na single product i frontpage
+body.single-product,
+body.home {
+  .sw-quick-view-wrapper {
+    display: none !important;
+  }
+}
 
+// Dodatno sakrivanje za related products sekciju
+.related.products,
+.up-sells.products {
+  .sw-quick-view-wrapper {
+    display: none !important;
+  }
+}
 // .single-product .container {
 //   display: flex;
 //   flex-direction: column;

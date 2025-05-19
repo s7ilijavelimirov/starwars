@@ -209,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function () {
             lazyLoadImages();
             enhanceAddToCart();
             enhanceMobileExperience();
-            initQuickView();
             enhanceCategories();
 
             // Pokreni ponovo pri promeni veličine ekrana
