@@ -85,7 +85,7 @@
 
             // Varijacije ako postoje
             if (productVariations) {
-                $variations.html('<div class="sw-variations-title">Varijacije:</div><div class="sw-variations-data">' + productVariations + '</div>');
+                $variations.html('<div class="sw-variations-title">Modeli:</div><div class="sw-variations-data">' + productVariations + '</div>');
                 $variations.show();
             } else {
                 $variations.hide();

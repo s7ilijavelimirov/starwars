@@ -143,9 +143,9 @@ $sw-footer: $footer-bg; // #53112b
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transform-origin: center center;
     padding-bottom: 0 !important; // Poništavamo podrazumevani padding
-
+    height: 100%;
     // Standardna visina za sve kartice
-    min-height: 320px;
+    // min-height: 320px;
 
     // Hover efekti - potpuno identični kao u _swiper-custom.scss
     &:hover {
@@ -192,8 +192,10 @@ $sw-footer: $footer-bg; // #53112b
 
     // Container za sliku - kontrolisani hover efekat
     .woocommerce-LoopProduct-link {
+        flex-shrink: 0; // Sprečava smanjivanje
         position: relative;
-        overflow: hidden;
+        display: block;
+        width: 100%;
 
         img {
             width: 100%;

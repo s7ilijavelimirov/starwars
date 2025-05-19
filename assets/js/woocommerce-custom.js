@@ -1,6 +1,7 @@
 /**
  * Star Wars WooCommerce Custom JS
  * Optimizacije i poboljšanja za WooCommerce
+ * Verzija: 1.2.0 - Optimizovana, bez height kontrole
  */
 document.addEventListener('DOMContentLoaded', function () {
     // Proveri da li je jQuery dostupan
@@ -81,18 +82,13 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Unapređeni hover efekti
+        // Unapređeni hover efekti - koristi CSS transformacije umesto jQuery manipulacije
         function enhanceProductHover() {
-            $('.products li.product').hover(
-                function () {
-                    $(this).find('img').css('transform', 'scale(1.05)');
-                    $(this).find('.woocommerce-loop-product__title').css('color', '#ffdd55');
-                },
-                function () {
-                    $(this).find('img').css('transform', 'scale(1)');
-                    $(this).find('.woocommerce-loop-product__title').css('color', '');
-                }
-            );
+            // Dodaj klasu za CSS da preuzme kontrolu umesto JS manipulacije
+            $('.products li.product').addClass('sw-hover-ready');
+
+            // Nema potrebe za jQuery hover manipulacijom - koristimo CSS
+            // Ovo poboljšava performanse
         }
 
         // Poboljšani responzivni checkout
@@ -107,11 +103,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Lazy load za slike
         function lazyLoadImages() {
-            $('.woocommerce img:not(.lazy-loaded)').each(function () {
-                if (!$(this).attr('loading')) {
-                    $(this).attr('loading', 'lazy').addClass('lazy-loaded');
-                }
-            });
+            // Koristi native Intersection Observer kada je moguće
+            if ('IntersectionObserver' in window) {
+                const imagesToLoad = document.querySelectorAll('.woocommerce img:not(.lazy-loaded)');
+
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            if (!img.getAttribute('loading')) {
+                                img.setAttribute('loading', 'lazy');
+                                img.classList.add('lazy-loaded');
+                            }
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                imagesToLoad.forEach(img => {
+                    imageObserver.observe(img);
+                });
+            } else {
+                // Fallback za starije browsere
+                $('.woocommerce img:not(.lazy-loaded)').each(function () {
+                    if (!$(this).attr('loading')) {
+                        $(this).attr('loading', 'lazy').addClass('lazy-loaded');
+                    }
+                });
+            }
         }
 
         // Dodavanje u korpu animacija
@@ -139,14 +158,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-
         // Optimizacija za kategorije
         function enhanceCategories() {
             // Ako smo na strani kategorije
             if ($('body').hasClass('woocommerce-product-category')) {
-                // Izjednači visinu kartica
-                equalizeProductHeights();
-
                 // Dodaj efekat na hover za kategorije
                 $('.subcategory-item a').hover(
                     function () {
@@ -156,47 +171,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         $(this).find('.subcategory-name').css('color', '');
                     }
                 );
-            }
-        }
-
-        // Funkcija za izjednačavanje visine kartica sa proizvodima
-        function equalizeProductHeights() {
-            if (window.innerWidth >= 768) {
-                // Reset heights
-                $('.products li.product').css('height', 'auto');
-
-                var row = [];
-                var tallest = 0;
-                var $products = $('.products li.product');
-
-                // Pronađi najviši element u svakom redu
-                $products.each(function (i) {
-                    var $this = $(this);
-                    var height = $this.outerHeight();
-
-                    // Dodaj u trenutni red
-                    row.push($this);
-
-                    if (height > tallest) {
-                        tallest = height;
-                    }
-
-                    // Proveri da li je ovo kraj reda
-                    var nextTop = i < $products.length - 1 ? $products.eq(i + 1).offset().top : null;
-                    if (nextTop === null || nextTop > $this.offset().top) {
-                        // Postavi visinu svima u redu
-                        for (var j = 0; j < row.length; j++) {
-                            row[j].css('height', tallest + 'px');
-                        }
-
-                        // Reset za sledeći red
-                        row = [];
-                        tallest = 0;
-                    }
-                });
-            } else {
-                // Na malim ekranima vrati na auto height
-                $('.products li.product').css('height', 'auto');
             }
         }
 
@@ -211,21 +185,95 @@ document.addEventListener('DOMContentLoaded', function () {
             enhanceMobileExperience();
             enhanceCategories();
 
+            // Ukloni sve inline height stilove koji su možda već postavljeni
+            removeInlineHeights();
+
             // Pokreni ponovo pri promeni veličine ekrana
             $(window).on('resize', function () {
                 enhanceMobileExperience();
-                equalizeProductHeights();
             });
 
-            // Load event - neki efekti su bolji nakon kompletnog učitavanja
+            // Load event - inicijalizacije nakon kompletnog učitavanja
             $(window).on('load', function () {
-                setTimeout(equalizeProductHeights, 500);
+                lazyLoadImages();
+            });
+        }
+
+        // Nova funkcija za uklanjanje inline height stilova
+        function removeInlineHeights() {
+            // Pronađi sve karte proizvoda i ukloni visinu
+            $('.products li.product').each(function () {
+                const $product = $(this);
+
+                // Dohvati trenutni stil
+                const style = $product.attr('style');
+
+                // Ako postoji stil, ukloni height atribut
+                if (style) {
+                    // Ukloni height deo iz style atributa
+                    const newStyle = style.replace(/height\s*:\s*[^;]+;?/gi, '');
+
+                    // Postavi novi stil ili ukloni atribut ako je prazan
+                    if (newStyle.trim()) {
+                        $product.attr('style', newStyle);
+                    } else {
+                        $product.removeAttr('style');
+                    }
+                }
+            });
+
+            // Sprečavanje ponovnog postavljanja height - kroz CSS rešenje
+            $('head').append('<style>.products li.product { height: auto !important; }</style>');
+        }
+
+        // MutationObserver da sprečimo bilo koji pokušaj postavljanja inline visine
+        function setupHeightObserver() {
+            if (!window.MutationObserver) return;
+
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    // Proveri da li je promenjen style atribut
+                    if (mutation.type === 'attributes' &&
+                        mutation.attributeName === 'style' &&
+                        mutation.target.className &&
+                        mutation.target.className.includes('product')) {
+
+                        const style = mutation.target.getAttribute('style');
+
+                        // Ako stil sadrži height, ukloni ga
+                        if (style && style.includes('height:')) {
+                            const newStyle = style.replace(/height\s*:\s*[^;]+;?/gi, '');
+
+                            if (newStyle.trim()) {
+                                mutation.target.setAttribute('style', newStyle);
+                            } else {
+                                mutation.target.removeAttribute('style');
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Posmatraj sve trenutne i buduće proizvode
+            document.querySelectorAll('.products').forEach(productList => {
+                observer.observe(productList, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['style']
+                });
             });
         }
 
         // Pokreni nakon učitavanja strane
         $(function () {
             init();
+            setupHeightObserver();
+
+            // Nakon svakog AJAX zahteva
+            $(document).ajaxComplete(function () {
+                setTimeout(removeInlineHeights, 10);
+            });
         });
 
     })(jQuery);
