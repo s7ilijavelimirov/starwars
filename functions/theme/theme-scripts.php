@@ -76,7 +76,7 @@ add_action('wp_enqueue_scripts', 's7design_enqueue_scripts');
 function s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir)
 {
     // Učitaj WooCommerce custom skripte samo na WooCommerce stranicama
-    if (class_exists('WooCommerce') && (is_woocommerce() || is_cart() || is_checkout() || is_account_page())) {
+    if (class_exists('WooCommerce') && (is_woocommerce() || is_cart() || is_checkout())) {
         wp_enqueue_script(
             's7design-woocommerce',
             $dist_uri . '/js/woocommerce-custom-build.js',
@@ -87,7 +87,7 @@ function s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir)
     }
 
     // Učitaj Quick View samo na stranicama proizvoda i arhivama
-    if (is_shop() || is_product_category() || is_product_tag() || is_front_page()) {
+    if (is_shop() || is_product_category() || is_product_tag()) {
         // Registracija Quick View skripte
         wp_enqueue_script(
             's7design-quick-view',

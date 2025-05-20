@@ -66,7 +66,8 @@
                         </a>
 
                         <!-- Dodajemo naziv sajta ispod logoa -->
-                        <h4 class="footer-site-name"><?php echo esc_html(get_bloginfo('name')); ?></h4>
+                        <p class="footer-site-name" role="contentinfo"><?php echo esc_html(get_bloginfo('name')); ?></p>
+
 
                         <!-- Dodajemo email sa ikonom -->
                         <div class="footer-contact-info">
