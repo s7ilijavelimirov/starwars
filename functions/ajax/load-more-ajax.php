@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AJAX funkcije za Load More funkcionalnost - Direktno sortiranje
+ * AJAX funkcije za Load More funkcionalnost - Sa ispravnom injekcijom Quick View dugmeta
  *
  * @package s7design
  */
@@ -16,13 +16,8 @@ if (!defined('ABSPATH')) {
  */
 function sw_load_more_products()
 {
-    // Debug informacije
-    error_log('================ LOAD MORE AJAX REQUEST ================');
-    error_log('POST data: ' . print_r($_POST, true));
-
     // Provera nonce-a za sigurnost
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'sw_load_more_nonce')) {
-        error_log('Nonce provera nije uspela');
         wp_send_json_error(['message' => 'Sigurnosna provera nije uspela']);
         die();
     }
@@ -31,23 +26,11 @@ function sw_load_more_products()
     $paged = isset($_POST['page']) ? absint($_POST['page']) : 1;
     $posts_per_page = isset($_POST['posts_per_page']) ? absint($_POST['posts_per_page']) : get_option('posts_per_page');
 
-    error_log('Stranica: ' . $paged);
-    error_log('Proizvoda po stranici: ' . $posts_per_page);
-
     // Dohvatanje kategorije, ako je definisana
     $category = isset($_POST['category']) ? sanitize_text_field($_POST['category']) : '';
-    if (!empty($category)) {
-        error_log('Kategorija: ' . $category);
-    }
 
     // Dohvatanje ID-jeva proizvoda koje treba preskočiti
     $loaded_ids = isset($_POST['loaded_ids']) ? array_map('absint', explode(',', $_POST['loaded_ids'])) : [];
-    if (!empty($loaded_ids)) {
-        error_log('Već učitani proizvodi (treba ih preskočiti): ' . implode(', ', $loaded_ids));
-    }
-
-    // NOVI PRISTUP: Dohvatamo SVE proizvode iz kategorije i ručno ih filtriramo
-    // Ovo je drugačiji pristup od uobičajenog paged parametra, ali je pouzdaniji
 
     // Početni argumenti za upit - uzimamo SVE proizvode iz kategorije
     $args = [
@@ -100,31 +83,20 @@ function sw_load_more_products()
             break;
     }
 
-    error_log('WP_Query argumenti: ' . print_r($args, true));
-
     // Izvršavanje WP upita
     $products_query = new WP_Query($args);
 
     // Dobijanje ID-jeva proizvoda
     $all_product_ids = $products_query->posts;
 
-    error_log('Ukupno pronađeno proizvoda u kategoriji: ' . count($all_product_ids));
-
     // Filtriranje već prikazanih proizvoda
     $remaining_product_ids = array_diff($all_product_ids, $loaded_ids);
 
-    error_log('Preostalo za prikaz nakon filtriranja: ' . count($remaining_product_ids));
-
     // Paginacija na preostalim proizvodima
-    $offset = ($paged - 1) * $posts_per_page;
     $current_page_product_ids = array_slice($remaining_product_ids, 0, $posts_per_page);
-
-    error_log('ID-jevi proizvoda za trenutnu stranicu: ' . print_r($current_page_product_ids, true));
 
     // Ako nema više proizvoda, vraćamo odgovor
     if (empty($current_page_product_ids)) {
-        error_log('Nema više proizvoda za prikaz - svi proizvodi su već prikazani');
-
         wp_send_json([
             'success' => true,
             'data' => [
@@ -147,8 +119,6 @@ function sw_load_more_products()
 
     // Izvršavanje drugog upita za dobijanje potpunih podataka o proizvodima
     $products_query = new WP_Query($args);
-
-    error_log('Proizvodi za prikaz: ' . $products_query->post_count);
 
     // Ukupan broj stranica na osnovu preostalih proizvoda
     $total_pages = ceil(count($remaining_product_ids) / $posts_per_page);
@@ -177,11 +147,6 @@ function sw_load_more_products()
     if ($products_query->have_posts()) {
         ob_start();
 
-        // Osigurava da će quick-view funkcija biti pozvana
-        if (function_exists('sw_add_quick_view_button')) {
-            add_action('woocommerce_before_shop_loop_item_title', 'sw_add_quick_view_button', 15);
-        }
-
         // Dodajemo atribute za lazy loading
         if (!function_exists('sw_add_lazy_loading_to_images')) {
             function sw_add_lazy_loading_to_images($attr, $attachment, $size)
@@ -201,6 +166,11 @@ function sw_load_more_products()
 
         add_filter('wp_get_attachment_image_attributes', 'sw_add_lazy_loading_to_images', 10, 3);
 
+        // Uklonimo Quick View akciju pre renderovanja ako postoji
+        if (has_action('woocommerce_before_shop_loop_item_title', 'sw_add_quick_view_button')) {
+            remove_action('woocommerce_before_shop_loop_item_title', 'sw_add_quick_view_button', 15);
+        }
+
         // Loop kroz proizvode
         while ($products_query->have_posts()) {
             $products_query->the_post();
@@ -214,14 +184,103 @@ function sw_load_more_products()
 
         wp_reset_postdata();
 
-        $response['data']['html'] = ob_get_clean();
-        error_log('HTML generisan: ' . strlen($response['data']['html']) . ' bajtova');
+        // Dobijamo generisani HTML
+        $html = ob_get_clean();
+
+        // KLJUČNA IZMENA: Koristimo DOMDocument umesto regex-a za preciznost
+        // Pripremamo podatke za Quick View dugmad
+        $product_buttons = array();
+        foreach ($current_page_product_ids as $product_id) {
+            $product = wc_get_product($product_id);
+            if (!$product) continue;
+
+            // Osnovni podaci proizvoda
+            $product_title = $product->get_title();
+            $product_price_html = $product->get_price_html();
+            $product_permalink = $product->get_permalink();
+            $product_short_description = wp_trim_words($product->get_short_description(), 20, '...');
+
+            // Slika proizvoda
+            $image_id = $product->get_image_id();
+            $image_url = wp_get_attachment_image_url($image_id, 'woocommerce_single');
+            $image_alt = get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: $product_title;
+
+            // Podaci o varijacijama
+            $variations_data = '';
+            if ($product->is_type('variable')) {
+                $attributes = $product->get_attributes();
+                $variation_items = [];
+
+                foreach ($attributes as $attribute) {
+                    if ($attribute->get_variation()) {
+                        $attribute_name = wc_attribute_label($attribute->get_name());
+                        $attribute_values = [];
+
+                        if ($attribute->is_taxonomy()) {
+                            $terms = $attribute->get_terms();
+                            foreach ($terms as $term) {
+                                $attribute_values[] = $term->name;
+                            }
+                        } else {
+                            $attribute_values = $attribute->get_options();
+                        }
+
+                        if (!empty($attribute_values)) {
+                            $variation_items[] = '<span class="sw-variation-item">' .
+                                $attribute_name . ': ' . implode(', ', $attribute_values) .
+                                '</span>';
+                        }
+                    }
+                }
+
+                $variations_data = !empty($variation_items) ? implode('', $variation_items) : '';
+            }
+
+            // Pripremamo dugme za ovaj proizvod
+            $product_buttons[$product_id] = array(
+                'title' => $product_title,
+                'price_html' => $product_price_html,
+                'permalink' => $product_permalink,
+                'description' => $product_short_description,
+                'image_url' => $image_url,
+                'image_alt' => $image_alt,
+                'variations_data' => $variations_data
+            );
+        }
+
+        // Dodaj sw-hover-ready klasu i Quick View dugme za svaki proizvod
+        foreach ($product_buttons as $product_id => $data) {
+            // Dodajemo klasu sw-hover-ready
+            $html = str_replace('post-' . $product_id . ' status-publish', 'post-' . $product_id . ' sw-hover-ready status-publish', $html);
+
+            // Kreiramo HTML za Quick View dugme
+            $quick_view_button = '<div class="sw-quick-view-wrapper"><button type="button" 
+                class="sw-quick-view-button quick-view-button" 
+                data-product-id="' . esc_attr($product_id) . '" 
+                data-product-title="' . esc_attr($data['title']) . '"
+                data-product-image="' . esc_url($data['image_url']) . '"
+                data-product-image-alt="' . esc_attr($data['image_alt']) . '"
+                data-product-price="' . esc_attr($data['price_html']) . '"
+                data-product-description="' . esc_attr($data['description']) . '"
+                data-product-permalink="' . esc_url($data['permalink']) . '"
+                data-product-variations="' . esc_attr($data['variations_data']) . '"
+                aria-label="Brzi pregled"
+                title="Brzi pregled"><span class="sw-quick-view-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 5C5.636 5 1 12 1 12C1 12 5.636 19 12 19C18.364 19 23 12 23 12C23 12 18.364 5 12 5Z" fill="none"></path>
+                <circle cx="12" cy="12" r="3" fill="none"></circle>
+            </svg></span></button></div>';
+
+            // Precizno dodavanje Quick View dugmeta unutar LoopProduct linka, pre h2 taga
+            $search_pattern = '/(<li[^>]*post-' . $product_id . '[^>]*>.*?)(<a[^>]*class="woocommerce-LoopProduct-link[^"]*"[^>]*>)(.*?)(<h2)/s';
+            $replacement = '$1$2$3' . $quick_view_button . '$4';
+            $html = preg_replace($search_pattern, $replacement, $html);
+        }
+
+        $response['data']['html'] = $html;
     } else {
-        error_log('Nema proizvoda za prikazivanje');
         $response['data']['html'] = '<p class="no-more-products">Nema više proizvoda.</p>';
     }
 
-    error_log('Slanje AJAX odgovora sa uspehom');
     wp_send_json($response);
     die();
 }
@@ -249,16 +308,8 @@ function sw_add_load_more_button()
 {
     global $wp_query;
 
-    // Debug informacije
-    error_log('============ LOAD MORE BUTTON RENDER ============');
-    error_log('Ukupno proizvoda (wp_query): ' . $wp_query->found_posts);
-    error_log('Proizvoda po stranici (wp_query): ' . $wp_query->query_vars['posts_per_page']);
-    error_log('Ukupno stranica (wp_query): ' . $wp_query->max_num_pages);
-    error_log('Trenutna stranica (wp_query): ' . get_query_var('paged'));
-
     // Ako imamo samo jednu stranicu, ne prikazujemo dugme
     if ($wp_query->max_num_pages <= 1) {
-        error_log('Samo jedna stranica, ne prikazujemo load more');
         return;
     }
 
@@ -279,8 +330,6 @@ function sw_add_load_more_button()
     $showing_from = ($current_page - 1) * $posts_per_page + 1;
     $showing_to = min($current_page * $posts_per_page, $found_posts);
 
-    error_log('Prikazuje se ' . $showing_from . ' - ' . $showing_to . ' od ' . $found_posts . ' proizvoda');
-
     // Sakupljamo ID-jeve trenutno prikazanih proizvoda
     $displayed_product_ids = [];
     if (have_posts()) {
@@ -299,7 +348,6 @@ function sw_add_load_more_button()
     }
 
     $product_ids_str = implode(',', $displayed_product_ids);
-    error_log('Trenutno prikazani proizvodi: ' . $product_ids_str);
 
     // Poboljšana struktura sa informacijama o paginaciji
     echo '<div class="sw-pagination-container">';
@@ -344,6 +392,4 @@ function sw_add_load_more_button()
     echo '</div>';
 
     echo '</div>';
-
-    error_log('Load More dugme prikazano');
 }

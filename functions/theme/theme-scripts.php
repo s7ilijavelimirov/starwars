@@ -2,6 +2,7 @@
 
 /**
  * Učitavanje skripti za temu - optimizovana verzija
+ * Objedinjene sve Load More funkcionalnosti
  *
  * @package s7design
  */
@@ -105,7 +106,17 @@ function s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir)
     }
 
     // Učitaj Load More samo na stranicama arhive proizvoda
+    s7design_register_load_more_scripts($dist_uri, $dist_dir);
+}
+
+/**
+ * Učitavanje Load More skripti i inicijalizacija
+ * (Integrisana funkcija iz load-more-init.php)
+ */
+function s7design_register_load_more_scripts($dist_uri, $dist_dir)
+{
     if (is_shop() || is_product_category() || is_product_tag()) {
+        // Registruj Load More skriptu
         wp_enqueue_script(
             's7design-load-more',
             $dist_uri . '/js/load-more-build.js',
@@ -188,14 +199,6 @@ function s7design_optimize_ajax_requests()
                     // Keširanje za već učitane proizvode
                     window.swProductCache = {};
 
-                    // Dodaj praćenje već učitanih proizvoda
-                    $(document).on('click', '.sw-quick-view-button', function() {
-                        var productId = $(this).data('product-id');
-                        if (productId && window.swProductCache[productId]) {
-                            console.log('Using cached product data');
-                        }
-                    });
-
                     // Zapamti otvorene quick-view prozore da se ne učitavaju ponovo
                     $(document).ajaxSuccess(function(event, xhr, settings) {
                         try {
@@ -258,7 +261,7 @@ function s7design_optimize_ajax_requests()
                                 if (lazyImage.dataset.src) {
                                     lazyImage.src = lazyImage.dataset.src;
                                     lazyImage.removeAttribute('data-src');
-                                    lazyObserver.unobserve(lazyImage);
+                                    observer.unobserve(lazyImage); // Ispravljena greška sa imenom
                                 }
                             }
                         });
