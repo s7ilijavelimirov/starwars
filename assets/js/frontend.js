@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Ostale inicijalizacije
   initHeaderScroll();
-  initImageModals();
   initBackToTop();
 });
 
@@ -235,38 +234,6 @@ function initHeaderScroll() {
       ticking = true;
     }
   }, { passive: true });
-}
-
-/**
- * Funkcija za inicijalizaciju modala za slike
- */
-function initImageModals() {
-  const modal = document.getElementById('myModal');
-  const img = document.getElementById('myImg');
-
-  if (!modal || !img) return;
-
-  const modalImg = document.getElementById('img01');
-  const captionText = document.getElementById('caption');
-  const closeBtn = document.querySelector('.close');
-
-  img.onclick = function () {
-    modal.style.display = "block";
-    if (modalImg) modalImg.src = this.src;
-    if (captionText) captionText.innerHTML = this.alt;
-  }
-
-  if (closeBtn) {
-    closeBtn.onclick = function () {
-      modal.style.display = "none";
-    }
-  }
-
-  modal.onclick = function (e) {
-    if (e.target === modal) {
-      modal.style.display = "none";
-    }
-  }
 }
 
 /**

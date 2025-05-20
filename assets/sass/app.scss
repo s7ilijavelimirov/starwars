@@ -37,13 +37,13 @@
 // @import "~bootstrap/scss/card";
 // @import "~bootstrap/scss/forms";
 // @import "~bootstrap/scss/list-group";
-// @import "~bootstrap/scss/modal";
+@import "~bootstrap/scss/modal";
 // @import "~bootstrap/scss/pagination";
 // @import "~bootstrap/scss/placeholders";
 // @import "~bootstrap/scss/popover";
 // @import "~bootstrap/scss/progress";
 // @import "~bootstrap/scss/spinners";
-// @import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/tables";
 // @import "~bootstrap/scss/toasts";
 // @import "~bootstrap/scss/tooltip";
 
@@ -59,13 +59,13 @@
 @import "layout/footer";
 @import "layout/swiper-custom";
 @import "components/woocommerce";
+@import "components/buttons";
 @import "components/quick-edit";
 @import "layout/sidebar";
 @import "layout/product";
 @import "layout/navigation_mobile";
 @import "layout/blog";
 @import "layout/pagination";
-@import "components/buttons";
 @import "layout/input";
 @import "components/gallery";
 @import "pages/home";
@@ -124,18 +124,6 @@ body.home {
   }
 }
 
-// Dodatno sakrivanje za related products sekciju
-.related.products,
-.up-sells.products {
-  .sw-quick-view-wrapper {
-    display: none !important;
-  }
-}
-// .single-product .container {
-//   display: flex;
-//   flex-direction: column;
-// }
-
 // 404 stranica
 .block {
   &-404 {
@@ -172,93 +160,5 @@ svg#animationss {
 @keyframes spin {
   100% {
     transform: rotate(-360deg);
-  }
-}
-
-// Modal - optimizovan
-.modal {
-  display: none;
-  position: fixed;
-  padding-top: 70px;
-  left: 0;
-  top: 0;
-  z-index: 99999999;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.9);
-
-  span.close {
-    label#show-menu,
-    label#show-menu-modal {
-      &:hover {
-        transform: rotate(180deg);
-        transition: ease-in-out 0.7s;
-      }
-      .stick {
-        margin: -2px;
-      }
-      .stick:nth-child(1) {
-        transform: rotate(45deg);
-        transition: ease-in-out 0.7s;
-      }
-      .stick:nth-child(2) {
-        transform: rotate(136deg);
-        transition: ease-in-out 0.7s;
-      }
-    }
-  }
-}
-
-/* Modal Content */
-.modal-content {
-  margin: auto;
-  display: block;
-  width: 70% !important;
-  max-width: 100px;
-  will-change: transform;
-}
-
-#caption {
-  margin: auto;
-  display: block;
-  width: 80%;
-  max-width: 700px;
-  text-align: center;
-  color: #ccc;
-  padding: 10px 0;
-  height: 100px;
-}
-
-/* Optimizovana animacija */
-@keyframes zoom {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-.modal-content,
-#caption {
-  animation: zoom 0.6s;
-}
-
-/* Close button */
-.close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 80px;
-  font-weight: 500;
-  transition: 0.3s;
-
-  &:hover,
-  &:focus {
-    color: #bbb;
-    text-decoration: none;
-    cursor: pointer;
   }
 }
