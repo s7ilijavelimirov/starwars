@@ -1,134 +1,24 @@
 /**
- * Visoko optimizovana Load More + Quick View funkcionalnost
- * Sa naprednom podrškom za varijacije
+ * Load More funkcionalnost za WooCommerce proizvode - Finalna verzija
  * 
  * @package s7design
- * @version 2.0
+ * @version 1.0.3
  */
 
 (function ($) {
     'use strict';
 
-    // Globalna referenca na parametre
-    let loadMoreParams = {
-        ajaxurl: (typeof sw_load_more_params !== 'undefined') ? sw_load_more_params.ajaxurl : '',
-        nonce: (typeof sw_load_more_params !== 'undefined') ? sw_load_more_params.nonce : '',
-    };
+    // Globalne varijable
+    let isLoading = false;
 
-    // Keš za varijacije proizvoda radi optimizacije
-    const variationsCache = {};
+    // Pamtimo ID-jeve proizvoda koje smo već učitali
+    let loadedProductIds = [];
 
-    // Glavna funkcija koja se pokreće kad je DOM spreman
+    // Funkcija koja se poziva kada je DOM spreman
     $(document).ready(function () {
+        console.log('DOM Spreman - inicijalizacija Load More');
         initLoadMore();
     });
-
-    /**
-     * Debounce helper funkcija za bolje performanse
-     */
-    function debounce(func, wait) {
-        let timeout;
-        return function () {
-            const context = this, args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(function () { func.apply(context, args); }, wait);
-        };
-    }
-
-    /**
-     * Helper funkcija za sigurno escapovanje HTML atributa
-     */
-    function escapeHtml(str) {
-        if (!str || typeof str !== 'string') return '';
-        return str.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    /**
-     * Optimizovana funkcija za dohvatanje varijacija proizvoda
-     * Koristi keš za minimalno opterećenje servera
-     * 
-     * @param {string} productId - ID proizvoda
-     * @param {function} callback - Callback funkcija koja se poziva nakon dohvatanja
-     */
-    function getProductVariations(productId, callback) {
-        // Proveri keš prvo
-        if (variationsCache[productId]) {
-            callback(variationsCache[productId]);
-            return;
-        }
-
-        // Dohvati preko AJAX-a
-        $.ajax({
-            url: loadMoreParams.ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'fetch_product_variations',
-                nonce: loadMoreParams.nonce,
-                product_id: productId
-            },
-            success: function (response) {
-                if (response && response.success && response.data) {
-                    // Sačuvaj u keš
-                    variationsCache[productId] = response.data.variations;
-                    callback(response.data.variations);
-                } else {
-                    callback('');
-                }
-            },
-            error: function () {
-                callback('');
-            }
-        });
-    }
-
-    /**
-     * Funkcija za dohvatanje varijacija za više proizvoda odjednom
-     * Optimizuje broj AJAX poziva
-     * 
-     * @param {Array} productIds - Niz ID-ova proizvoda
-     * @param {function} callback - Callback funkcija koja se poziva nakon dohvatanja
-     */
-    function getMultipleProductVariations(productIds, callback) {
-        // Izbaci duplikate i filtriraj samo proizvode koje nemamo u kešu
-        const uniqueIds = [...new Set(productIds)];
-        const idsToFetch = uniqueIds.filter(id => !variationsCache[id]);
-
-        // Ako su svi proizvodi već u kešu, odmah vrati rezultat
-        if (idsToFetch.length === 0) {
-            callback(uniqueIds.reduce((acc, id) => {
-                acc[id] = variationsCache[id] || '';
-                return acc;
-            }, {}));
-            return;
-        }
-
-        // Kreiraj promises za svaki ID
-        const promises = idsToFetch.map(id => {
-            return new Promise((resolve) => {
-                getProductVariations(id, function (variations) {
-                    resolve({ id, variations });
-                });
-            });
-        });
-
-        // Sačekaj sve promises i vrati rezultat
-        Promise.all(promises).then((results) => {
-            // Dodaj rezultate u keš
-            results.forEach(({ id, variations }) => {
-                variationsCache[id] = variations;
-            });
-
-            // Vrati sve varijacije, uključujući i one koje su već bile u kešu
-            callback(uniqueIds.reduce((acc, id) => {
-                acc[id] = variationsCache[id] || '';
-                return acc;
-            }, {}));
-        });
-    }
 
     /**
      * Inicijalizacija Load More funkcionalnosti
@@ -136,25 +26,61 @@
     function initLoadMore() {
         const $loadMoreBtn = $('#sw-load-more');
 
+        // Debug info - da vidimo da li je dugme uopšte pronađeno
+        console.log('Load More inicijalizacija, dugme pronađeno:', $loadMoreBtn.length > 0);
+
         // Ako dugme ne postoji na stranici, izađi
-        if (!$loadMoreBtn.length) return;
+        if (!$loadMoreBtn.length) {
+            console.log('Dugme nije pronađeno, izlazim iz funkcije');
+            return;
+        }
+
+        // Debug info za atribute dugmeta
+        console.log('Load More dugme podaci:', {
+            'data-page': $loadMoreBtn.attr('data-page'),
+            'data-max-pages': $loadMoreBtn.attr('data-max-pages'),
+            'data-category': $loadMoreBtn.attr('data-category'),
+            'data-orderby': $loadMoreBtn.attr('data-orderby'),
+            'data-posts-per-page': $loadMoreBtn.attr('data-posts-per-page'),
+            'data-loaded-ids': $loadMoreBtn.attr('data-loaded-ids') || 'nije postavljen'
+        });
+
+        // Inicijalizacija loadedProductIds sa već učitanim proizvodima
+        if ($loadMoreBtn.attr('data-loaded-ids')) {
+            loadedProductIds = $loadMoreBtn.attr('data-loaded-ids').split(',').map(id => parseInt(id, 10));
+            console.log('Inicijalizovani već učitani ID-jevi proizvoda:', loadedProductIds);
+        }
 
         // Dohvatanje kontejnera za proizvode
         const $productsContainer = $('.products');
+        console.log('Products kontejner pronađen:', $productsContainer.length > 0);
 
-        // Reference na paginacione elemente
-        const $paginationContainer = $('.sw-pagination-container');
+        // Provera da li su globalne varijable dostupne
+        console.log('sw_load_more_params dostupan:', typeof sw_load_more_params !== 'undefined');
+
+        if (typeof sw_load_more_params === 'undefined') {
+            console.error('sw_load_more_params nije dostupan! Proverite wp_localize_script u PHP kodu.');
+            return;
+        }
+
+        console.log('sw_load_more_params:', {
+            'ajaxurl': sw_load_more_params.ajaxurl,
+            'nonce': sw_load_more_params.nonce ? 'Postoji' : 'Ne postoji',
+        });
 
         // Slušanje klika na Load More dugme
-        $loadMoreBtn.off('click').on('click', debounce(function (e) {
+        $loadMoreBtn.on('click', function (e) {
             e.preventDefault();
 
-            // Izmeri trenutnu poziciju skrola
-            const scrollPosition = $(window).scrollTop();
+            console.log('Load More dugme kliknuto');
 
             // Onemogući dugme dok AJAX radi
-            if ($loadMoreBtn.hasClass('loading')) return;
-            $loadMoreBtn.addClass('loading');
+            if (isLoading) {
+                console.log('Već se učitava, prekidamo');
+                return;
+            }
+
+            setLoading(true);
 
             // Dobijanje trenutnih parametara
             const currentPage = parseInt($loadMoreBtn.attr('data-page'), 10);
@@ -163,258 +89,237 @@
             const orderby = $loadMoreBtn.attr('data-orderby');
             const postsPerPage = parseInt($loadMoreBtn.attr('data-posts-per-page'), 10);
 
-            // Dodaj CSS klasu za tranziciju
-            $paginationContainer.addClass('loading');
+            // Debug info pre zahteva
+            console.log('AJAX zahtev parametri:', {
+                currentPage: currentPage,
+                maxPages: maxPages,
+                category: category,
+                orderby: orderby,
+                postsPerPage: postsPerPage,
+                loadedProductIds: loadedProductIds
+            });
+
+            // Priprema podataka za zahtev
+            const requestData = {
+                action: 'load_more_products',
+                nonce: sw_load_more_params.nonce,
+                page: currentPage + 1,
+                posts_per_page: postsPerPage,
+                category: category,
+                orderby: orderby,
+                loaded_ids: loadedProductIds.join(',') // Prosleđujemo već učitane ID-jeve
+            };
+
+            console.log('AJAX zahtev data:', requestData);
 
             // AJAX zahtev
             $.ajax({
-                url: loadMoreParams.ajaxurl,
+                url: sw_load_more_params.ajaxurl,
                 type: 'POST',
                 dataType: 'json',
-                data: {
-                    action: 'load_more_products',
-                    nonce: loadMoreParams.nonce,
-                    page: currentPage + 1,
-                    posts_per_page: postsPerPage,
-                    category: category,
-                    orderby: orderby
+                data: requestData,
+                beforeSend: function (xhr) {
+                    console.log('AJAX zahtev se šalje...');
                 },
                 success: function (response) {
+                    console.log('AJAX uspeh, odgovor:', response);
+
+                    // Resetujemo stanje učitavanja
+                    setLoading(false);
+
                     if (response && response.success) {
-                        // Privremeni div za procesiranje HTML-a
-                        const $tempDiv = $('<div></div>');
-                        $tempDiv.html(response.data.html);
+                        // KLJUČNA IZMENA: Provera da li su svi proizvodi učitani
+                        if (response.data.all_loaded) {
+                            console.log('Svi proizvodi su uspešno učitani, nema više za prikaz');
 
-                        // Dohvati sve product IDs za optimizovan batch zahtev
-                        const productIds = [];
-                        $tempDiv.find('li.product').each(function () {
-                            const productIdMatch = $(this).attr('class').match(/post-(\d+)/);
-                            if (productIdMatch && productIdMatch[1]) {
-                                productIds.push(productIdMatch[1]);
+                            // Prikaži poruku o uspešnom učitavanju svih proizvoda
+                            showSuccessMessage('Svi proizvodi su uspešno učitani.');
+
+                            // Sakrivamo dugme jer nema više proizvoda
+                            $loadMoreBtn.addClass('hidden');
+                            return;
+                        }
+
+                        // Dodavanje novog HTML-a
+                        if (response.data.html && response.data.html.length > 0) {
+                            console.log('Dodajem HTML sadržaj u kontejner');
+                            $productsContainer.append(response.data.html);
+
+                            // Dodajemo nove ID-jeve u listu već učitanih
+                            if (response.data.product_ids && response.data.product_ids.length > 0) {
+                                loadedProductIds = loadedProductIds.concat(response.data.product_ids);
+                                console.log('Ažurirani učitani ID-jevi:', loadedProductIds);
+
+                                // Ažuriraj atribut na dugmetu za sledeći zahtev
+                                $loadMoreBtn.attr('data-loaded-ids', loadedProductIds.join(','));
                             }
-                        });
 
-                        // Dohvati varijacije za sve proizvode odjednom
-                        if (productIds.length > 0) {
-                            getMultipleProductVariations(productIds, function (variationsData) {
-                                // Sada dodaj quick view dugmad sa odgovarajućim varijacijama
-                                $tempDiv.find('li.product').each(function () {
-                                    const $product = $(this);
-                                    const $link = $product.find('a.woocommerce-LoopProduct-link');
-
-                                    if (!$link.length) return;
-
-                                    // Dohvati product ID
-                                    const productIdMatch = $product.attr('class').match(/post-(\d+)/);
-                                    const productId = productIdMatch ? productIdMatch[1] : '';
-
-                                    if (!productId) return;
-
-                                    // Dohvati ostale podatke
-                                    const productTitle = $product.find('.woocommerce-loop-product__title').text();
-                                    const productImage = $product.find('img').attr('src');
-                                    const productImageAlt = $product.find('img').attr('alt') || productTitle;
-                                    let productPrice = $product.find('.price').html() || '';
-
-                                    // Dohvati varijacije iz batch rezultata
-                                    const productVariations = variationsData[productId] || '';
-
-                                    // Kreiraj quick view dugme
-                                    const quickViewHTML = `<div class="sw-quick-view-wrapper"><button type="button" 
-                                        class="sw-quick-view-button quick-view-button" 
-                                        data-product-id="${productId}" 
-                                        data-product-title="${escapeHtml(productTitle)}"
-                                        data-product-image="${productImage}"
-                                        data-product-image-alt="${escapeHtml(productImageAlt)}"
-                                        data-product-price='${productPrice}'
-                                        data-product-permalink="${$link.attr('href')}"
-                                        data-product-variations="${escapeHtml(productVariations)}"
-                                        aria-label="Brzi pregled"
-                                        title="Brzi pregled"><span class="sw-quick-view-icon"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12 5C5.636 5 1 12 1 12C1 12 5.636 19 12 19C18.364 19 23 12 23 12C23 12 18.364 5 12 5Z" fill="none"></path>
-                                            <circle cx="12" cy="12" r="3" fill="none"></circle>
-                                        </svg></span></button></div>`;
-
-                                    // Ubaci quick view dugme nakon slike
-                                    $link.find('img').after(quickViewHTML);
-                                });
-
-                                // Dodaj obrađene proizvode u kontejner
-                                $productsContainer.append($tempDiv.html());
-
-                                // Ažuriraj atribut stranice
-                                $loadMoreBtn.attr('data-page', currentPage + 1);
-
-                                // Ažuriraj paginacione indikatore
-                                updatePaginationInfo(response.data.pagination || {
-                                    current_page: currentPage + 1,
-                                    max_pages: maxPages,
-                                    found_posts: $productsContainer.find('li.product').length,
-                                    posts_per_page: postsPerPage
-                                });
-
-                                // Sakrij dugme ako smo na poslednjoj stranici
-                                if (currentPage + 1 >= maxPages) {
-                                    $loadMoreBtn.addClass('hidden');
-                                }
-
-                                // Ažuriranje URL-a bez ručnog preusmeravanja
-                                updateURLParameter('paged', currentPage + 1);
-
-                                // Zadrži poziciju skrola
-                                $(window).scrollTop(scrollPosition);
-
-                                // Trigger dodatnih događaja za inicijalizaciju
-                                setTimeout(function () {
-                                    // Inicijalizuj Quick View
-                                    if (typeof window.initQuickView === 'function') {
-                                        window.initQuickView();
-                                    }
-
-                                    // Triggeruj WooCommerce event
-                                    $(document.body).trigger('post-load');
-                                }, 10);
-
-                                // Ukloni stanje učitavanja
-                                $loadMoreBtn.removeClass('loading');
-                                $paginationContainer.removeClass('loading');
-                            });
-                        } else {
-                            // Ako nema proizvoda, samo dodaj HTML
-                            $productsContainer.append($tempDiv.html());
-
-                            // Ažuriraj podatke paginacije
+                            // Ažuriranje parametara dugmeta
                             $loadMoreBtn.attr('data-page', currentPage + 1);
-                            updatePaginationInfo(response.data.pagination || {
-                                current_page: currentPage + 1,
-                                max_pages: maxPages,
-                                found_posts: $productsContainer.find('li.product').length,
-                                posts_per_page: postsPerPage
-                            });
+
+                            // Ažuriranje informacija o paginaciji
+                            updatePaginationInfo(response.data.pagination);
 
                             // Sakrij dugme ako smo na poslednjoj stranici
                             if (currentPage + 1 >= maxPages) {
+                                console.log('Poslednja stranica dostignuta, sakrivamo dugme');
                                 $loadMoreBtn.addClass('hidden');
                             }
 
-                            // Ažuriranje URL-a bez ručnog preusmeravanja
-                            updateURLParameter('paged', currentPage + 1);
+                            // Inicijalizuj Quick View ako postoji
+                            if (typeof window.initQuickView === 'function') {
+                                console.log('Inicijalizujemo Quick View');
+                                window.initQuickView();
+                            }
 
-                            // Zadrži poziciju skrola
-                            $(window).scrollTop(scrollPosition);
-
-                            // Ukloni stanje učitavanja
-                            $loadMoreBtn.removeClass('loading');
-                            $paginationContainer.removeClass('loading');
+                            // Trigger događaj da su proizvodi učitani
+                            $(document.body).trigger('sw-products-loaded');
+                            $(document.body).trigger('post-load');
+                        } else {
+                            console.warn('Dobijen prazan HTML ili nema HTML-a u odgovoru');
+                            showNoMoreProducts();
                         }
                     } else {
-                        // Prikaži poruku o grešci samo ako nema odgovora
-                        showErrorMessage('Došlo je do greške prilikom učitavanja proizvoda.');
-                        $loadMoreBtn.removeClass('loading');
-                        $paginationContainer.removeClass('loading');
+                        // Prikaz poruke ako nema više proizvoda
+                        console.log('Nema više proizvoda ili greška u odgovoru', response);
+
+                        // Prikaži detaljniju poruku o grešci
+                        let errorMessage = 'Nema više proizvoda.';
+                        if (response && response.data && response.data.message) {
+                            errorMessage = response.data.message;
+                        }
+
+                        console.error('AJAX greška:', errorMessage);
+                        showNoMoreProducts(errorMessage);
                     }
                 },
-                error: function () {
-                    showErrorMessage('Greška pri komunikaciji sa serverom. Molimo pokušajte ponovo.');
-                    $loadMoreBtn.removeClass('loading');
-                    $paginationContainer.removeClass('loading');
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error('AJAX greška:', textStatus, errorThrown);
+                    console.log('jqXHR status:', jqXHR.status);
+                    console.log('jqXHR responseText:', jqXHR.responseText);
+
+                    setLoading(false);
+
+                    // Pokušaj da parsiraš odgovor
+                    let errorMessage = 'Došlo je do greške pri učitavanju proizvoda.';
+                    try {
+                        const errorResponse = JSON.parse(jqXHR.responseText);
+                        if (errorResponse && errorResponse.message) {
+                            errorMessage = errorResponse.message;
+                        }
+                    } catch (e) {
+                        // Ako ne može da parsira, koristi statusText ili errorThrown
+                        errorMessage = errorThrown || textStatus || 'Nepoznata greška.';
+                    }
+
+                    showErrorMessage(errorMessage);
                 }
             });
-        }, 250)); // 250ms debounce za optimalne performanse
+        });
 
-        /**
-         * Ažurira paginacione indikatore - optimizovana verzija
-         */
-        function updatePaginationInfo(paginationData) {
-            // Ažuriranje teksta stranice
-            $('.sw-current-page').text('Stranica ' + paginationData.current_page + ' od ' + paginationData.max_pages);
+        // Slušaj klik na brojeve strana
+        $('.sw-page-number').on('click', function (e) {
+            e.preventDefault();
 
-            // Ažuriranje brojača proizvoda
-            $('.sw-products-count').text(
-                'Prikazuje se ' +
-                (paginationData.showing_from || '?') + ' - ' +
-                (paginationData.showing_to || '?') + ' od ' +
-                (paginationData.found_posts || '?') + ' proizvoda'
-            );
+            // Dobijanje broja stranice
+            const clickedPage = parseInt($(this).text(), 10);
+            console.log('Kliknuta stranica:', clickedPage);
 
-            // Efikasno ažuriranje aktivne stranice
-            $('.sw-page-numbers a').removeClass('current');
-            $('.sw-page-numbers a[data-page="' + paginationData.current_page + '"]').addClass('current');
-        }
+            // Promena URL-a
+            window.location.href = $(this).attr('href');
+        });
+    }
 
-        /**
-         * Ažurira URL parametar bez preusmeravanja
-         */
-        function updateURLParameter(key, value) {
-            if (history.pushState) {
-                let searchParams = new URLSearchParams(window.location.search);
-                searchParams.set(key, value);
-                history.pushState(
-                    { path: window.location.pathname + '?' + searchParams.toString() },
-                    '',
-                    window.location.pathname + '?' + searchParams.toString()
-                );
-            }
-        }
+    /**
+     * Promena stanja učitavanja
+     */
+    function setLoading(loading) {
+        isLoading = loading;
+        const $loadMoreBtn = $('#sw-load-more');
 
-        /**
-         * Prikazivanje poruke o grešci
-         */
-        function showErrorMessage(message) {
-            const $existingError = $('.sw-load-more-error');
-            if ($existingError.length) {
-                $existingError.text(message).show();
-            } else {
-                const $errorMessage = $('<div class="sw-load-more-error">' + message + '</div>').css({
-                    'color': '#ff3c38',
-                    'margin-top': '10px',
-                    'text-align': 'center',
-                    'font-weight': '500',
-                    'padding': '8px 15px',
-                    'background-color': 'rgba(255, 60, 56, 0.1)',
-                    'border-radius': '4px'
-                });
-                $loadMoreBtn.after($errorMessage);
-            }
-
-            // Auto-hide nakon 5 sekundi
-            setTimeout(function () {
-                $('.sw-load-more-error').fadeOut(300);
-            }, 5000);
+        if (loading) {
+            console.log('Postavljanje loading stanja');
+            $loadMoreBtn.addClass('loading');
+        } else {
+            console.log('Uklanjanje loading stanja');
+            $loadMoreBtn.removeClass('loading');
         }
     }
 
-    // Aktiviraj naprednu verziju quick-view procesiranja
-    $(function () {
-        if (typeof window.initQuickView === 'function') {
-            const originalInitQuickView = window.initQuickView;
+    /**
+     * Ažuriranje informacija o paginaciji
+     */
+    function updatePaginationInfo(pagination) {
+        if (!pagination) return;
+        console.log('Ažuriranje paginacije:', pagination);
 
-            // Poboljšana verzija koja osigurava da varijacije rade
-            window.initQuickView = function () {
-                // Pozovi originalnu inicijalizaciju
-                originalInitQuickView();
+        // Ažuriranje teksta stranice
+        $('.sw-current-page').text('Stranica ' + pagination.current_page + ' od ' + pagination.max_pages);
 
-                // Dodatno poboljšanje - koristi attr umesto data za varijacije
-                $(document).off('click.sw_quick_view_attr').on('click.sw_quick_view_attr', '.sw-quick-view-button', function () {
-                    const $button = $(this);
-                    const $variations = $('#sw-quick-view-modal').find('.sw-quick-view-variations');
+        // Ažuriranje brojača proizvoda
+        $('.sw-products-count').text(
+            'Prikazuje se ' +
+            pagination.showing_from + ' - ' +
+            pagination.showing_to + ' od ' +
+            pagination.found_posts + ' proizvoda'
+        );
 
-                    // Koristi attr umesto data za dobijanje varijacija
-                    const productVariations = $button.attr('data-product-variations') || '';
+        // Ažuriranje aktivne stranice
+        $('.sw-page-number').removeClass('current');
+        $('.sw-page-number').filter(function () {
+            return $(this).text() == pagination.current_page;
+        }).addClass('current');
+    }
 
-                    // Proveri da li ima varijacija i prikaži ih
-                    if (productVariations) {
-                        $variations.html('<div class="sw-variations-title">Varijacije:</div><div class="sw-variations-data">' + productVariations + '</div>');
-                        $variations.show();
-                    } else {
-                        $variations.hide();
-                    }
-                });
-            };
+    /**
+     * Poruka da nema više proizvoda
+     */
+    function showNoMoreProducts(message) {
+        const $loadMoreBtn = $('#sw-load-more');
+        const defaultMessage = 'Nema više proizvoda.';
 
-            // Ponovo inicijalizuj quick view
-            window.initQuickView();
+        // Sakrij dugme
+        $loadMoreBtn.addClass('hidden');
+
+        // Dodaj poruku
+        if (!$('.no-more-products').length) {
+            console.log('Dodajemo poruku:', message || defaultMessage);
+            $loadMoreBtn.after('<p class="no-more-products">' + (message || defaultMessage) + '</p>');
         }
-    });
+    }
+
+    /**
+     * NOVO: Prikazivanje poruke o uspešnom učitavanju
+     */
+    function showSuccessMessage(message) {
+        const $loadMoreBtn = $('#sw-load-more');
+
+        // Sakrij dugme
+        $loadMoreBtn.addClass('hidden');
+
+        // Dodaj poruku uspeha
+        if (!$('.sw-load-success').length) {
+            console.log('Dodajemo poruku o uspešnom učitavanju:', message);
+            $loadMoreBtn.after('<p class="sw-load-success">' + message + '</p>');
+        }
+    }
+
+    /**
+     * Prikazivanje poruke o grešci
+     */
+    function showErrorMessage(message) {
+        const $loadMoreBtn = $('#sw-load-more');
+        console.log('Prikazujemo poruku o grešci:', message);
+
+        // Dodaj poruku o grešci
+        if (!$('.sw-load-more-error').length) {
+            $loadMoreBtn.after('<div class="sw-load-more-error">' + message + '</div>');
+
+            // Sakri poruku nakon 5 sekundi
+            setTimeout(function () {
+                $('.sw-load-more-error').fadeOut();
+            }, 5000);
+        }
+    }
 
 })(jQuery);

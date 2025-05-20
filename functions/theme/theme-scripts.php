@@ -149,9 +149,6 @@ function s7design_preload_resources()
     echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">' . "\n";
     echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
     echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Medium.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
-
-    // DNS prefetch za eksternu domenu ako koristi CDN
-    echo '<link rel="dns-prefetch" href="//cdn.jsdelivr.net">' . "\n";
 }
 
 /**
@@ -209,6 +206,46 @@ function s7design_optimize_ajax_requests()
                                 }
                             }
                         } catch (e) {}
+                    });
+                }
+
+                // Optimizacija za load-more funkcionalnost
+                if (typeof sw_load_more_params !== 'undefined') {
+                    // Prati već učitane proizvode da bismo ih izbegli u novim zahtevima
+                    window.loadedProductIds = [];
+
+                    // Sakupi ID-jeve već učitanih proizvoda
+                    $('.products .product').each(function() {
+                        var classes = $(this).attr('class').split(' ');
+                        var productIdClass = classes.find(function(cls) {
+                            return cls.indexOf('post-') === 0;
+                        });
+
+                        if (productIdClass) {
+                            var productId = productIdClass.replace('post-', '');
+                            window.loadedProductIds.push(parseInt(productId, 10));
+                        }
+                    });
+
+                    // Pratimo nove proizvode nakon svakog AJAX zahteva
+                    $(document).ajaxSuccess(function(event, xhr, settings) {
+                        if (settings.data && settings.data.indexOf('load_more_products') > -1) {
+                            setTimeout(function() {
+                                $('.products .product').each(function() {
+                                    var classes = $(this).attr('class').split(' ');
+                                    var productIdClass = classes.find(function(cls) {
+                                        return cls.indexOf('post-') === 0;
+                                    });
+
+                                    if (productIdClass) {
+                                        var productId = parseInt(productIdClass.replace('post-', ''), 10);
+                                        if (!window.loadedProductIds.includes(productId)) {
+                                            window.loadedProductIds.push(productId);
+                                        }
+                                    }
+                                });
+                            }, 100);
+                        }
                     });
                 }
 
