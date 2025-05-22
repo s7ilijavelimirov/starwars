@@ -58,21 +58,7 @@ function s7design_deregister_external_fonts()
         }
     }
 }
-add_action('wp_enqueue_scripts', 's7design_deregister_external_fonts', 999);
-
-/**
- * Dodaje lazy-loading atribut svim slikama u sadržaju
- */
-function s7design_add_image_loading_attribute($content)
-{
-    // Zameni sve img tagove da uključe loading="lazy" atribut, osim ako već nemaju loading atribut
-    if (!is_admin()) {
-        $content = preg_replace('/(<img[^>]*?)(?!\sloading=)(.*?\/?>)/i', '$1 loading="lazy"$2', $content);
-    }
-    return $content;
-}
-add_filter('the_content', 's7design_add_image_loading_attribute');
-add_filter('post_thumbnail_html', 's7design_add_image_loading_attribute');
+add_action('wp_enqueue_scripts', 's7design_deregister_external_fonts', 5);
 
 /**
  * Asinhrono učitavanje manje kritičnih skripti

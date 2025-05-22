@@ -1,0 +1,567 @@
+// =============================================
+// PRODUCT META - SKU, KATEGORIJE, TAGOVI - FLEX LAYOUT
+// =============================================
+
+.woocommerce div.product {
+    .product_meta {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba($sw-yellow, 0.2);
+        font-size: 0.9rem;
+
+        // Flex container za sve meta elemente
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        // Meta row - sku, kategorije, tagovi u jednom redu
+        .meta-info-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 1.5rem;
+
+            @media (max-width: 991px) {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        // Osnovni styling za sve meta elemente
+        > span {
+            color: rgba($white, 0.8);
+            line-height: 1.6;
+            margin: 0; // Resetujemo margin jer koristimo gap
+        }
+
+        // SKU wrapper - kompaktan inline element
+        .sku_wrapper {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0; // Ne smanjuje se kada nema prostora
+
+            .sku {
+                color: $sw-yellow;
+                font-weight: 700;
+                background-color: rgba($sw-yellow, 0.15);
+                padding: 6px 12px;
+                border-radius: 8px;
+
+                font-size: 0.85rem;
+                border: 1px solid rgba($sw-yellow, 0.3);
+                display: inline-block;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                white-space: nowrap;
+
+                // Hover efekat za kopiranje
+                &:hover {
+                    background-color: rgba($sw-yellow, 0.25);
+                    cursor: pointer;
+                    transform: translateY(-1px);
+                    transition: all 0.3s ease;
+                }
+            }
+        }
+
+        // Kategorije styling - flex container
+        .posted_in {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            // Label (tekst "Kategorije:")
+            > span:not(a) {
+                margin-right: 5px;
+                white-space: nowrap;
+            }
+
+            a {
+                color: $sw-yellow;
+                text-decoration: none;
+                background-color: rgba($sw-yellow, 0.12);
+                padding: 6px 12px;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                display: inline-block;
+                border: 1px solid rgba($sw-yellow, 0.3);
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
+                position: relative;
+                overflow: hidden;
+                white-space: nowrap;
+
+                // Hover efekat sa animacijom
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                    transition: all 0.5s;
+                    z-index: 1;
+                }
+
+                span {
+                    position: relative;
+                    z-index: 2;
+                }
+
+                &:hover {
+                    background-color: $sw-yellow;
+                    color: $sw-black;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 10px rgba($sw-yellow, 0.4);
+                    border-color: $sw-yellow;
+
+                    &::before {
+                        left: 100%;
+                    }
+                }
+
+                &:active {
+                    transform: translateY(0);
+                    box-shadow: 0 2px 5px rgba($sw-yellow, 0.3);
+                }
+            }
+        }
+
+        // Tagovi styling - flex container
+        .tagged_as {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            flex: 1; // Zauzima ostatak prostora
+
+            // Label (tekst "Tags:")
+            > span:not(a) {
+                margin-right: 5px;
+                white-space: nowrap;
+            }
+
+            a {
+                color: rgba($white, 0.9);
+                text-decoration: none;
+                background-color: rgba($sw-black, 0.6);
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                display: inline-block;
+                border: 1px solid rgba($white, 0.2);
+                position: relative;
+                white-space: nowrap;
+
+                // Ikonica tag-a
+                &::before {
+                    content: "#";
+                    margin-right: 2px;
+                    opacity: 0.7;
+                    font-weight: 600;
+                }
+
+                &:hover {
+                    background-color: rgba($sw-yellow, 0.2);
+                    color: $sw-yellow;
+                    border-color: rgba($sw-yellow, 0.5);
+                    transform: translateY(-1px);
+                    box-shadow: 0 3px 8px rgba($sw-yellow, 0.2);
+
+                    &::before {
+                        opacity: 1;
+                    }
+                }
+
+                &:active {
+                    transform: translateY(0);
+                    box-shadow: 0 1px 3px rgba($sw-yellow, 0.2);
+                }
+            }
+        }
+
+        // Size Chart Button wrapper
+        .size-chart-button-wrapper {
+            margin: 1.5rem 0 1rem 0;
+            padding-top: 1rem;
+            border-top: 1px solid rgba($white, 0.1);
+
+            .btn {
+                background-color: $sw-yellow;
+                border-color: $sw-yellow;
+                color: $sw-black;
+                text-transform: uppercase;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                border-radius: 8px;
+                padding: 0.7rem 1.3rem;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 3px 10px rgba($sw-yellow, 0.3);
+
+                .size-chart-icon {
+                    width: 18px;
+                    height: 18px;
+                    transition: transform 0.3s ease;
+                }
+
+                // Hover efekat
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                    transition: all 0.5s;
+                    z-index: 1;
+                }
+
+                span {
+                    position: relative;
+                    z-index: 2;
+                }
+
+                &:hover {
+                    background-color: lighten($sw-yellow, 10%);
+                    border-color: lighten($sw-yellow, 10%);
+                    box-shadow: 0 6px 15px rgba($sw-yellow, 0.5);
+                    transform: translateY(-3px);
+
+                    .size-chart-icon {
+                        transform: scale(1.1) rotate(5deg);
+                    }
+
+                    &::before {
+                        left: 100%;
+                    }
+                }
+
+                &:active {
+                    transform: translateY(-1px);
+                    box-shadow: 0 3px 8px rgba($sw-yellow, 0.4);
+                }
+
+                &:focus {
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba($sw-yellow, 0.3);
+                }
+            }
+        }
+
+        // Responsive optimizacije
+        @media (max-width: 991px) {
+            .meta-info-row {
+                gap: 0.8rem;
+            }
+
+            .sku_wrapper,
+            .posted_in,
+            .tagged_as {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 767px) {
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            gap: 0.8rem;
+
+            .meta-info-row {
+                gap: 0.8rem;
+            }
+
+            .posted_in,
+            .tagged_as {
+                a {
+                    padding: 4px 8px;
+                    font-size: 0.8rem;
+                }
+            }
+
+            .size-chart-button-wrapper {
+                margin: 0.8rem 0 0 0;
+                padding-top: 0.8rem;
+
+                .btn {
+                    width: 100%;
+                    justify-content: center;
+                    padding: 0.8rem 1rem;
+                }
+            }
+        }
+
+        @media (max-width: 480px) {
+            .meta-info-row {
+                gap: 0.6rem;
+            }
+
+            .posted_in,
+            .tagged_as {
+                gap: 4px;
+
+                a {
+                    display: inline-block;
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+
+// Dodatni utility stilovi za bolje korisničko iskustvo
+.product_meta {
+    // Animacija za loading state
+    &.loading {
+        opacity: 0.6;
+        pointer-events: none;
+
+        * {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+    }
+
+    // Copy to clipboard feedback
+    .sku {
+        position: relative;
+
+        &.copied::after {
+            content: "Kopirano!";
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: $sw-yellow;
+            color: $sw-black;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            white-space: nowrap;
+            z-index: 100;
+            animation: fadeInOut 2s ease-in-out;
+        }
+    }
+}
+
+// Animacije
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-5px);
+    }
+    20%,
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+.woocommerce div.product {
+    .woocommerce-variation-add-to-cart.variations_button {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-top: 2rem;
+
+        // Add to Cart Button - jednostavan Star Wars stil
+        button.single_add_to_cart_button {
+            background-color: $sw-yellow;
+            color: $sw-black;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba($sw-yellow, 0.3);
+            width: auto;
+            min-width: 200px;
+            min-height: 50px;
+
+            @media (max-width: 767px) {
+                width: 100%;
+                min-width: auto;
+                padding: 1.1rem 2rem;
+            }
+
+            @media (max-width: 480px) {
+                font-size: 0.9rem;
+                padding: 1rem 1.5rem;
+            }
+
+            // Hover efekat
+            &:hover {
+                background-color: lighten($sw-yellow, 10%);
+                box-shadow: 0 5px 15px rgba($sw-yellow, 0.5);
+            }
+
+            // Active efekat
+            &:active {
+                box-shadow: 0 2px 8px rgba($sw-yellow, 0.4);
+            }
+
+            // Disabled state
+            &.disabled,
+            &.wc-variation-selection-needed {
+                background-color: rgba($sw-yellow, 0.4);
+                color: rgba($sw-black, 0.6);
+                cursor: not-allowed;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+                &:hover {
+                    background-color: rgba($sw-yellow, 0.4);
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                }
+            }
+        }
+
+        // Hidden input fields
+        input[type="hidden"] {
+            display: none;
+        }
+    }
+}
+.woocommerce-variation.single_variation{
+    display: none !important;
+}
+// =============================================
+// OVERRIDE PLUGIN STILOVA - SAMO BOJE I HOVER
+// =============================================
+
+// Osnovni dugmić stilovi
+.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item) {
+    background-color: rgba($sw-black, 0.7) !important;
+    border: 2px solid rgba($sw-yellow, 0.3) !important;
+    box-shadow: none !important;
+    color: $white !important;
+    border-radius: 5px !important;
+    transition: all 0.3s ease !important;
+    
+    // Hover state
+    &:hover {
+        background-color: rgba($sw-yellow, 0.1) !important;
+        border-color: $sw-yellow !important;
+        color: $sw-yellow !important;
+        box-shadow: 0 3px 8px rgba($sw-yellow, 0.2) !important;
+    }
+}
+
+// Selected state
+.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item.selected,
+.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item[aria-checked="true"],
+.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item:focus,
+.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item.wvs-selected {
+    background-color: $sw-yellow !important;
+    border-color: $sw-yellow !important;
+    color: $sw-black !important;
+    box-shadow: 0 3px 10px rgba($sw-yellow, 0.4) !important;
+    position: relative;
+    
+    // Checkmark za selected - ostaje uvek kada je selektovano
+    &::after {
+        content: "✓" !important;
+        position: absolute !important;
+        top: -10px !important;
+        right: -10px !important;
+        width: 20px !important;
+        height: 20px !important;
+        background-color: $sw-yellow !important;
+        color: $sw-black !important;
+        border-radius: 50% !important;
+        font-size: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-weight: bold !important;
+        border: 2px solid $sw-black !important;
+        z-index: 999 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: none !important;
+    }
+    
+    // Hover na selektovano dugme
+    &:hover {
+        background-color: lighten($sw-yellow, 10%) !important;
+        box-shadow: 0 4px 12px rgba($sw-yellow, 0.6) !important;
+        
+        // Kvačica ostaje i na hover
+        &::after {
+            background-color: lighten($sw-yellow, 10%) !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+    }
+}
+
+// Out of stock state
+.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).woo-disabled {
+    background-color: rgba($sw-black, 0.3) !important;
+    border-color: rgba($white, 0.1) !important;
+    color: rgba($white, 0.3) !important;
+    cursor: not-allowed !important;
+    position: relative;
+    
+    // Linija preko disabled dugmeta
+    &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: rgba($sw-red, 0.7);
+        transform: translateY(-50%);
+        z-index: 5;
+    }
+    
+    &:hover {
+        background-color: rgba($sw-black, 0.3) !important;
+        border-color: rgba($white, 0.1) !important;
+        color: rgba($white, 0.3) !important;
+        box-shadow: none !important;
+    }
+}
+
+// Text styling
+.woo-variation-swatches .variable-items-wrapper .variable-item .variable-item-contents .variable-item-span {
+    color: inherit !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+}

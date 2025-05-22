@@ -70,26 +70,26 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
         // Lazy load za slike - poboljšava performanse
-        function lazyLoadImages() {
-            if ('IntersectionObserver' in window) {
-                const imagesToLoad = document.querySelectorAll('.woocommerce img:not([loading="lazy"])');
-                if (!imagesToLoad.length) return;
+        // function lazyLoadImages() {
+        //     if ('IntersectionObserver' in window) {
+        //         const imagesToLoad = document.querySelectorAll('.woocommerce img:not([loading="lazy"])');
+        //         if (!imagesToLoad.length) return;
 
-                const imageObserver = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            img.setAttribute('loading', 'lazy');
-                            observer.unobserve(img);
-                        }
-                    });
-                });
+        //         const imageObserver = new IntersectionObserver((entries, observer) => {
+        //             entries.forEach(entry => {
+        //                 if (entry.isIntersecting) {
+        //                     const img = entry.target;
+        //                     img.setAttribute('loading', 'lazy');
+        //                     observer.unobserve(img);
+        //                 }
+        //             });
+        //         });
 
-                imagesToLoad.forEach(img => {
-                    imageObserver.observe(img);
-                });
-            }
-        }
+        //         imagesToLoad.forEach(img => {
+        //             imageObserver.observe(img);
+        //         });
+        //     }
+        // }
 
         // Animacija nakon dodavanja u korpu
         function enhanceAddToCart() {
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Inicijalizuj sve funkcije
         function init() {
             initQuantityButtons();
-            lazyLoadImages();
+           // lazyLoadImages();
             enhanceAddToCart();
         }
 

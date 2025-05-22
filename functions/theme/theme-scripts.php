@@ -1,8 +1,7 @@
 <?php
 
 /**
- * Učitavanje skripti za temu - optimizovana verzija
- * Objedinjene sve Load More funkcionalnosti
+ * Učitavanje skripti za temu - optimizovana verzija bez inline JS-a
  *
  * @package s7design
  */
@@ -27,7 +26,7 @@ function s7design_enqueue_scripts()
         true
     );
 
-    // Swiper core - ENQUEUE umesto REGISTER
+    // Swiper core
     wp_enqueue_script(
         's7design-swiper',
         $dist_uri . '/js/swiper-bundle.min.js',
@@ -40,12 +39,12 @@ function s7design_enqueue_scripts()
     wp_enqueue_script(
         's7design-swiper-init',
         $dist_uri . '/js/swiper-init-build.js',
-        ['s7design-swiper'], // Zavisnost od Swiper-a
+        ['s7design-swiper'],
         file_exists($dist_dir . '/js/swiper-init-build.js') ? filemtime($dist_dir . '/js/swiper-init-build.js') : null,
         true
     );
 
-    // Glavni frontend JS - učitan nakon Bootstrap-a, Swiper-a i Swiper-init
+    // Glavni frontend JS
     wp_enqueue_script(
         's7design-frontend',
         $dist_uri . '/js/frontend-build.js',
@@ -54,7 +53,7 @@ function s7design_enqueue_scripts()
         true
     );
 
-    // Dodavanje WP AJAX URL-a za skripte (ako koristite AJAX)
+    // AJAX parametri - samo osnovni
     wp_localize_script('s7design-frontend', 'ajax_object', [
         'ajax_url' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('s7design_nonce'),
@@ -71,11 +70,11 @@ function s7design_enqueue_scripts()
 add_action('wp_enqueue_scripts', 's7design_enqueue_scripts');
 
 /**
- * Odvojeni enqueue specifično za ecommerce skripte
+ * Ecommerce skripte
  */
 function s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir)
 {
-    // Učitaj WooCommerce custom skripte samo na WooCommerce stranicama
+    // WooCommerce custom skripte samo na WC stranicama
     if (class_exists('WooCommerce') && (is_woocommerce() || is_cart() || is_checkout())) {
         wp_enqueue_script(
             's7design-woocommerce',
@@ -86,9 +85,8 @@ function s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir)
         );
     }
 
-    // Učitaj Quick View samo na stranicama proizvoda i arhivama
+    // Quick View samo na shop/category stranicama
     if (is_shop() || is_product_category() || is_product_tag()) {
-        // Registracija Quick View skripte
         wp_enqueue_script(
             's7design-quick-view',
             $dist_uri . '/js/quick-view-build.js',
@@ -97,26 +95,23 @@ function s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir)
             true
         );
 
-        // Lokalizacija skripte za AJAX
+        // Minimalna lokalizacija
         wp_localize_script('s7design-quick-view', 'sw_quick_view_params', [
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('sw_quick_view_nonce'),
-            'cache_enabled' => 'true' // Omogućava klijentsko keširanje za brži prikaz
+            'nonce'   => wp_create_nonce('sw_quick_view_nonce')
         ]);
     }
 
-    // Učitaj Load More samo na stranicama arhive proizvoda
+    // Load More skripte
     s7design_register_load_more_scripts($dist_uri, $dist_dir);
 }
 
 /**
- * Učitavanje Load More skripti i inicijalizacija
- * (Integrisana funkcija iz load-more-init.php)
+ * Load More skripte
  */
 function s7design_register_load_more_scripts($dist_uri, $dist_dir)
 {
     if (is_shop() || is_product_category() || is_product_tag()) {
-        // Registruj Load More skriptu
         wp_enqueue_script(
             's7design-load-more',
             $dist_uri . '/js/load-more-build.js',
@@ -125,7 +120,7 @@ function s7design_register_load_more_scripts($dist_uri, $dist_dir)
             true
         );
 
-        // Lokalizacija skripte za AJAX
+        // Minimalna lokalizacija
         wp_localize_script('s7design-load-more', 'sw_load_more_params', [
             'ajaxurl' => admin_url('admin-ajax.php'),
             'nonce'   => wp_create_nonce('sw_load_more_nonce'),
@@ -137,44 +132,41 @@ function s7design_register_load_more_scripts($dist_uri, $dist_dir)
 }
 
 /**
- * Preload kritičnih resursa za brži prikazivanje stranice
+ * Preload samo najkritičnijih resursa
  */
 function s7design_preload_resources()
 {
     $uri = get_template_directory_uri();
 
-    // Preload glavnih stilova
-    echo '<link rel="preload" href="' . $uri . '/dist/css/frontend.min.css" as="style">' . "\n";
+    // Preload glavnih stilova - najviši prioritet
+    echo '<link rel="preload" href="' . $uri . '/dist/css/frontend.min.css" as="style" fetchpriority="high">' . "\n";
 
-    // Preload kritičnih skripti
+    // Preload samo kritičnih skripti
     echo '<link rel="preload" href="' . $uri . '/dist/js/bootstrap.bundle.min.js" as="script">' . "\n";
     echo '<link rel="preload" href="' . $uri . '/dist/js/frontend-build.js" as="script">' . "\n";
 
-    // Preload Swiper only on pages that need it
+    // Swiper samo ako je stvarno potreban
     if (is_front_page() || is_home() || is_shop() || is_product_category() || is_product_tag()) {
         echo '<link rel="preload" href="' . $uri . '/dist/js/swiper-bundle.min.js" as="script">' . "\n";
         echo '<link rel="preload" href="' . $uri . '/dist/js/swiper-init-build.js" as="script">' . "\n";
     }
 
-    // Preload fontova - najviši prioritet za regularni font
+    // Preload samo najvažnijih fontova
     echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">' . "\n";
     echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
-    echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Medium.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
 }
 
 /**
- * Dodavanje defer atributa na nekritične skripte
+ * Defer atribut za nekritične skripte
  */
 function s7design_defer_scripts($tag, $handle, $src)
 {
-    // Lista skripti koje treba učitati sa defer
     $defer_scripts = [
         's7design-quick-view',
         's7design-load-more',
         's7design-woocommerce'
     ];
 
-    // Ako je skripta u listi, dodaj defer
     if (in_array($handle, $defer_scripts)) {
         return str_replace(' src', ' defer src', $tag);
     }
@@ -182,110 +174,3 @@ function s7design_defer_scripts($tag, $handle, $src)
     return $tag;
 }
 add_filter('script_loader_tag', 's7design_defer_scripts', 10, 3);
-
-/**
- * Optimizacija AJAX zahteva sa klijentskim keširanjem
- */
-function s7design_optimize_ajax_requests()
-{
-    // Pokreni ovo samo na stranicama gde koristimo AJAX
-    if (is_shop() || is_product_category() || is_product_tag() || is_front_page()) {
-?>
-        <script>
-            // Optimizacija za AJAX zahteve sa klijentskim keširanjem
-            (function($) {
-                // Keširanje za brži prikaz quick-view-a i load-more proizvoda
-                if (typeof sw_quick_view_params !== 'undefined' && sw_quick_view_params.cache_enabled === 'true') {
-                    // Keširanje za već učitane proizvode
-                    window.swProductCache = {};
-
-                    // Zapamti otvorene quick-view prozore da se ne učitavaju ponovo
-                    $(document).ajaxSuccess(function(event, xhr, settings) {
-                        try {
-                            if (settings.data && settings.data.indexOf('sw_load_quick_view') > -1) {
-                                var productId = settings.data.match(/product_id=(\d+)/);
-                                if (productId && productId[1] && xhr.responseJSON && xhr.responseJSON.success) {
-                                    window.swProductCache[productId[1]] = xhr.responseJSON;
-                                }
-                            }
-                        } catch (e) {}
-                    });
-                }
-
-                // Optimizacija za load-more funkcionalnost
-                if (typeof sw_load_more_params !== 'undefined') {
-                    // Prati već učitane proizvode da bismo ih izbegli u novim zahtevima
-                    window.loadedProductIds = [];
-
-                    // Sakupi ID-jeve već učitanih proizvoda
-                    $('.products .product').each(function() {
-                        var classes = $(this).attr('class').split(' ');
-                        var productIdClass = classes.find(function(cls) {
-                            return cls.indexOf('post-') === 0;
-                        });
-
-                        if (productIdClass) {
-                            var productId = productIdClass.replace('post-', '');
-                            window.loadedProductIds.push(parseInt(productId, 10));
-                        }
-                    });
-
-                    // Pratimo nove proizvode nakon svakog AJAX zahteva
-                    $(document).ajaxSuccess(function(event, xhr, settings) {
-                        if (settings.data && settings.data.indexOf('load_more_products') > -1) {
-                            setTimeout(function() {
-                                $('.products .product').each(function() {
-                                    var classes = $(this).attr('class').split(' ');
-                                    var productIdClass = classes.find(function(cls) {
-                                        return cls.indexOf('post-') === 0;
-                                    });
-
-                                    if (productIdClass) {
-                                        var productId = parseInt(productIdClass.replace('post-', ''), 10);
-                                        if (!window.loadedProductIds.includes(productId)) {
-                                            window.loadedProductIds.push(productId);
-                                        }
-                                    }
-                                });
-                            }, 100);
-                        }
-                    });
-                }
-
-                // Optimizacija učitavanja slika sa intersection observer
-                if ('IntersectionObserver' in window) {
-                    var lazyImageObserver = new IntersectionObserver(function(entries, observer) {
-                        entries.forEach(function(entry) {
-                            if (entry.isIntersecting) {
-                                let lazyImage = entry.target;
-                                if (lazyImage.dataset.src) {
-                                    lazyImage.src = lazyImage.dataset.src;
-                                    lazyImage.removeAttribute('data-src');
-                                    observer.unobserve(lazyImage); // Ispravljena greška sa imenom
-                                }
-                            }
-                        });
-                    });
-
-                    // Primeni na sve slike koje imaju data-src atribut
-                    document.addEventListener('DOMContentLoaded', function() {
-                        const lazyImages = document.querySelectorAll('img[data-src]');
-                        lazyImages.forEach(function(lazyImage) {
-                            lazyImageObserver.observe(lazyImage);
-                        });
-
-                        // Ponovno pokreni za nove slike nakon AJAX zahteva
-                        $(document).ajaxComplete(function() {
-                            const newLazyImages = document.querySelectorAll('img[data-src]');
-                            newLazyImages.forEach(function(lazyImage) {
-                                lazyImageObserver.observe(lazyImage);
-                            });
-                        });
-                    });
-                }
-            })(jQuery);
-        </script>
-<?php
-    }
-}
-add_action('wp_footer', 's7design_optimize_ajax_requests', 99);

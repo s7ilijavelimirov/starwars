@@ -709,69 +709,12 @@ $sw-footer: $footer-bg; // #53112b
     // Animacija pojavljivanja
     opacity: 0;
     animation: fadeIn 0.4s ease forwards;
-    table.woocommerce-product-attributes {
-        width: 100% !important;
-        border-collapse: separate !important;
-        border-spacing: 0 10px !important;
-        margin: 1rem 0 !important;
-
-        tbody {
-            tr {
-                background: rgba($primary-color, 0.5) !important;
-                border-radius: 8px !important;
-                overflow: hidden !important;
-
-                th,
-                td {
-                    padding: 1rem !important;
-                    border: none !important;
-
-                    &:first-child {
-                        border-radius: 8px 0 0 8px !important;
-                    }
-
-                    &:last-child {
-                        border-radius: 0 8px 8px 0 !important;
-                    }
-                }
-
-                th {
-                    background: rgba($secondary-color2, 0.1) !important;
-                    color: $secondary-color2 !important;
-                    font-weight: 600 !important;
-                    width: 30% !important;
-                }
-
-                td {
-                    color: rgba($white, 0.9) !important;
-
-                    p {
-                        margin: 0 !important;
-
-                        a {
-                            display: inline-block !important;
-                            background: rgba($secondary-color2, 0.2) !important;
-                            color: $secondary-color2 !important;
-                            padding: 2px 8px !important;
-                            border-radius: 12px !important;
-                            text-decoration: none !important;
-                            margin: 2px !important;
-                            font-size: 0.9rem !important;
-
-                            &:hover {
-                                background: $secondary-color2 !important;
-                                color: $primary-color !important;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    h2:first-child {
+        display: none !important;
     }
     @media (max-width: 767px) {
         padding: 1rem !important;
     }
-
     h1,
     h2,
     h3,
@@ -789,15 +732,15 @@ $sw-footer: $footer-bg; // #53112b
     table th {
         background: rgba($secondary-color2, 0.1) !important;
         color: $secondary-color2 !important;
+        border-radius: 5px;
+        border-bottom: 5px solid black;
     }
 
     table td {
         color: rgba($white, 0.9) !important;
     }
-    table tbody {
-        tr {
-            margin-bottom: 1rem;
-        }
+    .woocommerce-Tabs-panel--description {
+        background-color: red !important;
     }
 }
 
@@ -810,5 +753,109 @@ $sw-footer: $footer-bg; // #53112b
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+.woocommerce-Tabs-panel--additional_information {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 10px !important;
+    margin: 1rem 0 !important;
+    table.woocommerce-product-attributes.shop_attributes {
+        margin-bottom: 0px !important;
+    }
+    td.woocommerce-product-attributes-item__value {
+        p {
+            margin-left: 1rem !important;
+        }
+    }
+}
+// =============================================
+// SINGLE PRODUCT PRICE STYLING
+// =============================================
+
+
+.woocommerce div.product .summary.entry-summary {
+    // Cena proizvoda
+    p.price {
+        margin-bottom: 1rem;
+        font-size: clamp(1.5rem, 3vw, 2.2rem);
+        font-weight: 700;
+        color: $sw-yellow;
+        // text-shadow: rgb(255, 255, 255) 2px 2px;
+        position: relative;
+        padding-left: 20px;
+
+        @media (max-width: 767px) {
+            margin-bottom: 1.5rem;
+            //text-align: center;
+            padding-left: 0;
+        }
+
+        // Žuta linija pre cene
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background-color: $sw-yellow;
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba($sw-yellow, 0.6);
+
+            @media (max-width: 767px) {
+                display: none;
+            }
+        }
+
+        .woocommerce-Price-amount {
+            color: inherit;
+
+            bdi {
+                font-weight: inherit;
+                font-style: normal;
+            }
+
+            // RSD manji i drugačiji
+            .woocommerce-Price-currencySymbol {
+                font-size: 0.6em;
+                opacity: 0.8;
+                margin-left: 5px;
+                font-weight: 500;
+                position: relative;
+                top: -0.2em;
+                background-color: rgba($sw-yellow, 0.2);
+                padding: 2px 6px;
+                border-radius: 4px;
+                border: 1px solid rgba($sw-yellow, 0.4);
+            }
+        }
+
+        // Sale price support
+        del {
+            color: rgba($white, 0.6);
+            margin-right: 15px;
+            font-size: 0.8em;
+            text-decoration-color: rgba($sw-red, 0.6);
+
+            .woocommerce-Price-amount {
+                color: rgba($white, 0.6);
+                font-weight: normal;
+
+                .woocommerce-Price-currencySymbol {
+                    background-color: rgba($white, 0.1);
+                    border-color: rgba($white, 0.2);
+                }
+            }
+        }
+
+        ins {
+            text-decoration: none;
+
+            .woocommerce-Price-amount {
+                color: $sw-yellow;
+            }
+        }
     }
 }
