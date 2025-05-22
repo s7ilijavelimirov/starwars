@@ -4,6 +4,7 @@ $sw-grey: #222;
 $sw-white: #fff;
 $sw-border: #444;
 $sw-radius: 8px;
+// Blur efekat samo za modal backdrop
 
 // WooCommerce form inputs
 .woocommerce input[type="text"],
@@ -119,94 +120,6 @@ $sw-radius: 8px;
     color: $sw-yellow;
     border-radius: $sw-radius;
 }
-.quantity.buttons-added {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #ffe81f;
-    border-radius: 6px;
-    padding: 6px 8px;
-    gap: 6px;
-    width: fit-content;
-    box-shadow: 0 0 8px rgba(255, 232, 31, 0.3);
-    transition: all 0.3s ease;
-
-    &:hover {
-        box-shadow: 0 0 12px rgba(255, 232, 31, 0.5);
-        transform: scale(1.01);
-    }
-
-    button.minus,
-    button.plus {
-        background-color: #ffe81f;
-        color: #000;
-        font-size: 1.3rem;
-        font-weight: bold;
-        border: none;
-        width: 34px;
-        height: 34px;
-        cursor: pointer;
-        //transition: all 0.2s ease;
-        border-radius: 5px;
-        text-shadow: 1px 1px #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
-
-        &:hover {
-            background-color: #fff200;
-            box-shadow: 0 0 6px rgba(255, 232, 31, 0.6);
-            transform: scale(1.05);
-        }
-
-        &:active {
-            transform: scale(0.95);
-        }
-    }
-
-    input.qty {
-        width: 44px;
-        height: 34px;
-        text-align: center;
-        border: none;
-        font-size: 1.1rem;
-        background: transparent;
-        color: #fff;
-        font-weight: bold;
-        padding: 0;
-        margin: 0;
-        outline: none;
-        -moz-appearance: textfield;
-
-        &::-webkit-inner-spin-button,
-        &::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-    }
-
-    // 📱 Responsive - za manje ekrane
-    @media (max-width: 480px) {
-        padding: 5px 6px;
-        gap: 4px;
-
-        button.minus,
-        button.plus {
-            width: 28px;
-            height: 28px;
-            font-size: 1rem;
-        }
-
-        input.qty {
-            width: 36px;
-            height: 28px;
-            font-size: 1rem;
-        }
-    }
-}
-// Star Wars tema - Poboljšana paginacija i Load More
-// ========================================
 
 // Star Wars tema - Trokolonska paginacija sa centralnim Load More dugmetom
 // ========================================

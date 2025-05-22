@@ -58,18 +58,6 @@ $sw-footer: $footer-bg; // #53112b
 .woocommerce,
 .woocommerce-page {
     color: $white;
-
-    // Fix za conflict sa Bootstrap grid sistemom
-    .row {
-        margin-right: -15px;
-        margin-left: -15px;
-    }
-
-    [class*="col-"] {
-        padding-right: 15px;
-        padding-left: 15px;
-    }
-
     // Glavni container za sve WooCommerce stranice
     .woocommerce-wrapper {
         padding: 2rem 0;
@@ -101,6 +89,7 @@ $sw-footer: $footer-bg; // #53112b
     }
 
     // Breadcrumbs
+    // Breadcrumbs sa responsive podrškom
     .woocommerce-breadcrumb {
         margin-bottom: 2rem;
         color: $sw-yellow !important;
@@ -111,7 +100,22 @@ $sw-footer: $footer-bg; // #53112b
         border-radius: 30px;
         display: inline-block;
         border: 1px solid rgba($sw-yellow, 0.3);
+        max-width: 100%;
+        word-wrap: break-word;
 
+        // Responsive stilovi
+        @media (max-width: 767px) {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 1.5rem;
+            width: 100%;
+            border-radius: 15px;
+            display: block;
+            line-height: 1.5;
+            white-space: normal;
+        }
+
+        // Stilovi za linkove
         a {
             color: $white !important;
             transition: all 0.3s ease;
@@ -119,6 +123,14 @@ $sw-footer: $footer-bg; // #53112b
             &:hover {
                 color: $sw-yellow !important;
                 text-decoration: none;
+            }
+        }
+
+        // Stilizovanje separatora (/) za bolji izgled na mobilnim
+        @media (max-width: 767px) {
+            // Smanjenje razmaka uz separator
+            .woocommerce-breadcrumb {
+                word-spacing: 1px;
             }
         }
     }
@@ -385,8 +397,6 @@ $sw-footer: $footer-bg; // #53112b
 // =============================================
 // JEDNA STRANICA PROIZVODA
 // =============================================
-
-
 
 // =============================================
 // PAGINATION

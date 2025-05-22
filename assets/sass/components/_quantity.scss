@@ -1,0 +1,338 @@
+// Star Wars tema - Stilovi za quantity input
+// ========================================
+// Optimizacija galerije za Single Product
+// Optimizacija za WooCommerce galeriju proizvoda
+.woocommerce-product-gallery {
+    // Glavni kontejner za galeriju
+    .woocommerce-product-gallery__wrapper {
+        background-color: #ffffff;
+        border-radius: 10px;
+        border: 2px solid #ffdd55;
+    }
+
+    // Kontejner za glavnu sliku
+    .woocommerce-product-gallery__image {
+        background-color: #ffffff;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        //padding: 20px; // Opciono - unutrašnji razmak
+        border-radius: 10px;
+        // Link i glavna slika
+        a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+
+            // Glavna slika proizvoda
+            img.wp-post-image {
+                max-height: 650px; // Maksimalna visina slike - prilagodi po potrebi
+                width: auto;
+                max-width: 100%;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto;
+            }
+        }
+
+        // Zoom slika sa belom pozadinom
+        .zoomImg {
+            background-color: #ffffff !important;
+        }
+    }
+
+    // Thumbnails
+    .flex-control-thumbs {
+        margin-top: 15px;
+
+        li {
+            background-color: #ffffff;
+            border-radius: 4px; // Opciono
+            overflow: hidden;
+
+            img {
+                object-fit: contain;
+                background-color: #ffffff;
+                border: 1px solid #eeeeee; // Opciono - suptilna ivica
+            }
+        }
+    }
+}
+
+// Lightbox popravka
+.pswp__img {
+    background-color: #ffffff !important;
+}
+// Koristi varijable iz teme
+$sw-yellow: $secondary-color2; // #ffdd55
+$sw-black: $primary-color; // #000000
+$sw-white: #ffffff;
+
+// Osnovni stilovi za quantity container
+.quantity.buttons-added {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid $sw-yellow;
+    border-radius: 6px;
+    padding: 5px;
+    gap: 5px;
+    width: fit-content;
+    box-shadow: 0 0 8px rgba($sw-yellow, 0.3);
+    margin-bottom: 20px;
+
+    // Plus i minus dugmad
+    button.minus,
+    button.plus {
+        background-color: $sw-yellow;
+        color: $sw-black;
+        font-size: 1.4rem; // Veća veličina fonta
+        font-weight: bold;
+        border: none;
+        width: 2rem; // Fiksna širina u rem jedinicama
+        height: 2rem; // Fiksna visina u rem jedinicama
+        cursor: pointer;
+        border-radius: 5px;
+        text-shadow: 1px 1px $sw-white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
+        line-height: 1;
+        padding: 0;
+
+        &:hover {
+            background-color: lighten($sw-yellow, 10%);
+            // Bez transform svojstva da se ne pomera
+        }
+
+        &:active {
+            background-color: darken($sw-yellow, 5%);
+            // Bez transform svojstva da se ne pomera
+        }
+
+        // Za bolju pristupačnost
+        &:focus {
+            outline: none;
+            box-shadow:
+                0 0 0 2px rgba($sw-yellow, 0.6),
+                inset 0 0 4px rgba(0, 0, 0, 0.3);
+        }
+    }
+
+    // Input polje
+    input.input-text.qty,
+    input.qty {
+        width: 2.5rem;
+        height: 2rem;
+        text-align: center;
+        border: none;
+        font-size: 1.1rem;
+        background: transparent;
+        color: $sw-white;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+        -moz-appearance: textfield;
+        outline: none;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        // Focus stilovi
+        &:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
+
+// Posebna stilizacija za korpu
+.woocommerce-cart {
+    table.shop_table,
+    table.cart {
+        // Quantity polje u tabeli
+        td.product-quantity {
+            .quantity.buttons-added {
+                margin: 0 auto;
+
+                button.minus,
+                button.plus {
+                    width: 2rem; // Balansirano
+                    height: 2rem;
+                    font-size: 1.2rem;
+                }
+
+                input.qty {
+                    width: 2.2rem;
+                    height: 2rem;
+                    font-size: 1rem;
+                }
+            }
+        }
+    }
+}
+
+// Posebna stilizacija za checkout
+.woocommerce-checkout {
+    .quantity.buttons-added {
+        margin-bottom: 10px;
+    }
+}
+
+// Responsive stilovi
+@media (max-width: 768px) {
+    .quantity.buttons-added {
+        padding: 5px;
+        gap: 5px;
+
+        button.minus,
+        button.plus {
+            width: 2.2rem; // Balansirano za tablete
+            height: 2.2rem;
+            font-size: 1.3rem;
+        }
+
+        input.qty {
+            width: 2.4rem;
+            height: 2.2rem;
+            font-size: 1.1rem;
+        }
+    }
+
+    // Balansirani stilovi u korpi
+    .woocommerce-cart {
+        td.product-quantity {
+            .quantity.buttons-added {
+                button.minus,
+                button.plus {
+                    width: 2.2rem;
+                    height: 2.2rem;
+                }
+
+                input.qty {
+                    width: 2.3rem;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .quantity.buttons-added {
+        padding: 4px;
+        gap: 4px;
+
+        button.minus,
+        button.plus {
+            width: 2.4rem; // Balansirano za mobilne - ali i dalje dovoljno veliko za touch
+            height: 2.4rem;
+            font-size: 1.3rem;
+        }
+
+        input.qty {
+            width: 2.4rem;
+            height: 2.4rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+    }
+
+    // Balansirani stilovi u korpi na mobilnom
+    .woocommerce-cart {
+        td.product-quantity {
+            .quantity.buttons-added {
+                padding: 4px;
+
+                button.minus,
+                button.plus {
+                    width: 2.2rem;
+                    height: 2.2rem;
+                }
+
+                input.qty {
+                    width: 2.2rem;
+                    height: 2.2rem;
+                }
+            }
+        }
+    }
+}
+
+// Dodatni stilovi za quantity na single product stranicu
+.single-product {
+    .quantity.buttons-added {
+        // Balansirani stilovi
+        margin-bottom: 1.5rem;
+
+        @media (max-width: 768px) {
+            button.minus,
+            button.plus {
+                width: 2.3rem; // Balansirano za tablete
+                height: 2.3rem;
+                font-size: 1.3rem;
+            }
+
+            input.qty {
+                width: 2.6rem;
+                height: 2.3rem;
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            button.minus,
+            button.plus {
+                width: 2.5rem; // Balansirano za mobilne
+                height: 2.5rem;
+                font-size: 1.4rem;
+            }
+
+            input.qty {
+                width: 2.6rem;
+                height: 2.5rem;
+                font-size: 1.3rem;
+            }
+        }
+    }
+}
+
+// Fix za responsive prikaz u korpi
+@media (max-width: 767px) {
+    .woocommerce-cart {
+        table.shop_table_responsive,
+        table.cart {
+            td.product-quantity {
+                text-align: right;
+
+                &:before {
+                    float: left;
+                }
+
+                .quantity.buttons-added {
+                    display: inline-flex;
+                    float: right;
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
+// Osiguranje da su touch targeti dovoljno veliki ali ne preveliki
+@media (hover: none) and (pointer: coarse) {
+    // Ovo cilja samo touch uređaje
+    .quantity.buttons-added {
+        button.minus,
+        button.plus {
+            min-width: 2.3rem; // Balansirano
+            min-height: 2.3rem;
+        }
+    }
+}

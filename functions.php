@@ -12,6 +12,7 @@ require_once get_template_directory() . '/functions/helpers/helpers.php';
 include_once get_template_directory() . '/functions/theme/theme-setup.php';
 include_once get_template_directory() . '/functions/theme/theme-styles.php';
 include_once get_template_directory() . '/functions/theme/theme-scripts.php';
+
 // AJAX handleri za proizvode
 require_once get_template_directory() . '/functions/ajax/quick-view-ajax.php';
 require_once get_template_directory() . '/functions/ajax/load-more-ajax.php';
