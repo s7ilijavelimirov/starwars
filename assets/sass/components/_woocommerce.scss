@@ -622,10 +622,193 @@ $sw-footer: $footer-bg; // #53112b
     }
 }
 
-// =============================================
-// KORPA I CHECKOUT
-// =============================================
+// Star Wars Tabs - Jednostavan i kratak
+// ====================================
 
-// =============================================
-// CHECKOUT STRANICA
-// =============================================
+// Star Wars Tabs - Jednostavan i kratak
+// ====================================
+
+.woocommerce-tabs.wc-tabs-wrapper {
+    ul.tabs.wc-tabs {
+        display: flex !important;
+        justify-content: flex-start;
+        gap: 15px !important;
+        margin: 0 0 1.5rem 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
+        border: none !important;
+        background: transparent !important;
+
+        &::before,
+        &::after {
+            display: none !important;
+        }
+
+        li {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border: none !important;
+
+            &::before,
+            &::after {
+                display: none !important;
+            }
+
+            a {
+                display: inline-block !important;
+                padding: 0.4rem 1rem !important;
+                //background: $secondary-color2 !important;
+                color: $primary-color !important;
+                text-decoration: none !important;
+                font-weight: 600 !important;
+                border: none !important;
+                border-radius: 8px !important;
+                transition: all 0.3s ease !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+
+                background: darken($secondary-color2, 30%) !important;
+                &:hover {
+                    background: lighten($secondary-color2, 10%) !important;
+
+                    box-shadow: 0 4px 12px rgba($secondary-color2, 0.3) !important;
+                }
+
+                &:focus,
+                &:active {
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+            }
+
+            &.active a {
+                background: $secondary-color2 !important;
+                box-shadow: 0 3px 10px rgba($secondary-color2, 0.4) !important;
+            }
+        }
+
+        @media (max-width: 767px) {
+            justify-content: flex-start !important;
+            gap: 10px !important;
+
+            li a {
+                padding: 4px 8px !important;
+                font-size: 14px !important;
+            }
+        }
+    }
+}
+// Tab sadržaj sa animacijom
+.woocommerce-tabs .woocommerce-Tabs-panel {
+    background: rgba($primary-color, 0.9) !important;
+    border: 1px solid rgba($secondary-color2, 0.3) !important;
+    border-radius: 10px !important;
+    padding: 2rem !important;
+
+    // Animacija pojavljivanja
+    opacity: 0;
+    animation: fadeIn 0.4s ease forwards;
+    table.woocommerce-product-attributes {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 10px !important;
+        margin: 1rem 0 !important;
+
+        tbody {
+            tr {
+                background: rgba($primary-color, 0.5) !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+
+                th,
+                td {
+                    padding: 1rem !important;
+                    border: none !important;
+
+                    &:first-child {
+                        border-radius: 8px 0 0 8px !important;
+                    }
+
+                    &:last-child {
+                        border-radius: 0 8px 8px 0 !important;
+                    }
+                }
+
+                th {
+                    background: rgba($secondary-color2, 0.1) !important;
+                    color: $secondary-color2 !important;
+                    font-weight: 600 !important;
+                    width: 30% !important;
+                }
+
+                td {
+                    color: rgba($white, 0.9) !important;
+
+                    p {
+                        margin: 0 !important;
+
+                        a {
+                            display: inline-block !important;
+                            background: rgba($secondary-color2, 0.2) !important;
+                            color: $secondary-color2 !important;
+                            padding: 2px 8px !important;
+                            border-radius: 12px !important;
+                            text-decoration: none !important;
+                            margin: 2px !important;
+                            font-size: 0.9rem !important;
+
+                            &:hover {
+                                background: $secondary-color2 !important;
+                                color: $primary-color !important;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    @media (max-width: 767px) {
+        padding: 1rem !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: $secondary-color2 !important;
+    }
+
+    p,
+    li {
+        color: rgba($white, 0.9) !important;
+    }
+
+    table th {
+        background: rgba($secondary-color2, 0.1) !important;
+        color: $secondary-color2 !important;
+    }
+
+    table td {
+        color: rgba($white, 0.9) !important;
+    }
+    table tbody {
+        tr {
+            margin-bottom: 1rem;
+        }
+    }
+}
+
+// Animacija
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
