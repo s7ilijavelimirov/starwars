@@ -64,7 +64,7 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
-              sourceMap: !isProduction,
+              sourceMap: false, // UKLONI SOURCE MAPS u produkciji
               url: false
             }
           },
@@ -74,7 +74,7 @@ module.exports = {
               postcssOptions: {
                 plugins: [
                   require('autoprefixer'),
-                  // Dodajemo PurgeCSS samo u produkciji
+                  // PurgeCSS uvek u produkciji
                   ...(isProduction ? [
                     purgecss({
                       content: [
@@ -88,7 +88,8 @@ module.exports = {
                         './index.php',
                         './functions.php',
                         './assets/js/**/*.js',
-                        './template-parts/**/*.php'
+                        './template-parts/**/*.php',
+                        './woocommerce/**/*.php' // DODAJ WooCommerce template-e
                       ],
                       defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || [],
                       safelist: {
@@ -114,8 +115,15 @@ module.exports = {
                           /^carousel/,
                           /^dropdown/,
                           /^btn/,
-                          /^fw-/,  // Font-weight utility klase
-                          /^fs-/,  // Font-size utility klase
+                          /^fw-/,
+                          /^fs-/,
+                          /^woocommerce/,
+                          /^sw-/,
+                          /^form-/,
+                          /^input-/,
+                          /^table/,
+                          /^border/,
+                          /^rounded/,
                           'fade',
                           'show',
                           'collapse',
@@ -126,7 +134,6 @@ module.exports = {
                           'current_page_item',
                           'scrolled',
                           'header-scrolled',
-                          // Swiper klase
                           /^swiper/,
                           'blog-card',
                           'product-card',
@@ -163,18 +170,15 @@ module.exports = {
           {
             loader: 'sass-loader',
             options: {
-              sourceMap: !isProduction,
+              sourceMap: false,
               sassOptions: {
                 includePaths: ['node_modules'],
                 quietDeps: true,
-                outputStyle: isProduction ? 'compressed' : 'expanded',
-                // Uklanjamo upozorenja za zastarelu sintaksu
-                quietDeps: true,
-                logger: {
-                  warn: function (message) {
-                    return message.includes('@import') ? null : console.warn(message);
-                  }
-                }
+                outputStyle: isProduction ? 'compressed' : 'expanded', // KLJUČNO
+                silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin'],
+                // Dodatne optimizacije
+                precision: 6,
+                sourceComments: false
               }
             }
           }
@@ -205,7 +209,7 @@ module.exports = {
           from: 'node_modules/swiper/swiper-bundle.min.css',
           to: 'css/swiper-bundle.min.css'
         },
-        // Slike
+        // Slike - DODAJ KOMPRESIJU
         {
           from: 'assets/images',
           to: 'images'
@@ -218,35 +222,47 @@ module.exports = {
       ],
     }),
 
-    // Globalno dostupan bootstrap i swiper objekti
-    new webpack.ProvidePlugin({
-      bootstrap: ['bootstrap', 'default'],
-      Swiper: ['swiper', 'default']
-    }),
-
-    // Dodaj banner sa informacijama o verziji teme
-    new webpack.BannerPlugin({
-      banner: `Theme: StarWars | Version: ${require('./package.json').version} | Build date: ${new Date().toISOString()}`
-    }),
+    // UKLONI ProvidePlugin ako ne koristiš globalno
+    ...(isProduction ? [] : [
+      new webpack.ProvidePlugin({
+        bootstrap: ['bootstrap', 'default'],
+        Swiper: ['swiper', 'default']
+      })
+    ])
   ],
   optimization: {
     minimizer: [
-      // Terser za JS minifikaciju
+      // Agresivniji Terser
       new TerserPlugin({
         parallel: true,
         terserOptions: {
-          format: {
-            comments: false,
+          parse: {
+            ecma: 8,
           },
           compress: {
+            ecma: 5,
+            warnings: false,
+            comparisons: false,
+            inline: 2,
             drop_console: isProduction,
             drop_debugger: isProduction,
+            pure_funcs: isProduction ? ['console.log', 'console.info', 'console.debug', 'console.warn'] : []
+          },
+          mangle: {
+            safari10: true,
+          },
+          output: {
+            ecma: 5,
+            comments: false,
+            ascii_only: true,
           },
         },
         extractComments: false,
       }),
-      // CSS minifikacija
+      // ISPRAVLJEN CSS minifier
       new CssMinimizerPlugin({
+        test: /\.css$/i,
+        parallel: true,
         minimizerOptions: {
           preset: [
             'default',
@@ -254,30 +270,34 @@ module.exports = {
               discardComments: { removeAll: true },
               discardDuplicates: true,
               discardOverridden: true,
-              normalizeWhitespace: isProduction,
+              normalizeWhitespace: true, // UVEK true za minifikaciju
+              mergeLonghand: true,
+              mergeRules: true,
+              colormin: true,
+              convertValues: true,
+              calc: true,
+              // Zadržimo samo bezbedne optimizacije
+              discardUnused: false,
+              mergeIdents: false,
+              reduceIdents: false,
+              zindex: false
             },
           ],
         },
       }),
     ],
-    // Optimizacija chunk-ova
-    splitChunks: isProduction ? {
-      chunks: 'all',
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all'
-        }
-      }
-    } : false
+    // Ukloni splitChunks u produkciji - pravi dodatne fajlove
+    splitChunks: false,
+    // Dodaj sideEffects optimizaciju
+    sideEffects: false,
+    usedExports: true
   },
   mode: isProduction ? 'production' : 'development',
-  devtool: isProduction ? false : 'source-map',
+  devtool: false, // UKLONI SVE SOURCE MAPS
   performance: {
-    hints: isProduction ? 'warning' : false,
-    maxAssetSize: 500000, // 500kb
-    maxEntrypointSize: 500000
+    hints: isProduction ? 'error' : false, // Promeni na 'error'
+    maxAssetSize: 300000, // Smanji na 300kb
+    maxEntrypointSize: 300000
   },
   stats: {
     modules: false,

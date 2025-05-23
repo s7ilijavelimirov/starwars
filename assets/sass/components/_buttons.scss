@@ -213,7 +213,9 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
 .sw-pagination-info {
     display: flex;
     flex-direction: column;
-
+    @media (max-width: 767px) {
+        align-items: center;
+    }
     .sw-current-page {
         font-size: 1rem;
         font-weight: 600;
@@ -295,7 +297,7 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
 
     // Aktivni efekat
     &:active {
-       // transform: translateY(-1px);
+        // transform: translateY(-1px);
         box-shadow: 0 2px 10px rgba($pagination-color, 0.3);
     }
 
@@ -329,15 +331,15 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
 // Spinner za učitavanje
 .sw-loading-spinner {
     position: absolute;
-    right: 15px;  // Umesto left: 50%
-    top: 50%;     // Umesto bottom: 12px
+    right: 15px; // Umesto left: 50%
+    top: 50%; // Umesto bottom: 12px
     width: 20px;
     height: 20px;
     border: 2px solid $pagination-color;
     border-top: 2px solid transparent;
     border-radius: 50%;
     opacity: 0;
-    transform: translateY(-50%) rotate(0deg);  // Umesto translateY(10px) translateX(-50%)
+    transform: translateY(-50%) rotate(0deg); // Umesto translateY(10px) translateX(-50%)
     transition: all 0.3s ease;
     animation: sw-spin 1s linear infinite;
     z-index: 2;
@@ -346,10 +348,10 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
 // Animacija za spinner
 @keyframes sw-spin {
     0% {
-        transform: translateY(-50%) rotate(0deg);  // Ukloni translateX
+        transform: translateY(-50%) rotate(0deg); // Ukloni translateX
     }
     100% {
-        transform: translateY(-50%) rotate(360deg);  // Ukloni translateX
+        transform: translateY(-50%) rotate(360deg); // Ukloni translateX
     }
 }
 
@@ -360,7 +362,9 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
     justify-content: flex-end;
     margin: 0;
     flex-wrap: wrap;
-
+    @media (max-width: 767px) {
+        justify-content: center;
+    }
     .sw-page-text {
         color: $white;
         margin-right: 0.75rem;
@@ -377,7 +381,7 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
         margin: 0;
         list-style: none;
         gap: 5px;
-
+        flex-wrap: wrap;
         li {
             margin: 0;
         }

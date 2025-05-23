@@ -316,8 +316,8 @@ $sw-white: #ffffff;
                 }
 
                 .quantity.buttons-added {
-                    display: inline-flex;
-                    float: right;
+                    display: inline-flex !important;
+                    //float: right;
                     margin-bottom: 0;
                 }
             }

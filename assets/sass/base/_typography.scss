@@ -13,8 +13,4 @@ body {
 // Override stilova za linkove
 a {
   color: $secondary-color2;
-  
-  &:hover {
-    color: darken($secondary-color2, 10%);
-  }
 }

@@ -1,22 +1,21 @@
-// BOOTSTRAP CORE COMPONENTS - samo neophodno
+// BOOTSTRAP CORE - samo potrebno
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/variables-dark";
 @import "~bootstrap/scss/maps";
 
-// PRVO UČITAJ NAŠE FONTOVE I VARIJABLE pre Bootstrap mixina
+// NAŠI FONTOVI I VARIJABLE - PRVO
 @import "base/fonts";
 @import "abstracts/variables";
 @import "abstracts/functions";
 @import "abstracts/mixins";
 
-// BOOTSTRAP MIXINS i komponente nakon naših definicija
+// BOOTSTRAP MIXINS i utilities
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/utilities";
 @import "~bootstrap/scss/root";
 @import "~bootstrap/scss/reboot";
 
-// BOOTSTRAP LAYOUT I KOMPONENTE
+// BOOTSTRAP LAYOUT - samo potrebno
 @import "~bootstrap/scss/containers";
 @import "~bootstrap/scss/grid";
 @import "~bootstrap/scss/nav";
@@ -24,32 +23,14 @@
 @import "~bootstrap/scss/buttons";
 @import "~bootstrap/scss/transitions";
 @import "~bootstrap/scss/dropdown";
-@import "~bootstrap/scss/offcanvas"; // Potrebno za offcanvas mobilni meni
+@import "~bootstrap/scss/offcanvas";
 @import "~bootstrap/scss/close";
-@import "~bootstrap/scss/carousel"; // Potrebno za carousel elemente na stranici
-
-// NEKORIŠĆENE BOOTSTRAP KOMPONENTE - zakomentarisane radi optimizacije
-// @import "~bootstrap/scss/accordion";
-// @import "~bootstrap/scss/alert";
-// @import "~bootstrap/scss/badge";
-// @import "~bootstrap/scss/breadcrumb";
-// @import "~bootstrap/scss/button-group";
-// @import "~bootstrap/scss/card";
-// @import "~bootstrap/scss/forms";
-// @import "~bootstrap/scss/list-group";
+@import "~bootstrap/scss/carousel";
 @import "~bootstrap/scss/modal";
-// @import "~bootstrap/scss/pagination";
-// @import "~bootstrap/scss/placeholders";
-// @import "~bootstrap/scss/popover";
-// @import "~bootstrap/scss/progress";
-// @import "~bootstrap/scss/spinners";
 @import "~bootstrap/scss/tables";
-// @import "~bootstrap/scss/toasts";
-// @import "~bootstrap/scss/tooltip";
-
 @import "~bootstrap/scss/utilities/api";
 
-// NAŠI STILOVI nakon Bootstrap komponenti
+// NAŠI CUSTOM STILOVI
 @import "components/background";
 @import "base/typography";
 @import "layout/navigation";
@@ -59,6 +40,8 @@
 @import "components/slider";
 @import "layout/footer";
 @import "layout/swiper-custom";
+@import "layout/cart";
+@import "layout/checkout";
 @import "components/woocommerce";
 @import "components/buttons";
 @import "components/quick-edit";
@@ -73,14 +56,14 @@
 @import "pages/contact";
 @import "pages/post";
 @import "layout/responsive";
-/* Font-Rendering optimizacija */
+
+// PERFORMANCE OPTIMIZACIJE
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-/* Montserrat Font-Family override - eliminacija FOUT */
 body {
   font-family:
     "Montserrat",
@@ -93,7 +76,7 @@ body {
     sans-serif !important;
 }
 
-/* Montserrat Force Load - sprečava promenu fontova tokom učitavanja stranice */
+// Font preload trick
 body:before {
   content: "";
   font-family: "Montserrat", sans-serif !important;
@@ -109,7 +92,8 @@ body:before {
   width: 0;
   height: 0;
 }
-// Globalne modifikacije stilova
+
+// GLOBALNE MODIFIKACIJE
 a {
   text-decoration: none;
 }
@@ -117,7 +101,8 @@ a {
 button:focus {
   background: transparent;
 }
-// Uslovni prikaz QuickView dugmeta - sakrivenog na single product i frontpage
+
+// Quick View samo gde treba
 body.single-product,
 body.home {
   .sw-quick-view-wrapper {
@@ -126,35 +111,31 @@ body.home {
 }
 
 // 404 stranica
-.block {
-  &-404 {
-    position: relative;
-    display: flex;
+.block-404 {
+  position: relative;
+  display: flex;
+  margin-top: 100px;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  background-color: transparent;
+
+  h1 {
     margin-top: 100px;
-    align-items: flex-start;
-    justify-content: space-evenly;
-    background-color: transparent;
-    h1 {
-      margin-top: 100px;
-      font-size: 50vh;
-      text-align: center;
-      svg {
-        display: inline-block;
-        vertical-align: middle;
-        margin: 0 10vh;
-      }
+    font-size: 50vh;
+    text-align: center;
+    color: $secondary-color2;
+
+    svg {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 10vh;
     }
   }
-}
-
-.block-404 h1 {
-  color: $secondary-color2;
 }
 
 // Optimizovane animacije
 svg#animationss {
   will-change: transform;
-  -webkit-animation: spin 4s linear infinite;
   animation: spin 4s linear infinite;
 }
 

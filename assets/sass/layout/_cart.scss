@@ -1,0 +1,439 @@
+// WooCommerce Cart Page - Star Wars tema
+// =====================================
+
+// Cart stranica glavni container
+.woocommerce-cart {
+    .woocommerce {
+        padding: 2rem 0;
+
+        // Cart forma
+        .woocommerce-cart-form {
+            margin-bottom: 2rem;
+
+            // Glavna tabela korpe
+            .shop_table.cart {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                background-color: rgba($black, 0.7);
+                border: 2px solid $secondary-color2;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 5px 20px rgba($secondary-color2, 0.3);
+
+                // Zaglavlje tabele
+                thead {
+                    background: linear-gradient(135deg, $secondary-color2, lighten($secondary-color2, 10%));
+
+                    th {
+                        padding: 1rem 0.75rem;
+                        color: $black;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        font-size: 0.9rem;
+                        border: none;
+                        text-align: center;
+
+                        &.product-name {
+                            text-align: left;
+                        }
+
+                        .screen-reader-text {
+                            clip: rect(1px, 1px, 1px, 1px);
+                            position: absolute !important;
+                            height: 1px;
+                            width: 1px;
+                            overflow: hidden;
+                        }
+                    }
+                }
+
+                // Sadržaj tabele
+                tbody {
+                    tr.cart_item {
+                        border-bottom: 1px solid rgba($secondary-color2, 0.2);
+                        transition: background-color 0.3s ease;
+
+                        &:hover {
+                            background-color: rgba($secondary-color2, 0.05);
+                        }
+
+                        td {
+                            padding: 1.25rem 0.75rem;
+                            vertical-align: middle;
+                            border: none;
+                            color: $white;
+
+                            // Remove dugme
+                            &.product-remove {
+                                text-align: center;
+                                width: 60px;
+
+                                .remove {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    width: 35px;
+                                    height: 35px;
+                                    background-color: rgba($sith-red, 0.2);
+                                    color: $sith-red;
+                                    border: 2px solid $sith-red;
+                                    border-radius: 50%;
+                                    font-size: 1.2rem;
+                                    font-weight: bold;
+                                    text-decoration: none;
+                                    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                                    margin: 0 auto;
+
+                                    &:hover {
+                                        background-color: $sith-red;
+                                        color: $white;
+                                        transform: rotate(90deg) scale(1.1);
+                                        box-shadow: 0 4px 12px rgba($sith-red, 0.4);
+                                    }
+                                }
+                            }
+
+                            // Slika proizvoda - POVEĆANA
+                            &.product-thumbnail {
+                                width: 120px; // Povećano sa default-a
+                                text-align: center;
+
+                                a {
+                                    display: block;
+                                    border-radius: 8px;
+                                    overflow: hidden;
+                                    border: 2px solid rgba($secondary-color2, 0.3);
+                                    transition: all 0.3s ease;
+
+                                    &:hover {
+                                        border-color: $secondary-color2;
+                                        transform: scale(1.05);
+                                        box-shadow: 0 4px 15px rgba($secondary-color2, 0.4);
+                                    }
+
+                                    img {
+                                        width: 100px; // Povećano sa ~70px
+                                        height: 100px;
+                                        object-fit: cover;
+                                        transition: transform 0.3s ease;
+
+                                        &:hover {
+                                            transform: scale(1.1);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Naziv proizvoda
+                            &.product-name {
+                                a {
+                                    color: $secondary-color2;
+                                    text-decoration: none;
+                                    font-weight: 600;
+                                    transition: color 0.3s ease;
+
+                                    &:hover {
+                                        color: lighten($secondary-color2, 15%);
+                                    }
+                                }
+                            }
+
+                            // Cena
+                            &.product-price {
+                                text-align: center;
+                                font-weight: 600;
+                                color: $secondary-color2;
+                                font-size: 1.1rem;
+                            }
+
+                            // Količina - koristi postojeće stilove
+                            &.product-quantity {
+                                text-align: center;
+
+                                .quantity.buttons-added {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    max-width: 120px;
+                                    margin: 0 auto;
+                                }
+                            }
+
+                            // Ukupno
+                            &.product-subtotal {
+                                text-align: center;
+                                font-weight: 700;
+                                color: $secondary-color2;
+                                font-size: 1.2rem;
+                            }
+                        }
+                    }
+
+                    // Actions red (dugme za ažuriranje)
+                    tr:last-child td.actions {
+                        background: linear-gradient(135deg, rgba($black, 0.8), rgba($black, 0.9));
+                        padding: 1.5rem;
+                        //text-align: center;
+                        border-top: 2px solid rgba($secondary-color2, 0.3);
+
+                        .button {
+                            background-color: $secondary-color2;
+                            color: $black;
+                            border: 2px solid $secondary-color2;
+                            padding: 0.75rem 2rem;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            border-radius: 30px;
+                            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+                            &:hover:not(:disabled) {
+                                background-color: transparent;
+                                color: $secondary-color2;
+                                transform: translateY(-2px);
+                                box-shadow: 0 5px 15px rgba($secondary-color2, 0.4);
+                            }
+
+                            &:disabled {
+                                opacity: 0.5;
+                                cursor: not-allowed;
+                                background-color: rgba($secondary-color2, 0.3);
+                                border-color: rgba($secondary-color2, 0.3);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Cart totals - desna strana
+        .cart-collaterals {
+            .cart_totals {
+                background: linear-gradient(135deg, rgba($black, 0.9), rgba($black, 0.7));
+                border: 2px solid $secondary-color2;
+                border-radius: 12px;
+                padding: 2rem;
+                box-shadow: 0 5px 20px rgba($secondary-color2, 0.3);
+
+                h2 {
+                    color: $secondary-color2;
+                    text-align: center;
+                    margin-bottom: 1.5rem;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    position: relative;
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        bottom: -8px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        width: 60px;
+                        height: 3px;
+                        background: linear-gradient(90deg, transparent, $secondary-color2, transparent);
+                    }
+                }
+
+                .shop_table {
+                    width: 100%;
+                    border-collapse: separate;
+                    border-spacing: 0;
+
+                    tr {
+                        border-bottom: 1px solid rgba($secondary-color2, 0.2);
+
+                        &:last-child {
+                            border-bottom: none;
+                        }
+
+                        th,
+                        td {
+                            padding: 1rem 0;
+                            border: none;
+
+                            &:first-child {
+                                padding-left: 0;
+                            }
+
+                            &:last-child {
+                                padding-right: 0;
+                                text-align: right;
+                            }
+                        }
+
+                        th {
+                            color: $white;
+                            font-weight: 600;
+                            font-size: 1rem;
+                        }
+
+                        td {
+                            color: $secondary-color2;
+                            font-weight: 600;
+
+                            .woocommerce-Price-amount {
+                                font-size: 1.1rem;
+                            }
+                        }
+
+                        // Ukupno red - posebno isticanje
+                        &.order-total {
+                            border-top: 2px solid $secondary-color2;
+                            background: rgba($secondary-color2, 0.1);
+
+                            th,
+                            td {
+                                padding: 1.5rem 0;
+                                font-size: 1.3rem;
+                                font-weight: 700;
+                                color: $secondary-color2;
+                            }
+                        }
+                    }
+
+                    // Shipping opcije
+                    .woocommerce-shipping-totals {
+                        .woocommerce-shipping-methods {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+
+                            li {
+                                margin-bottom: 0.5rem;
+
+                                label {
+                                    color: $white;
+                                    cursor: pointer;
+                                    display: flex;
+                                    align-items: center;
+
+                                    input[type="radio"] {
+                                        margin-right: 0.5rem;
+                                        accent-color: $secondary-color2;
+                                    }
+                                }
+                            }
+                        }
+
+                        .woocommerce-shipping-destination {
+                            font-size: 0.9rem;
+                            color: rgba($white, 0.7);
+                            margin-top: 0.5rem;
+
+                            strong {
+                                color: $secondary-color2;
+                            }
+                        }
+                    }
+                }
+
+                // NASAVI DALJE DUGME - OPTIMIZOVANO
+                .wc-proceed-to-checkout {
+                    margin-top: 2rem;
+                    text-align: center;
+
+                    .checkout-button {
+                        display: inline-block;
+                        background: linear-gradient(135deg, $secondary-color2, lighten($secondary-color2, 10%));
+                        color: $black;
+                        padding: 1rem 3rem;
+                        font-size: 1.2rem;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        text-decoration: none;
+                        border: 3px solid $secondary-color2;
+                        border-radius: 50px;
+                        position: relative;
+                        overflow: hidden;
+                        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+                        min-width: 250px; // FIKSIRANA ŠIRINA - sprečava layout shift
+                        box-shadow: 0 4px 15px rgba($secondary-color2, 0.4);
+
+                        // Sprečava layout shift tokom učitavanja
+                        transform: translateZ(0);
+                        will-change: transform;
+
+                        &::before {
+                            content: "";
+                            position: absolute;
+                            top: 0;
+                            left: -100%;
+                            width: 100%;
+                            height: 100%;
+                            background: linear-gradient(90deg, transparent, rgba($white, 0.3), transparent);
+                            transition: left 0.6s ease;
+                            z-index: 1;
+                        }
+
+                        &:hover {
+                            transform: translateY(-3px) scale(1.02);
+                            box-shadow: 0 8px 25px rgba($secondary-color2, 0.6);
+                            background: linear-gradient(135deg, lighten($secondary-color2, 15%), $secondary-color2);
+
+                            &::before {
+                                left: 100%;
+                            }
+                        }
+
+                        &:active {
+                            transform: translateY(-1px) scale(1.01);
+                            transition: all 0.1s ease;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Responsive prilagođavanja
+@media (max-width: 768px) {
+    .woocommerce-cart {
+        .woocommerce {
+            padding: 1rem 0;
+
+            .shop_table.cart {
+                font-size: 0.9rem;
+
+                thead th {
+                    padding: 0.75rem 0.5rem;
+                    font-size: 0.8rem;
+                }
+
+                tbody td {
+                    padding: 1rem 0.5rem;
+
+                    &.product-thumbnail {
+                        width: 80px;
+
+                        img {
+                            width: 70px;
+                            height: 70px;
+                        }
+                    }
+
+                    &.product-name a {
+                        font-size: 0.9rem;
+                    }
+                }
+            }
+
+            .cart_totals {
+                padding: 1.5rem;
+                margin-top: 2rem;
+
+                .checkout-button {
+                    padding: 0.875rem 2rem;
+                    font-size: 1.1rem;
+                    min-width: 200px;
+                }
+            }
+        }
+    }
+}

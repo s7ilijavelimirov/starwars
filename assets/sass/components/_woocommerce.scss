@@ -3,6 +3,7 @@
 // Kompletan fajl sa stilovima koji prate postojeći dizajn
 // =============================================
 /* Parent grid container */
+
 ul.products {
     display: grid !important;
     grid-template-columns: repeat(5, 1fr);
@@ -221,6 +222,10 @@ $sw-footer: $footer-bg; // #53112b
             justify-content: center;
             position: relative;
             overflow: hidden; // Da sakrije višak teksta
+            @media (max-width: 767px) {
+                padding: 5px !important;
+                font-size: 0.8rem !important;
+            }
         }
 
         // Cena mora biti apsolutno fiksna i pozicionirana
@@ -308,7 +313,12 @@ $sw-footer: $footer-bg; // #53112b
                 left: 0;
             }
         }
-
+        @media (max-width: 767px) {
+           width: 90%;
+           padding: 6px 10px;
+           font-size: 0.8rem;
+          
+        }
         &::before {
             content: "";
             position: absolute;
@@ -772,7 +782,6 @@ $sw-footer: $footer-bg; // #53112b
 // =============================================
 // SINGLE PRODUCT PRICE STYLING
 // =============================================
-
 
 .woocommerce div.product .summary.entry-summary {
     // Cena proizvoda
