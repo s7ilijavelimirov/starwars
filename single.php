@@ -214,6 +214,21 @@ while (have_posts()) : the_post();
                             wp_reset_postdata();
                         }
                         ?>
+                        <div class="custom-share-buttons">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>"
+                                target="_blank" rel="noopener noreferrer">
+                                Facebook
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(get_permalink()); ?>&text=<?php echo urlencode(get_the_title()); ?>"
+                                target="_blank" rel="noopener noreferrer">
+                                Twitter
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?php echo urlencode(get_permalink()); ?>"
+                                target="_blank" rel="noopener noreferrer">
+                                LinkedIn
+                            </a>
+                        </div>
+
                     </div>
 
                     <div class="col-lg-4">

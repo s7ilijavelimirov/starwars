@@ -456,13 +456,25 @@
         }
     }
 }
-.woocommerce-variation.single_variation{
+.woocommerce-variation.single_variation {
     display: none !important;
 }
 // =============================================
 // OVERRIDE PLUGIN STILOVA - SAMO BOJE I HOVER
 // =============================================
-
+.woocommerce div.product form.cart .variations {
+    border-top: 2px solid rgba(255, 221, 85, 0.2);
+    border-bottom: 2px solid rgba(255, 221, 85, 0.2);
+    tbody {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        display: block;
+        tr {
+            display: block;
+            padding-bottom: 1rem;
+        }
+    }
+}
 // Osnovni dugmić stilovi
 .woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item) {
     background-color: rgba($sw-black, 0.7) !important;
@@ -471,7 +483,7 @@
     color: $white !important;
     border-radius: 5px !important;
     transition: all 0.3s ease !important;
-    
+
     // Hover state
     &:hover {
         background-color: rgba($sw-yellow, 0.1) !important;
@@ -483,15 +495,19 @@
 
 // Selected state
 .woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item.selected,
-.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item[aria-checked="true"],
+.woo-variation-swatches
+    .variable-items-wrapper
+    .variable-item:not(.radio-variable-item).button-variable-item[aria-checked="true"],
 .woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item:focus,
-.woo-variation-swatches .variable-items-wrapper .variable-item:not(.radio-variable-item).button-variable-item.wvs-selected {
+.woo-variation-swatches
+    .variable-items-wrapper
+    .variable-item:not(.radio-variable-item).button-variable-item.wvs-selected {
     background-color: $sw-yellow !important;
     border-color: $sw-yellow !important;
     color: $sw-black !important;
     box-shadow: 0 3px 10px rgba($sw-yellow, 0.4) !important;
     position: relative;
-    
+
     // Checkmark za selected - ostaje uvek kada je selektovano
     &::after {
         content: "✓" !important;
@@ -514,12 +530,12 @@
         visibility: visible !important;
         pointer-events: none !important;
     }
-    
+
     // Hover na selektovano dugme
     &:hover {
         background-color: lighten($sw-yellow, 10%) !important;
         box-shadow: 0 4px 12px rgba($sw-yellow, 0.6) !important;
-        
+
         // Kvačica ostaje i na hover
         &::after {
             background-color: lighten($sw-yellow, 10%) !important;
@@ -536,7 +552,7 @@
     color: rgba($white, 0.3) !important;
     cursor: not-allowed !important;
     position: relative;
-    
+
     // Linija preko disabled dugmeta
     &::before {
         content: "";
@@ -549,7 +565,7 @@
         transform: translateY(-50%);
         z-index: 5;
     }
-    
+
     &:hover {
         background-color: rgba($sw-black, 0.3) !important;
         border-color: rgba($white, 0.1) !important;

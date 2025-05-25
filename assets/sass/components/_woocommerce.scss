@@ -314,10 +314,9 @@ $sw-footer: $footer-bg; // #53112b
             }
         }
         @media (max-width: 767px) {
-           width: 90%;
-           padding: 6px 10px;
-           font-size: 0.8rem;
-          
+            width: 90%;
+            padding: 10px;
+            font-size: 0.8rem;
         }
         &::before {
             content: "";

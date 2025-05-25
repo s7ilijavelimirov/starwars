@@ -13,6 +13,10 @@
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- ICON -->
+	<link rel="icon" href="<?php echo get_template_directory_uri(); ?>/favicon.ico" type="image/x-icon" />
+	<link rel="apple-touch-icon" href="<?php echo get_template_directory_uri(); ?>/apple-touch-icon.png">
+
 
 	<?php wp_head(); ?>
 </head>
@@ -171,3 +175,5 @@
 
 	<div class="main-content">
 		<!-- Glavni sadržaj stranice počinje ovdje -->
+
+		
