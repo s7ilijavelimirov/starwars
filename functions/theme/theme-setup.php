@@ -84,7 +84,7 @@ function arphabet_widgets_init()
 		'id'            => 'footer_2',
 		'before_widget' => '<div class="footer-menu">',
 		'after_widget'  => '</div>',
-		'before_title'  => '<h5 class="rounded">',
+		'before_title'  => '<h2 class="rounded">',
 		'after_title'   => '</h5>',
 	));
 	register_sidebar(array(

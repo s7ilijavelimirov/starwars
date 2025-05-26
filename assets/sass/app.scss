@@ -1,13 +1,13 @@
-// BOOTSTRAP CORE - samo potrebno
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/maps";
-
 // NAŠI FONTOVI I VARIJABLE - PRVO
 @import "base/fonts";
 @import "abstracts/variables";
 @import "abstracts/functions";
 @import "abstracts/mixins";
+
+// BOOTSTRAP CORE - samo potrebno
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/maps";
 
 // BOOTSTRAP MIXINS i utilities
 @import "~bootstrap/scss/mixins";

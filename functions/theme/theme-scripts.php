@@ -163,7 +163,7 @@ function s7design_defer_scripts($tag, $handle, $src)
 {
     $defer_scripts = [
         's7design-quick-view',
-        's7design-load-more',
+        // 's7design-load-more',    // OBRIŠI OVU LINIJU!
         's7design-woocommerce'
     ];
 

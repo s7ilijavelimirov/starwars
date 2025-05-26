@@ -117,13 +117,13 @@ if (have_rows('hero_slider')) :
 
         <?php if ($slide_count > 1) : ?>
             <!-- Kontrolne strelice -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#heroSlider" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroSlider" data-bs-slide="prev" aria-label="Prethodni slajd">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden d-none">Previous</span>
+                <span class="visually-hidden">Prethodni slajd</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#heroSlider" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#heroSlider" data-bs-slide="next" aria-label="Sledeći slajd">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden d-none">Next</span>
+                <span class="visually-hidden">Sledeći slajd</span>
             </button>
         <?php endif; ?>
     </section>

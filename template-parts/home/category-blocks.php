@@ -22,7 +22,7 @@ if (!function_exists('get_field') || !have_rows('block')) {
                 <div class="col-12 col-md-6">
                     <a href="<?php echo esc_url($link); ?>" class="category-banner d-block position-relative text-center" aria-label="<?php echo esc_attr(strip_tags($head_title)); ?>">
                         <div class="banner-img-wrapper">
-                            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr(strip_tags($head_title)); ?>" class="img-fluid w-100 h-100 banner-img" loading="lazy" decoding="async">
+                            <img src="<?php echo esc_url($image); ?>" alt="" class="img-fluid w-100 h-100 banner-img" loading="lazy" decoding="async" role="presentation">
                         </div>
                         <div class="banner-content">
                             <h3 class="banner-title"><?php echo wp_kses_post($head_title); ?></h3>

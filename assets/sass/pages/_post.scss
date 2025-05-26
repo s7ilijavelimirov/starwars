@@ -431,7 +431,7 @@ $card-hover-transform: translateY(-10px);
 // Blog Grid Container
 #blogpage {
     position: relative;
-    padding: 2rem 0;
+   
     // Responzivan grid layout
     .row {
         > [class*="col-"] {
@@ -473,7 +473,7 @@ $card-hover-transform: translateY(-10px);
     padding: 4rem 0;
     background-color: rgba($black, 0.7);
     position: relative;
-    margin-bottom: 3rem;
+    //margin-bottom: 3rem;
     text-align: center;
 
     // Star Wars žuta linija

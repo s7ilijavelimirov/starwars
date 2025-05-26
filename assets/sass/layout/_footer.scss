@@ -3,7 +3,7 @@
 .site-footer {
     position: relative;
     background-color: transparent;
-    margin-top: 3rem;
+    // margin-top: 3rem;
     font-family: $font-family-base;
     will-change: transform;
 
@@ -183,7 +183,7 @@
                     margin-bottom: 1.5rem;
 
                     // Naslovi u navigacijama
-                    h5.rounded,
+                    h2.rounded,
                     .widgettitle {
                         font-size: 1.25rem;
                         color: $secondary-color2;
@@ -204,6 +204,10 @@
                             width: 40px;
                             height: 3px;
                             background-color: $secondary-color2;
+                            @media (max-width: 991.98px) {
+                                left: 50%;
+                                transform: translateX(-50%);
+                            }
                         }
                     }
 

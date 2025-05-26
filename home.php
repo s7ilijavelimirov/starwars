@@ -9,23 +9,23 @@
 get_header();
 ?>
 
-<div class="blog-header py-5">
+<div class="blog-header py-3 py-md-4 py-lg-5">
     <div class="container">
         <h1 class="page-title text-center">
             <?php echo esc_html(get_the_title(get_option('page_for_posts'))); ?>
         </h1>
         <?php if (function_exists('yoast_breadcrumb')) : ?>
-            <div class="breadcrumbs mt-3 text-center">
+            <div class="breadcrumbs mt-2 mt-md-3 text-center">
                 <?php yoast_breadcrumb('<p id="breadcrumbs" class="mb-0">', '</p>'); ?>
             </div>
         <?php endif; ?>
     </div>
 </div>
 
-<div class="content-area py-5">
+<div class="content-area py-3 py-md-4 py-lg-5">
     <div class="container">
         <div class="row justify-content-between" id="blogpage">
-            <div class="col-sm-12 col-md-12 col-lg-8 mb-5 mb-lg-0">
+            <div class="col-12 col-lg-8 mb-4 mb-lg-0">
                 <main id="main" class="site-main" role="main">
                     <?php if (have_posts()) : ?>
                         <div class="row">
@@ -48,7 +48,7 @@ get_header();
                         // Paginacija sa brojevima
                         get_template_part('template-parts/blog/pagination', null, array(
                             'style' => 'numbers',
-                            'wrapper_class' => 'starwars-pagination mt-4'
+                            'wrapper_class' => 'starwars-pagination mt-3 mt-md-4'
                         ));
                         ?>
 
@@ -62,7 +62,7 @@ get_header();
                 </main>
             </div>
 
-            <div class="col-sm-12 col-md-12 col-lg-4">
+            <div class="col-12 col-lg-4">
                 <aside id="secondary" class="sidebar widget-area" role="complementary">
                     <?php get_template_part('sidebar'); ?>
                 </aside>

@@ -3,7 +3,17 @@
 // Kompletan fajl sa stilovima koji prate postojeći dizajn
 // =============================================
 /* Parent grid container */
+@media (max-width: 576px) {
+    .woocommerce-main-content {
+        padding-top: 1rem !important;
+    }
+}
 
+@media (max-width: 768px) {
+    .trust-badge {
+        margin-bottom: 1.5rem;
+    }
+}
 ul.products {
     display: grid !important;
     grid-template-columns: repeat(5, 1fr);

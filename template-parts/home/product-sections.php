@@ -120,7 +120,7 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                     <div class="row align-items-center mb-3">
                         <?php if (!empty($section_subtitle)) : ?>
                             <div class="col-md-9 col-12">
-                                <h6 class="mb-0 fw-normal text-white"><?php echo $section_subtitle; ?></h6>
+                                <p class="mb-0 fw-normal text-white"><?php echo $section_subtitle; ?></p>
                             </div>
                         <?php endif; ?>
 
@@ -195,7 +195,7 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                                             <?php endif; ?>
                                         </div>
 
-                                        <h6 class="product-title"><?php the_title(); ?></h6>
+                                       <h3 class="product-title"><?php the_title(); ?></h3>
 
                                         <div class="product-price">
                                             <?php echo $product->get_price_html(); ?>
@@ -216,7 +216,7 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                         <div class="row align-items-center mb-3">
                             <?php if (!empty($section_subtitle)) : ?>
                                 <div class="col-md-9 col-12">
-                                    <h6 class="mb-0 fw-normal text-white"><?php echo $section_subtitle; ?></h6>
+                                    <hp class="mb-0 fw-normal text-white"><?php echo $section_subtitle; ?></p>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -270,7 +270,7 @@ if (!function_exists('get_field') || !have_rows('product_sections')) {
                                             <?php endif; ?>
                                         </div>
 
-                                        <h6 class="product-title"><?php the_title(); ?></h6>
+                                        <h3 class="product-title"><?php the_title(); ?></h3>
 
                                         <div class="product-price">
                                             <?php echo $product->get_price_html(); ?>

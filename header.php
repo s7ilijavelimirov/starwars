@@ -13,9 +13,11 @@
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- Robots meta -->
+	<meta name="robots" content="index, follow">
 	<!-- ICON -->
-	<link rel="icon" href="<?php echo get_template_directory_uri(); ?>/favicon.ico" type="image/x-icon" />
-	<link rel="apple-touch-icon" href="<?php echo get_template_directory_uri(); ?>/apple-touch-icon.png">
+	<!-- <link rel="icon" href="<?php echo get_template_directory_uri(); ?>/favicon.ico" type="image/x-icon" />
+	<link rel="apple-touch-icon" href="<?php echo get_template_directory_uri(); ?>/apple-touch-icon.png"> -->
 
 
 	<?php wp_head(); ?>
@@ -123,7 +125,41 @@
 							'walker'         => new bootstrap_5_wp_nav_menu_walker()
 						));
 						?>
+						<!-- Search toggle button -->
+						<button type="button" class="btn btn-outline-warning me-2" id="searchToggle" aria-label="Pretraži sajt">
+							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+								<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+							</svg>
+							<span class="d-none d-md-inline ms-1">Pretraži</span>
+						</button>
 
+						<!-- Inline search form - initially hidden -->
+						<div class="search-dropdown" id="searchDropdown" style="display: none;">
+							<div class="search-dropdown-content">
+								<form role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>" class="search-form">
+									<div class="input-group">
+										<input
+											type="search"
+											class="form-control bg-dark text-white border-warning"
+											placeholder="Pretražite proizvode, članke..."
+											name="s"
+											id="searchInput"
+											required
+											autocomplete="off">
+										<button class="btn btn-warning" type="submit">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+												<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+											</svg>
+										</button>
+										<button type="button" class="btn btn-outline-secondary" id="searchClose">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+												<path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+											</svg>
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
 						<!-- Korpa za desktop -->
 						<?php if (shortcode_exists('xoo_wsc_cart')) : ?>
 							<div class="ms-3 cart-icon-wrapper">
@@ -175,5 +211,3 @@
 
 	<div class="main-content">
 		<!-- Glavni sadržaj stranice počinje ovdje -->
-
-		

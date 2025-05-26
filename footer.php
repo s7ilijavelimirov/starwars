@@ -9,7 +9,8 @@
 
 </div> <!-- main-content -->
 
-<footer class="site-footer" itemscope itemtype="https://schema.org/WPFooter">
+<footer class="site-footer mt-3 mt-sm-4 mt-md-5 mt-lg-6 pt-3 pt-md-4 pt-lg-5 pb-4"
+    itemscope itemtype="https://schema.org/WPFooter">
     <!-- Star Wars granica -->
     <div class="sw-yellow-border" aria-hidden="true"></div>
 
@@ -24,7 +25,7 @@
         </button>
     </div>
 
-    <div class="footer-main py-5">
+    <div class="footer-main pt-5">
         <div class="container">
             <div class="row">
                 <!-- Logo kolona -->

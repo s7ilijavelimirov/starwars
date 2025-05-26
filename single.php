@@ -173,7 +173,7 @@ while (have_posts()) : the_post();
                             if ($related_query->have_posts()) :
                         ?>
                                 <div class="related-posts">
-                                    <h3 class="section-title"><?php esc_html_e('Povezani članci', 'starwars'); ?></h3>
+                                    <h2 class="section-title"><?php esc_html_e('Povezani članci', 'starwars'); ?></h2>
 
                                     <div class="related-posts-container">
                                         <div class="row">
