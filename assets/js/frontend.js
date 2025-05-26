@@ -10,46 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
   initHeaderScroll();
   initBackToTop();
 });
-document.addEventListener('DOMContentLoaded', function () {
-  const searchToggle = document.getElementById('searchToggle');
-  const searchDropdown = document.getElementById('searchDropdown');
-  const searchInput = document.getElementById('searchInput');
-  const searchClose = document.getElementById('searchClose');
-
-  // Otvori search
-  searchToggle.addEventListener('click', function (e) {
-    e.stopPropagation();
-    searchDropdown.style.display = 'block';
-    setTimeout(() => {
-      searchDropdown.classList.add('show');
-      searchInput.focus();
-    }, 10);
-  });
-
-  // Zatvori search
-  function closeSearch() {
-    searchDropdown.classList.remove('show');
-    setTimeout(() => {
-      searchDropdown.style.display = 'none';
-    }, 300);
-  }
-
-  searchClose.addEventListener('click', closeSearch);
-
-  // Zatvori klikom izvan
-  document.addEventListener('click', function (e) {
-    if (!searchDropdown.contains(e.target) && !searchToggle.contains(e.target)) {
-      closeSearch();
-    }
-  });
-
-  // Zatvori sa Escape
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && searchDropdown.classList.contains('show')) {
-      closeSearch();
-    }
-  });
-});
 /**
  * Inicijalizuje animacije teksta u Bootstrap slideru
  * Sa posebnim rešenjem za ponavljanje animacije kod povratka na prvi slajd

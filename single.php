@@ -214,23 +214,24 @@ while (have_posts()) : the_post();
                             wp_reset_postdata();
                         }
                         ?>
-                        <div class="custom-share-buttons">
-                            <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>"
-                                target="_blank" rel="noopener noreferrer">
-                                Facebook
-                            </a>
-                            <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(get_permalink()); ?>&text=<?php echo urlencode(get_the_title()); ?>"
-                                target="_blank" rel="noopener noreferrer">
-                                Twitter
-                            </a>
-                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?php echo urlencode(get_permalink()); ?>"
-                                target="_blank" rel="noopener noreferrer">
-                                LinkedIn
-                            </a>
+                        <div class="custom-share-section">
+                            <h3 class="share-title">Podelite ovu objavu sa galaksijom!</h3>
+                            <div class="custom-share-buttons">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink()); ?>"
+                                    target="_blank" rel="noopener noreferrer" class="share-btn facebook">
+                                    <i class="fab fa-facebook-f"></i> Facebook
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(get_permalink()); ?>&text=<?php echo urlencode(get_the_title()); ?>"
+                                    target="_blank" rel="noopener noreferrer" class="share-btn twitter">
+                                    <i class="fab fa-twitter"></i> Twitter
+                                </a>
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?php echo urlencode(get_permalink()); ?>"
+                                    target="_blank" rel="noopener noreferrer" class="share-btn linkedin">
+                                    <i class="fab fa-linkedin-in"></i> LinkedIn
+                                </a>
+                            </div>
                         </div>
-
                     </div>
-
                     <div class="col-lg-4">
                         <aside class="single-sidebar">
                             <?php get_template_part('sidebar'); ?>

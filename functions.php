@@ -42,54 +42,6 @@ function s7design_preload_background()
 }
 add_action('wp_head', 's7design_preload_background', 5);
 
-/**
- * Deregistruje Google Fonts koje drugi plugini možda učitavaju
- */
-function s7design_deregister_external_fonts()
-{
-    // Pronađi i ukloni Google Fonts i slične externe fontove
-    global $wp_styles;
-    foreach ($wp_styles->registered as $handle => $style) {
-        if (
-            strpos($style->src, 'fonts.googleapis.com') !== false ||
-            strpos($style->src, 'fonts.gstatic.com') !== false
-        ) {
-            wp_deregister_style($handle);
-        }
-    }
-}
-add_action('wp_enqueue_scripts', 's7design_deregister_external_fonts', 5);
-
-/**
- * Asinhrono učitavanje manje kritičnih skripti
- */
-function s7design_async_less_critical_scripts()
-{
-?>
-    <script>
-        // Funkcija za odloženo učitavanje skripti
-        function loadScript(src, async = true, defer = true) {
-            const script = document.createElement('script');
-            script.src = src;
-            if (async) script.async = true;
-            if (defer) script.defer = true;
-            document.head.appendChild(script);
-        }
-
-        // Odloženo učitavanje nakon učitavanja stranice
-        window.addEventListener('load', function() {
-            // Ovde liste skripti koje se mogu učitati sa odlaganjem
-            setTimeout(function() {
-                // Dodajte ovde URL-ove skripti koje nisu kritične
-                // loadScript('https://example.com/script.js');
-            }, 2000);
-        });
-    </script>
-<?php
-}
-add_action('wp_footer', 's7design_async_less_critical_scripts', 99);
-
-
 // Prikaz navigacije za postove
 function show_posts_nav()
 {

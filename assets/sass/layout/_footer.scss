@@ -18,9 +18,12 @@
     // Button za povratak na vrh sa SVG
     .back-to-top-container {
         position: absolute;
-        top: -25px;
+        top: 20px;
         right: 10%;
         z-index: 10;
+        @media (max-width: 991.98px) {
+            top: -5px;
+        }
         .back-to-top-btn {
             display: flex;
             flex-direction: column;

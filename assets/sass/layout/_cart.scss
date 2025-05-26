@@ -153,11 +153,11 @@
                                 text-align: center;
 
                                 .quantity.buttons-added {
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    max-width: 120px;
-                                    margin: 0 auto;
+                                    // display: flex;
+                                    // align-items: center;
+                                    // justify-content: center;
+                                    // max-width: 120px;
+                                    // margin: 0 auto;
                                 }
                             }
 
@@ -284,7 +284,7 @@
 
                             th,
                             td {
-                                padding: 1.5rem 0;
+                                padding: 1rem;
                                 font-size: 1.3rem;
                                 font-weight: 700;
                                 color: $secondary-color2;
@@ -438,7 +438,7 @@
             }
 
             .cart_totals {
-                padding: 1.5rem;
+                padding: 1rem 0.5rem 0rem 0.5rem !important;
                 margin-top: 2rem;
 
                 .checkout-button {

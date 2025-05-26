@@ -439,7 +439,7 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
 
 // Poruka kada nema više proizvoda
 .no-more-products {
-    text-align: center;
+    text-align: left;
     color: $white;
     font-size: 1rem;
     padding: 1rem;
@@ -449,31 +449,56 @@ $pagination-hover-bg: rgba($secondary-color2, 0.2);
     margin: 2rem auto;
     max-width: 400px;
 }
-.custom-share-buttons {
-    margin-top: 30px;
-    display: flex;
-    gap: 15px;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-}
+.custom-share-section {
+    margin: 2rem 0;
+    text-align: left;
+    .share-title {
+        font-size: 1.5rem;
+        color: #ffe81f; // Star Wars žuta
+        text-shadow: 0 0 10px #000;
+        margin-bottom: 1rem;
+    }
 
-.custom-share-buttons a {
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-decoration: none;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    color: #000;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-    border: 2px solid #ffd700;
-    background: linear-gradient(to right, #ffd700, #ffcc00);
-}
+    .custom-share-buttons {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
 
-.custom-share-buttons a:hover {
-    background: #fff700;
-    color: #111;
-    box-shadow: 0 0 15px rgba(255, 255, 0, 0.9);
-    transform: scale(1.05);
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 5px rgba(255, 232, 31, 0.5);
+
+            i {
+                font-size: 1.1rem;
+            }
+
+            &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 15px rgba(255, 232, 31, 0.8);
+            }
+
+            &.facebook {
+                background: #3b5998;
+            }
+
+            &.twitter {
+                background: #1da1f2;
+            }
+
+            &.linkedin {
+                background: #0077b5;
+            }
+        }
+    }
 }

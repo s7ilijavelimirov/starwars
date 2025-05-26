@@ -1,176 +1,197 @@
 <?php
 
 /**
- * Učitavanje skripti za temu - optimizovana verzija bez inline JS-a
- *
- * @package s7design
+ * ULTRA OPTIMIZOVANI theme-scripts.php
+ * Fokus na conditional loading i defer
  */
 
-/**
- * Glavni enqueue za skripte
- */
 function s7design_enqueue_scripts()
 {
     $dist_uri = get_template_directory_uri() . '/dist';
     $dist_dir = get_template_directory() . '/dist';
 
-    // jQuery (osigurajmo da je dostupan)
+    // jQuery ostaje - potreban je
     wp_enqueue_script('jquery');
 
-    // Bootstrap bundle
+    // 1. BOOTSTRAP - svugde ali defer
     wp_enqueue_script(
         's7design-bootstrap',
         $dist_uri . '/js/bootstrap.bundle.min.js',
         ['jquery'],
-        file_exists($dist_dir . '/js/bootstrap.bundle.min.js') ? filemtime($dist_dir . '/js/bootstrap.bundle.min.js') : null,
+        filemtime($dist_dir . '/js/bootstrap.bundle.min.js'),
         true
     );
 
-    // Swiper core
-    wp_enqueue_script(
-        's7design-swiper',
-        $dist_uri . '/js/swiper-bundle.min.js',
-        [],
-        file_exists($dist_dir . '/js/swiper-bundle.min.js') ? filemtime($dist_dir . '/js/swiper-bundle.min.js') : null,
-        true
-    );
-
-    // Swiper INIT skripta sa zavisnošću od Swiper-a
-    wp_enqueue_script(
-        's7design-swiper-init',
-        $dist_uri . '/js/swiper-init-build.js',
-        ['s7design-swiper'],
-        file_exists($dist_dir . '/js/swiper-init-build.js') ? filemtime($dist_dir . '/js/swiper-init-build.js') : null,
-        true
-    );
-
-    // Glavni frontend JS
+    // 2. FRONTEND JS - glavni
     wp_enqueue_script(
         's7design-frontend',
         $dist_uri . '/js/frontend-build.js',
-        ['s7design-bootstrap', 's7design-swiper', 's7design-swiper-init', 'jquery'],
-        file_exists($dist_dir . '/js/frontend-build.js') ? filemtime($dist_dir . '/js/frontend-build.js') : null,
+        ['jquery', 's7design-bootstrap'],
+        filemtime($dist_dir . '/js/frontend-build.js'),
         true
     );
 
-    // AJAX parametri - samo osnovni
-    wp_localize_script('s7design-frontend', 'ajax_object', [
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('s7design_nonce'),
-        'is_woocommerce' => class_exists('WooCommerce') ? 'true' : 'false',
-        'is_shop' => is_shop() ? 'true' : 'false',
-    ]);
-
-    // Učitaj ecommerce-specifične skripte
-    s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir);
-
-    // Preload u <head>
-    add_action('wp_head', 's7design_preload_resources', 1);
-}
-add_action('wp_enqueue_scripts', 's7design_enqueue_scripts');
-
-/**
- * Ecommerce skripte
- */
-function s7design_enqueue_ecommerce_scripts($dist_uri, $dist_dir)
-{
-    // WooCommerce custom skripte samo na WC stranicama
-    if (class_exists('WooCommerce') && (is_woocommerce() || is_cart() || is_checkout())) {
+    // 3. SWIPER - SAMO gde treba
+    if (is_front_page()) {
         wp_enqueue_script(
-            's7design-woocommerce',
-            $dist_uri . '/js/woocommerce-custom-build.js',
-            ['jquery'],
-            file_exists($dist_dir . '/js/woocommerce-custom-build.js') ? filemtime($dist_dir . '/js/woocommerce-custom-build.js') : null,
+            's7design-swiper',
+            $dist_uri . '/js/swiper-bundle.min.js',
+            [],
+            filemtime($dist_dir . '/js/swiper-bundle.min.js'),
+            true
+        );
+
+        wp_enqueue_script(
+            's7design-swiper-init',
+            $dist_uri . '/js/swiper-init-build.js',
+            ['s7design-swiper'],
+            filemtime($dist_dir . '/js/swiper-init-build.js'),
             true
         );
     }
 
-    // Quick View samo na shop/category stranicama
+    // 4. WOOCOMMERCE skripte - conditional
+    s7design_conditional_wc_scripts($dist_uri, $dist_dir);
+
+    // 5. Minimalna AJAX lokalizacija
+    wp_localize_script('s7design-frontend', 'sw_ajax', [
+        'url' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('sw_nonce')
+    ]);
+}
+add_action('wp_enqueue_scripts', 's7design_enqueue_scripts');
+
+/**
+ * WooCommerce skripte - SAMO gde treba
+ */
+function s7design_conditional_wc_scripts($dist_uri, $dist_dir)
+{
+    if (!class_exists('WooCommerce')) return;
+
+    // SHOP stranice - Quick View + Load More
     if (is_shop() || is_product_category() || is_product_tag()) {
         wp_enqueue_script(
             's7design-quick-view',
             $dist_uri . '/js/quick-view-build.js',
             ['jquery'],
-            file_exists($dist_dir . '/js/quick-view-build.js') ? filemtime($dist_dir . '/js/quick-view-build.js') : null,
+            filemtime($dist_dir . '/js/quick-view-build.js'),
             true
         );
 
-        // Minimalna lokalizacija
-        wp_localize_script('s7design-quick-view', 'sw_quick_view_params', [
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('sw_quick_view_nonce')
-        ]);
-    }
-
-    // Load More skripte
-    s7design_register_load_more_scripts($dist_uri, $dist_dir);
-}
-
-/**
- * Load More skripte
- */
-function s7design_register_load_more_scripts($dist_uri, $dist_dir)
-{
-    if (is_shop() || is_product_category() || is_product_tag()) {
         wp_enqueue_script(
             's7design-load-more',
             $dist_uri . '/js/load-more-build.js',
             ['jquery'],
-            file_exists($dist_dir . '/js/load-more-build.js') ? filemtime($dist_dir . '/js/load-more-build.js') : null,
+            filemtime($dist_dir . '/js/load-more-build.js'),
             true
         );
 
-        // Minimalna lokalizacija
-        wp_localize_script('s7design-load-more', 'sw_load_more_params', [
-            'ajaxurl' => admin_url('admin-ajax.php'),
-            'nonce'   => wp_create_nonce('sw_load_more_nonce'),
-            'current_page' => max(1, get_query_var('paged')),
-            'text_loading' => __('Učitavanje...', 's7design'),
-            'text_no_more' => __('Nema više proizvoda', 's7design')
+        // Lokalizacija za Load More
+        wp_localize_script('s7design-load-more', 'sw_load_more', [
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('sw_load_more_nonce'),
+            'page' => max(1, get_query_var('paged')),
+            'loading' => 'Učitavanje...',
+            'no_more' => 'Nema više proizvoda'
+        ]);
+
+        // Quick View lokalizacija
+        wp_localize_script('s7design-quick-view', 'sw_quick_view', [
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('sw_quick_view_nonce')
         ]);
     }
 }
 
 /**
- * Preload samo najkritičnijih resursa
- */
-function s7design_preload_resources()
-{
-    $uri = get_template_directory_uri();
-
-    // Preload glavnih stilova - najviši prioritet
-    echo '<link rel="preload" href="' . $uri . '/dist/css/frontend.min.css" as="style" fetchpriority="high">' . "\n";
-
-    // Preload samo kritičnih skripti
-    echo '<link rel="preload" href="' . $uri . '/dist/js/bootstrap.bundle.min.js" as="script">' . "\n";
-    echo '<link rel="preload" href="' . $uri . '/dist/js/frontend-build.js" as="script">' . "\n";
-
-    // Swiper samo ako je stvarno potreban
-    if (is_front_page() || is_home() || is_shop() || is_product_category() || is_product_tag()) {
-        echo '<link rel="preload" href="' . $uri . '/dist/js/swiper-bundle.min.js" as="script">' . "\n";
-        echo '<link rel="preload" href="' . $uri . '/dist/js/swiper-init-build.js" as="script">' . "\n";
-    }
-
-    // Preload samo najvažnijih fontova
-    echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Regular.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">' . "\n";
-    echo '<link rel="preload" href="' . $uri . '/dist/fonts/Montserrat-Bold.woff2" as="font" type="font/woff2" crossorigin>' . "\n";
-}
-
-/**
- * Defer atribut za nekritične skripte
+ * DEFER svih ne-kritičnih skripti
  */
 function s7design_defer_scripts($tag, $handle, $src)
 {
-    $defer_scripts = [
+    // Svi skripti osim jQuery treba da budu defer
+    $defer_handles = [
+        's7design-bootstrap',
+        's7design-frontend',
+        's7design-swiper',
+        's7design-swiper-init',
         's7design-quick-view',
-        // 's7design-load-more',    // OBRIŠI OVU LINIJU!
-        's7design-woocommerce'
+        's7design-load-more',
+        's7design-checkout',
+        's7design-product'
     ];
 
-    if (in_array($handle, $defer_scripts)) {
+    if (in_array($handle, $defer_handles)) {
         return str_replace(' src', ' defer src', $tag);
     }
 
     return $tag;
 }
 add_filter('script_loader_tag', 's7design_defer_scripts', 10, 3);
+
+/**
+ * Preload SAMO najkritičnijih skripti
+ */
+function s7design_preload_scripts()
+{
+    $uri = get_template_directory_uri() . '/dist';
+
+    // Glavni JS
+    echo '<link rel="preload" href="' . $uri . '/js/frontend-build.js" as="script">' . "\n";
+
+    // Bootstrap
+    echo '<link rel="preload" href="' . $uri . '/js/bootstrap.bundle.min.js" as="script">' . "\n";
+
+    // Swiper SAMO na stranicama gde treba
+    if (is_front_page() || is_shop() || is_product_category()) {
+        echo '<link rel="preload" href="' . $uri . '/js/swiper-bundle.min.js" as="script">' . "\n";
+    }
+}
+add_action('wp_head', 's7design_preload_scripts', 2);
+
+/**
+ * Ukloni POTPUNO nepotrebne skripte
+ */
+function s7design_remove_bloat_scripts()
+{
+    if (!is_admin()) {
+        // WordPress bloat
+        wp_deregister_script('wp-embed');
+        wp_deregister_script('wp-emoji-release.min.js');
+
+        // Ukloni heartbeat na frontend-u
+        wp_deregister_script('heartbeat');
+
+        // Ukloni comment-reply ako nema komentara
+        if (!is_single() || !comments_open()) {
+            wp_deregister_script('comment-reply');
+        }
+    }
+}
+add_action('wp_enqueue_scripts', 's7design_remove_bloat_scripts', 100);
+
+/**
+ * Async loading za manje važne skripte
+ */
+function s7design_async_scripts()
+{
+?>
+    <script>
+        // Odloženo učitavanje analytics i drugih ne-kritičnih skripti
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                // Ovde možeš dodati Google Analytics, Facebook Pixel, itd.
+                // loadScript('https://www.google-analytics.com/analytics.js');
+            }, 3000); // 3 sekunde nakon load
+        });
+
+        function loadScript(src) {
+            var script = document.createElement('script');
+            script.src = src;
+            script.async = true;
+            document.head.appendChild(script);
+        }
+    </script>
+<?php
+}
+add_action('wp_footer', 's7design_async_scripts', 99);
+?>
